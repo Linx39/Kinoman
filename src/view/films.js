@@ -6,13 +6,15 @@ export const createFilmsTemplate = () => `<section class="films">
     
   </section>
 
-  <section class="films-list films-list--extra">
+  <button class="films-list__show-more">Show more</button>
+
+  <section class="films-list films-list--extra" data-extra="Top rated">
     <h2 class="films-list__title">Top rated</h2>
       <div class="films-list__container">
       </div>
   </section>
 
-  <section class="films-list films-list--extra">
+  <section class="films-list films-list--extra" data-extra="Most commented">
     <h2 class="films-list__title">Most commented</h2>
     <div class="films-list__container">
     </div>

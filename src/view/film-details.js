@@ -1,4 +1,27 @@
-export const createFilmDetailsTemplate = () => `<section class="film-details">
+import { addClassName } from '../mock/util.js';
+
+const controlActiveClass = 'film-details__control-button--active';
+
+export const createFilmDetailsTemplate = (film) => {
+  const {
+    title,
+    rating,
+    year,
+    duration,
+    genre,
+    poster,
+    description,
+    comments,
+    watchlist,
+    watched,
+    favorite,
+  } = film;
+
+  const watchlistClassName = addClassName(watchlist, controlActiveClass);
+  const watchedClassName = addClassName(watched, controlActiveClass);
+  const favoriteClassName = addClassName(favorite, controlActiveClass);
+
+  return `<section class="film-details">
 <form class="film-details__inner" action="" method="get">
   <div class="film-details__top-container">
     <div class="film-details__close">
@@ -6,7 +29,7 @@ export const createFilmDetailsTemplate = () => `<section class="film-details">
     </div>
     <div class="film-details__info-wrap">
       <div class="film-details__poster">
-        <img class="film-details__poster-img" src="./images/posters/the-great-flamarion.jpg" alt="">
+        <img class="film-details__poster-img" src="${poster}" alt="">
 
         <p class="film-details__age">18+</p>
       </div>
@@ -14,12 +37,12 @@ export const createFilmDetailsTemplate = () => `<section class="film-details">
       <div class="film-details__info">
         <div class="film-details__info-head">
           <div class="film-details__title-wrap">
-            <h3 class="film-details__title">The Great Flamarion</h3>
-            <p class="film-details__title-original">Original: The Great Flamarion</p>
+            <h3 class="film-details__title">${title}</h3>
+            <p class="film-details__title-original">${title}</p>
           </div>
 
           <div class="film-details__rating">
-            <p class="film-details__total-rating">8.9</p>
+            <p class="film-details__total-rating">${rating}</p>
           </div>
         </div>
 
@@ -42,7 +65,7 @@ export const createFilmDetailsTemplate = () => `<section class="film-details">
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Runtime</td>
-            <td class="film-details__cell">1h 18m</td>
+            <td class="film-details__cell">${duration}</td>
           </tr>
           <tr class="film-details__row">
             <td class="film-details__term">Country</td>
@@ -57,16 +80,14 @@ export const createFilmDetailsTemplate = () => `<section class="film-details">
           </tr>
         </table>
 
-        <p class="film-details__film-description">
-          The film opens following a murder at a cabaret in Mexico City in 1936, and then presents the events leading up to it in flashback. The Great Flamarion (Erich von Stroheim) is an arrogant, friendless, and misogynous marksman who displays his trick gunshot act in the vaudeville circuit. His show features a beautiful assistant, Connie (Mary Beth Hughes) and her drunken husband Al (Dan Duryea), Flamarion's other assistant. Flamarion falls in love with Connie, the movie's femme fatale, and is soon manipulated by her into killing her no good husband during one of their acts.
-        </p>
+        <p class="film-details__film-description">${description}</p>
       </div>
     </div>
 
     <section class="film-details__controls">
-      <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-      <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-      <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+      <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlistClassName}" id="watchlist" name="watchlist">Add to watchlist</button>
+      <button type="button" class="film-details__control-button film-details__control-button--watched ${watchedClassName}" id="watched" name="watched">Already watched</button>
+      <button type="button" class="film-details__control-button film-details__control-button--favorite ${favoriteClassName}" id="favorite" name="favorite">Add to favorites</button>
     </section>
   </div>
 
@@ -162,3 +183,5 @@ export const createFilmDetailsTemplate = () => `<section class="film-details">
   </div>
 </form>
 </section>`;
+};
+
