@@ -1,21 +1,24 @@
-import { addClassName } from '../mock/util.js';
+import dayjs from 'dayjs';
+import { addClassName } from '../util/util.js';
 
 const controlActiveClass = 'film-card__controls-item--active';
 
 export const createFilmCardTemplate = (film) => {
   const {
+    poster,
     title,
     rating,
-    year,
-    duration,
-    genre,
-    poster,
+    releaseDate,
+    runtime,
+    genres,
     description,
     comments,
     watchlist,
     watched,
     favorite,
   } = film;
+
+  const filmReleaseDate = dayjs(releaseDate).format('YYYY');
 
   const watchlistClassName = addClassName(watchlist, controlActiveClass);
   const watchedClassName = addClassName(watched, controlActiveClass);
@@ -26,9 +29,9 @@ export const createFilmCardTemplate = (film) => {
 
   <p class="film-card__rating">${rating}</p>
   <p class="film-card__info">
-    <span class="film-card__year">${year}</span>
-    <span class="film-card__duration">${duration}</span>
-    <span class="film-card__genre">${genre}</span>
+    <span class="film-card__year">${filmReleaseDate}</span>
+    <span class="film-card__duration">${runtime}</span>
+    <span class="film-card__genre">${genres[0]}</span>
   </p>
 
   <img src="${poster}" alt="" class="film-card__poster">

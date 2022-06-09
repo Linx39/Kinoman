@@ -1,18 +1,14 @@
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
+import { getRandomInteger, getRandomElement, getRandomArray, getRandomDate, generateRandomText } from '../util/util.js';
+import { generateComments } from './comment.js';
 
 const Rating = {
   MIN: 0,
   MAX: 100,
 };
 
-const Year = {
-  MIN: 1900,
-  MAX: 2022,
+const Date = {
+  MIN: '1900.01.01',
+  MAX: '2022.12.31',
 };
 
 const DescriptionCount = {
@@ -25,22 +21,6 @@ const CommentsCount = {
   MAX: 5,
 };
 
-const TITLES = [
-  'Sagebrush Trail',
-  'The Man with the Golden Arm',
-  'Santa Claus Conquers the Martians',
-  'Popeye the Sailor Meets Sindbad the Sailor',
-  'The Dance of Life',
-];
-
-const GENRES = [
-  'Cartoon',
-  'Comedy',
-  'Drama',
-  'Western',
-  'Musical',
-];
-
 const POSTERS = [
   'made-for-each-other.png',
   'popeye-meets-sinbad.png',
@@ -49,6 +29,85 @@ const POSTERS = [
   'the-dance-of-life.jpg',
   'the-great-flamarion.jpg',
   'the-man-with-the-golden-arm.jpg',
+];
+
+const TITLES = [
+  'Sagebrush Trail',
+  'The Man with the Golden Arm',
+  'Santa Claus Conquers the Martians',
+  'Popeye the Sailor Meets Sindbad the Sailor',
+  'The Dance of Life',
+];
+
+const DIRECTORS = [
+  'Стивен Спилберг',
+  'Мартин Скорсезе',
+  'Квентин Тарантино',
+  'Гай Ричи',
+  'Вуди Аллен',
+  'Джеймс Кэмерон',
+  'Ридли Скотт',
+  'Тим Бёртон',
+];
+
+const WRITERS = [
+  'Стивен Спилберг',
+  'Мартин Скорсезе',
+  'Квентин Тарантино',
+  'Гай Ричи',
+  'Вуди Аллен',
+  'Джеймс Кэмерон',
+  'Ридли Скотт',
+  'Тим Бёртон',
+];
+
+const ACTORS = [
+  'Дензел Вашингтон',
+  'Изабель Юппер',
+  'Дэниел Дей-Льюис',
+  'Киану Ривз',
+  'Николь Кидман',
+  'Сон Кан-хо',
+  'Тони Сервилло',
+  'Чжао Тао',
+  'Виола Дэвис',
+  'Сирша Ронан',
+  'Джулианна Мур',
+  'Хоакин Феникс',
+  'Тильда Суинтон',
+  'Оскар Айзек',
+  'Майкл Б. Джордан',
+  'Ким Мин Хи',
+  'Элфри Вудард',
+  'Уиллем Дефо',
+  'Уэс Стьюди',
+  'Роб Морган',
+  'Катрин Денёв',
+  'Мелисса МакКарти',
+  'Махершала Али',
+  'Соня Брага',
+  'Гаэль Гарсия Берналь',
+];
+
+const COUNTRES = [
+  'Россия',
+  'США',
+  'Индия',
+  'Китай',
+  'Германия',
+  'Испания',
+  'Бразилия',
+  'Франция',
+];
+
+const GENRES = [
+  'Cartoon',
+  'Comedy',
+  'Drama',
+  'Western',
+  'Musical',
+  'Film-Noir',
+  'Mystery',
 ];
 
 const DESCRIPTIONS = [
@@ -65,28 +124,23 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const getRandomText = (array) => {
-  const randomIndex = getRandomInteger(0, array.length - 1);
-
-  return array[randomIndex];
-};
-
-const generateDescription = () => {
-  let description = '';
-  for (let i = 1; i < getRandomInteger(DescriptionCount.MIN, DescriptionCount.MAX); i++) {
-    description += getRandomText(DESCRIPTIONS);
-  }
-  return description;
-};
+// const commentsFilm = generateComments();
+// console.log (commentsFilm)
 
 export const generateFilm = () => ({
-  title: getRandomText(TITLES),
+  poster: `./images/posters/${getRandomElement(POSTERS)}`,
+  title: getRandomElement(TITLES),
+  alternativeTitle: getRandomElement(TITLES),
   rating: getRandomInteger(Rating.MIN, Rating.MAX)/10,
-  year: getRandomInteger(Year.MIN, Year.MAX),
-  duration: `${getRandomInteger(1,24)}h${getRandomInteger(0,60)}m`,
-  genre: getRandomText(GENRES),
-  poster: `./images/posters/${getRandomText(POSTERS)}`,
-  description: generateDescription(),
+  director: getRandomElement(DIRECTORS),
+  writers: getRandomArray(WRITERS, 3),
+  actors: getRandomArray(ACTORS, 10),
+  releaseDate: getRandomDate(Date.MIN),
+  runtime: `${getRandomInteger(1,24)}h${getRandomInteger(0,60)}m`,
+  country: getRandomElement(COUNTRES),
+  genres: getRandomArray(GENRES, 3),
+  description: generateRandomText(DESCRIPTIONS, DescriptionCount.MIN, DescriptionCount.MAX),
+  ageRating: `${getRandomInteger(0,99)}+`,
   comments: getRandomInteger(CommentsCount.MIN, CommentsCount.MAX),
   watchlist: Boolean(getRandomInteger(0, 1)),
   watched: Boolean(getRandomInteger(0, 1)),
