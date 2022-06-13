@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import { addClassName } from '../util/util.js';
 
+const DESCRIPTON_LENGTH = 139;
+
 const controlActiveClass = 'film-card__controls-item--active';
 
 export const createFilmCardTemplate = (film) => {
@@ -19,6 +21,10 @@ export const createFilmCardTemplate = (film) => {
   } = film;
 
   const filmReleaseDate = dayjs(releaseDate).format('YYYY');
+  const descriptionText = description.length < DESCRIPTON_LENGTH
+    ? description
+    : `${description.substring(0, DESCRIPTON_LENGTH-1)}...`;
+
   const commentsCount = comments.length;
 
   const watchlistClassName = addClassName(watchlist, controlActiveClass);
@@ -37,7 +43,7 @@ export const createFilmCardTemplate = (film) => {
 
   <img src="${poster}" alt="" class="film-card__poster">
 
-  <p class="film-card__description">${description}</p>
+  <p class="film-card__description">${descriptionText}</p>
   
   <a class="film-card__comments">${commentsCount} comments</a>
   

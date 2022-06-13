@@ -36,7 +36,10 @@ const getRandomDate = (dateMin, dateMax = Date(), isMin = false) => {
 const getRandomRuntime = (timeMin, timeMax) => {
   const randomRuntime = getRandomInteger(timeMin, timeMax);
   const hours = Math.floor(randomRuntime / 60);
-  const minutes = randomRuntime - hours  *60;
+  let minutes = randomRuntime - hours * 60;
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
   return `${hours}h ${minutes}m`;
 };
 

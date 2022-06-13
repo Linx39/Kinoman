@@ -10,10 +10,11 @@ import { generateFilm } from './mock/film';
 
 const PLACE_DEFAULT = 'beforeend';
 
+const FILMS_COUNT = 30;
 const FILM_CARD_COUNT = 5;
 const FILM_EXTRA_CARD_COUNT = 2;
 
-const films = new Array(FILM_CARD_COUNT).fill().map(generateFilm);
+const films = new Array(FILMS_COUNT).fill().map(generateFilm);
 
 const bodyElement = document.querySelector('body');
 const headerElement = document.querySelector('.header');
@@ -37,7 +38,7 @@ const openFilmDetails = (card) => {
   });
 };
 
-render(headerElement, createHeaderProfileTemplate());
+render(headerElement, createHeaderProfileTemplate(films));
 render(mainElement, createMainNavigationTemplate());
 render(mainElement, createSortTemplate());
 render(mainElement, createFilmsTemplate());
@@ -53,13 +54,15 @@ const renderFilmList = () => {
 
 renderFilmList();
 
-const filmsListExtraContainers = mainElement.querySelectorAll('.films-list.films-list--extra .films-list__container');
-filmsListExtraContainers.forEach((container) => {
-  for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
-    render(container, createFilmCardTemplate(films[i]));
-  }
-});
+const filmsListTopRatedContainer = mainElement.querySelector('[name="Top rated"] .films-list__container');
+for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
+  render(filmsListTopRatedContainer, createFilmCardTemplate(films[i]));
+}
 
+const filmsListMostCommentedContainer = mainElement.querySelector('[name="Most commented"] .films-list__container');
+for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
+  render(filmsListMostCommentedContainer, createFilmCardTemplate(films[i]));
+}
 
 const filmCardElement = document.querySelectorAll('.film-card');
 filmCardElement.forEach((card) => openFilmDetails(card));

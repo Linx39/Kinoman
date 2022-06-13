@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { addClassName } from '../util/util.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
+const GENRE = 'Genre';
 
 export const createFilmDetailsTemplate = (film) => {
   const {
@@ -49,6 +50,8 @@ export const createFilmDetailsTemplate = (film) => {
   const watchlistClassName = addClassName(watchlist, CONTROL_ACTIVE_CLASS);
   const watchedClassName = addClassName(watched, CONTROL_ACTIVE_CLASS);
   const favoriteClassName = addClassName(favorite, CONTROL_ACTIVE_CLASS);
+
+  const genresHeader = genres.length > 1 ? `${GENRE}s` : GENRE;
 
   const genresTemplate = createGenresTemplate();
   const commentsTemplate = createCommentsTemplate();
@@ -105,7 +108,7 @@ export const createFilmDetailsTemplate = (film) => {
               <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">Genres</td>
+              <td class="film-details__term">${genresHeader}</td>
               <td class="film-details__cell">
                 ${genresTemplate}
             </tr>

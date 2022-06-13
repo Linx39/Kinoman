@@ -8,13 +8,13 @@ export const createFilmsTemplate = () => `<section class="films">
 
   <button class="films-list__show-more">Show more</button>
 
-  <section class="films-list films-list--extra" data-extra="Top rated">
+  <section class="films-list films-list--extra" name="Top rated">
     <h2 class="films-list__title">Top rated</h2>
       <div class="films-list__container">
       </div>
   </section>
 
-  <section class="films-list films-list--extra" data-extra="Most commented">
+  <section class="films-list films-list--extra" name="Most commented">
     <h2 class="films-list__title">Most commented</h2>
     <div class="films-list__container">
     </div>

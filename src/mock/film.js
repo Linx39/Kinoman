@@ -127,7 +127,7 @@ export const generateFilm = () => ({
   releaseDate: getRandomDate(DATE_MIN),
   runtime: getRandomRuntime(1, 720),
   country: getRandomElement(COUNTRES),
-  genres: getRandomArray(GENRES, 3),
+  genres: getRandomArray(GENRES, 4),
   description: generateRandomText(DESCRIPTIONS, DescriptionCount.MIN, DescriptionCount.MAX),
   ageRating: `${getRandomInteger(0,99)}+`,
   comments: generateComments(),
