@@ -27,18 +27,23 @@ const getRandomArray = (array, arrayLength = array.length) => {
     });
 };
 
-const getRandomDate = (dateMin, dateMax = Date()) => {
-  const dateDiff = getRandomInteger(dayjs(dateMax).diff(dayjs(dateMin), 'day') +1);
-  return dayjs(dateMin).add(dateDiff, 'day').toDate();
+const getRandomDate = (dateMin, dateMax = Date(), isMin = false) => {
+  const diffValue = isMin ? 'minute' : 'day';
+  const dateDiff = getRandomInteger(dayjs(dateMax).diff(dayjs(dateMin), diffValue) +1);   //?????
+  return dayjs(dateMin).add(dateDiff, diffValue).toDate();
 };
 
-const generateRandomText = (array, textCountMin = 1, textCountMax = 1) => {
-  let text = '';
-  for (let i = 1; i < getRandomInteger(textCountMin, textCountMax); i++) {
-    text += getRandomElement(array);
-  }
-  return text;
+const getRandomRuntime = (timeMin, timeMax) => {
+  const randomRuntime = getRandomInteger(timeMin, timeMax);
+  const hours = Math.floor(randomRuntime / 60);
+  const minutes = randomRuntime - hours  *60;
+  return `${hours}h ${minutes}m`;
 };
+
+const generateRandomText = (arrayTexts, textCountMin = 1, textCountMax = 1) => new Array(getRandomInteger(textCountMin, textCountMax))
+  .fill()
+  .map(() => getRandomElement(arrayTexts))
+  .join(' ');
 
 const addClassName = (isAdd, className) => (
   isAdd
@@ -46,4 +51,4 @@ const addClassName = (isAdd, className) => (
     : ''
 );
 
-export { getRandomInteger, getRandomElement, getRandomArray, getRandomDate, generateRandomText, addClassName };
+export { getRandomInteger, getRandomElement, getRandomArray, getRandomDate, getRandomRuntime, generateRandomText, addClassName };

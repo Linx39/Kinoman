@@ -18,35 +18,18 @@ const COMMENTS = [
   'Omcmvbfh v kvdhhsdmd mnhbvgv',
 ];
 
-const EMOTION = [
-  'angry.png',
-  'puke.png',
-  'sleeping.png',
-  'smile.png',
-];
+const Emotion = {
+  angry: 'angry.png',
+  puke: 'puke.png',
+  sleeping: 'sleeping.png',
+  smile: 'smile.png',
+};
 
 const generateComment = () => ({
   author: getRandomElement(AUTHOR),
   comment: getRandomElement(COMMENTS),
-  date: getRandomDate('2019.01.01'),
-  emotion: `./images/emoji/${getRandomElement(EMOTION)}`,
+  date: getRandomDate('2019.01.01', undefined, true),
+  emotion: `./images/emoji/${getRandomElement(Object.values(Emotion))}`,
 });
 
-// const comm = generateComment();
-// console.log(comm);
-
-const commentsCount = getRandomInteger(0,5);
-
-const generateComments = () => {
-  const arr = new Array(commentsCount);
-
-    arr.fill(null);
-
-    arr.map(generateComment);
-    return arr;
-};
-
-const commmm = generateComments();
-console.log(commmm);
-
-export { generateComments };
+export const generateComments = () => new Array(getRandomInteger(0,5)).fill(null).map(generateComment);

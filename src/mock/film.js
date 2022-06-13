@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomElement, getRandomArray, getRandomDate, generateRandomText } from '../util/util.js';
+import { getRandomInteger, getRandomElement, getRandomArray, getRandomDate, getRandomRuntime, generateRandomText } from '../util/util.js';
 import { generateComments } from './comment.js';
 
 const Rating = {
@@ -6,18 +6,10 @@ const Rating = {
   MAX: 100,
 };
 
-const Date = {
-  MIN: '1900.01.01',
-  MAX: '2022.12.31',
-};
+const DATE_MIN = '1900.01.01';
 
 const DescriptionCount = {
   MIN: 1,
-  MAX: 5,
-};
-
-const CommentsCount = {
-  MIN: 0,
   MAX: 5,
 };
 
@@ -124,9 +116,6 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-// const commentsFilm = generateComments();
-// console.log (commentsFilm)
-
 export const generateFilm = () => ({
   poster: `./images/posters/${getRandomElement(POSTERS)}`,
   title: getRandomElement(TITLES),
@@ -135,13 +124,13 @@ export const generateFilm = () => ({
   director: getRandomElement(DIRECTORS),
   writers: getRandomArray(WRITERS, 3),
   actors: getRandomArray(ACTORS, 10),
-  releaseDate: getRandomDate(Date.MIN),
-  runtime: `${getRandomInteger(1,24)}h${getRandomInteger(0,60)}m`,
+  releaseDate: getRandomDate(DATE_MIN),
+  runtime: getRandomRuntime(1, 720),
   country: getRandomElement(COUNTRES),
   genres: getRandomArray(GENRES, 3),
   description: generateRandomText(DESCRIPTIONS, DescriptionCount.MIN, DescriptionCount.MAX),
   ageRating: `${getRandomInteger(0,99)}+`,
-  comments: getRandomInteger(CommentsCount.MIN, CommentsCount.MAX),
+  comments: generateComments(),
   watchlist: Boolean(getRandomInteger(0, 1)),
   watched: Boolean(getRandomInteger(0, 1)),
   favorite: Boolean(getRandomInteger(0, 1)),

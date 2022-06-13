@@ -19,6 +19,7 @@ export const createFilmCardTemplate = (film) => {
   } = film;
 
   const filmReleaseDate = dayjs(releaseDate).format('YYYY');
+  const commentsCount = comments.length;
 
   const watchlistClassName = addClassName(watchlist, controlActiveClass);
   const watchedClassName = addClassName(watched, controlActiveClass);
@@ -38,7 +39,7 @@ export const createFilmCardTemplate = (film) => {
 
   <p class="film-card__description">${description}</p>
   
-  <a class="film-card__comments">${comments} comments</a>
+  <a class="film-card__comments">${commentsCount} comments</a>
   
   <div class="film-card__controls">
     <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button">Add to watchlist</button>
