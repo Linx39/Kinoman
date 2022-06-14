@@ -1,3 +1,7 @@
-export const createFooterStatisticsTemplate = () => `<section class="footer__statistics">
-<p>130 291 movies inside</p>
-</section>`;
+export const createFooterStatisticsTemplate = (films) => {
+  const moviesInside = films.length;
+
+  return `<section class="footer__statistics">
+  <p>${moviesInside} movies inside</p>
+  </section>`;
+};

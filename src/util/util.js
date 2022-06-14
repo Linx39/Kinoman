@@ -40,6 +40,9 @@ const getRandomRuntime = (timeMin, timeMax) => {
   if (minutes < 10) {
     minutes = `0${minutes}`;
   }
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
   return `${hours}h ${minutes}m`;
 };
 

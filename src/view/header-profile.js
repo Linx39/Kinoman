@@ -1,29 +1,26 @@
-import { FILMS_COUNT } from './main.js';
+const PROFILE_RATING_NAME = ['Novice', 'Fan', 'Movie Buff'];
 
-export const createHeaderProfileTemplate = (films) => {
-  const PROFILE_RATING_NAME = {
-    novice: [1, 10],
-    fan: [11, 20],
-    'movie buff': [20, FILMS_COUNT],
-  };
+const getProfileRating = (name, count) => {
+  if (count >= 1 && count <= 10) {
+    return name[0];
+  }
+  if (count >= 11 && count <= 20) {
+    return name[1];
+  }
+  if (count >= 21) {
+    return name[2];
+  }
+};
 
-  const sumWatched = films.map((film) => film.watched).reduce((sum, watched) => sum + watched, 0);
+export const createHeaderProfileTemplate = (filterItems) => {
+  const sumWatched = filterItems[2].count;
 
   let profileRatingTemplate = '';
 
-  let profileRating;
-  if (sumWatched >= 1 && sumWatched <= 10) {
-    profileRating = PROFILE_RATING_NAME[0];
-  }
-  if (sumWatched >= 11 && sumWatched <= 20) {
-    profileRating = PROFILE_RATING_NAME[1];
-  }
-  if (sumWatched >= 21) {
-    profileRating = PROFILE_RATING_NAME[2];
-  }
+  const profileRatingName = getProfileRating(PROFILE_RATING_NAME, sumWatched);
 
   if (sumWatched > 0) {
-    profileRatingTemplate = `<p class="profile__rating">${profileRating}</p>`;
+    profileRatingTemplate = `<p class="profile__rating">${profileRatingName}</p>`;
   }
 
   return `<section class="header__profile profile">
@@ -31,4 +28,3 @@ export const createHeaderProfileTemplate = (films) => {
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
 };
-
