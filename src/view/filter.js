@@ -5,7 +5,7 @@ const filmsToFilterMap = {
   favorites: (films) => films.filter((film) => film.favorite).length,
 };
 
-export const generateFilter = (films) => Object
+const createFilmsFilter = (films) => Object
   .entries(filmsToFilterMap)
   .map(([filterName, filmsCount]) => ({
     name: filterName,
@@ -13,3 +13,9 @@ export const generateFilter = (films) => Object
   }),
   );
 
+const createCommentsFilter = (film, commentsData) => {
+  const {comments} = film;
+  return commentsData.slice().filter((comment) => comments.some((id) => id === comment.id));
+};
+
+export { createFilmsFilter, createCommentsFilter };

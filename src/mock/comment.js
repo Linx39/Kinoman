@@ -1,4 +1,6 @@
-import { getRandomInteger, getRandomElement, getRandomDate } from '../util/util.js';
+import { getRandomElementFromArray, getRandomDate } from '../util/util.js';
+
+const path = './images/emoji/';
 
 const AUTHOR = [
   'Tim Macoveev',
@@ -25,11 +27,9 @@ const Emotion = {
   smile: 'smile.png',
 };
 
-const generateComment = () => ({
-  author: getRandomElement(AUTHOR),
-  comment: getRandomElement(COMMENTS),
+export const generateComment = () => ({
+  author: getRandomElementFromArray(AUTHOR),
+  comment: getRandomElementFromArray(COMMENTS),
   date: getRandomDate('2019.01.01', undefined, true),
-  emotion: `./images/emoji/${getRandomElement(Object.values(Emotion))}`,
+  emotion: `${path}${getRandomElementFromArray(Object.values(Emotion))}`,
 });
-
-export const generateComments = () => new Array(getRandomInteger(0,5)).fill(null).map(generateComment);

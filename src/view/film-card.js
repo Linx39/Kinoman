@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { addClassName } from '../util/util.js';
+import { addClassName, convertTime } from '../util/util.js';
 
 const DESCRIPTON_LENGTH = 139;
 
@@ -21,6 +21,7 @@ export const createFilmCardTemplate = (film) => {
   } = film;
 
   const filmReleaseDate = dayjs(releaseDate).format('YYYY');
+  const filmRuntime = convertTime(runtime);
   const descriptionText = description.length < DESCRIPTON_LENGTH
     ? description
     : `${description.substring(0, DESCRIPTON_LENGTH-1)}...`;
@@ -37,7 +38,7 @@ export const createFilmCardTemplate = (film) => {
   <p class="film-card__rating">${rating}</p>
   <p class="film-card__info">
     <span class="film-card__year">${filmReleaseDate}</span>
-    <span class="film-card__duration">${runtime}</span>
+    <span class="film-card__duration">${filmRuntime}</span>
     <span class="film-card__genre">${genres[0]}</span>
   </p>
 

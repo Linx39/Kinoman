@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import { addClassName } from '../util/util.js';
+import { addClassName, convertTime } from '../util/util.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
 
-export const createFilmDetailsTemplate = (film) => {
+export const createFilmDetailsTemplate = (film, filmComments) => {
   const {
     poster,
     title,
@@ -29,7 +29,7 @@ export const createFilmDetailsTemplate = (film) => {
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
     .join('');
 
-  const createCommentsTemplate = () => comments
+  const createCommentsTemplate = () => filmComments
     .map(({author, comment, date, emotion}) => `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
           <img src="${emotion}" width="55" height="55" alt="emoji-smile">
@@ -45,7 +45,9 @@ export const createFilmDetailsTemplate = (film) => {
       </li>`)
     .join('');
 
+  const ageRatingFilm = `${ageRating}+`;
   const filmReleaseDate = dayjs(releaseDate).format('DD MMMM YYYY');
+  const filmRuntime = convertTime(runtime);
 
   const watchlistClassName = addClassName(watchlist, CONTROL_ACTIVE_CLASS);
   const watchedClassName = addClassName(watched, CONTROL_ACTIVE_CLASS);
@@ -67,7 +69,7 @@ export const createFilmDetailsTemplate = (film) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="${poster}" alt="">
 
-          <p class="film-details__age">${ageRating}</p>
+          <p class="film-details__age">${ageRatingFilm}</p>
         </div>
 
         <div class="film-details__info">
@@ -101,7 +103,7 @@ export const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${runtime}</td>
+              <td class="film-details__cell">${filmRuntime}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>

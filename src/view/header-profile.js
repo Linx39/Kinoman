@@ -1,25 +1,24 @@
-const PROFILE_RATING_NAME = ['Novice', 'Fan', 'Movie Buff'];
+const FILTER_NAME = 'history';
 
-const getProfileRating = (name, count) => {
-  if (count >= 1 && count <= 10) {
-    return name[0];
-  }
-  if (count >= 11 && count <= 20) {
-    return name[1];
-  }
-  if (count >= 21) {
-    return name[2];
-  }
-};
+const ProfileRatingName = [
+  {filmCountMin: 1, ratingName: 'Novice'},
+  {filmCountMin: 11, ratingName: 'Fan'},
+  {filmCountMin: 21, ratingName: 'Movie Buff'},
+];
+
+const getProfileRating = (filmCount) => ProfileRatingName
+  .reverse()
+  .find((item) => filmCount >= item.filmCountMin)
+  .ratingName;
+
 
 export const createHeaderProfileTemplate = (filterItems) => {
-  const sumWatched = filterItems[2].count;
+  const itemCount = filterItems.find((item) => item.name === FILTER_NAME).count;
 
   let profileRatingTemplate = '';
 
-  const profileRatingName = getProfileRating(PROFILE_RATING_NAME, sumWatched);
-
-  if (sumWatched > 0) {
+  if (itemCount > 0) {
+    const profileRatingName = getProfileRating(itemCount);
     profileRatingTemplate = `<p class="profile__rating">${profileRatingName}</p>`;
   }
 
