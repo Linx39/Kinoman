@@ -1,0 +1,4 @@
+const FILMS_COUNT = 23;
+const COMMENTS_COUNT = 50;
+
+export { FILMS_COUNT, COMMENTS_COUNT };
