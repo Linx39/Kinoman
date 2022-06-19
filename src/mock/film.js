@@ -1,5 +1,5 @@
-import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../util/util.js';
-import { COMMENTS_COUNT } from './const.js';
+import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../util.js';
+import { COMMENTS_COUNT } from '../const.js';
 
 const Rating = {
   MIN: 0,
