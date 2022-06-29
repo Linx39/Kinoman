@@ -82,7 +82,7 @@ const renderTemplate = (container, template, place = PLACE_DEFAULT) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const renderElement = (container, element, place) => {
+const render = (container, element, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -102,4 +102,4 @@ const createElement = (template) => {
 export { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray,
   getRandomDate, convertTime, generateRandomText,
   DateFormat, formatDate, addClassName, removeAllChildren,
-  RenderPosition, renderTemplate, renderElement, createElement };
+  RenderPosition, renderTemplate, render, createElement };

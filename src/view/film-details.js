@@ -1,9 +1,9 @@
-import { addClassName, convertTime, formatDate, DateFormat } from '../util.js';
+import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../util.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
 
-export const createFilmDetailsTemplate = (film, filmComments) => {
+const createFilmDetailsTemplate = (film, filmComments) => {
   const {
     poster,
     title,
@@ -171,3 +171,26 @@ export const createFilmDetailsTemplate = (film, filmComments) => {
     </section>`);
 };
 
+export default class FilmDetails {
+  constructor(film, filmComments) {
+    this._film = film;
+    this._filmComments = filmComments;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsTemplate(this._film, this._filmComments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
