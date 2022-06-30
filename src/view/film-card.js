@@ -1,4 +1,4 @@
-import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../util.js';
+import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../utils.js';
 
 const DESCRIPTON_LENGTH = 139;
 

@@ -1,4 +1,4 @@
-import { getRandomElementFromArray, getRandomDate } from '../util.js';
+import { getRandomElementFromArray, getRandomDate } from '../utils.js';
 
 const path = './images/emoji/';
 

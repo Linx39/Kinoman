@@ -1,4 +1,4 @@
-import { createElement } from '../util.js';
+import { createElement } from '../utils.js';
 
 const createFooterStatisticsTemplate = (films) => {
   const moviesInside = films.length;

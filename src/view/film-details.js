@@ -1,4 +1,4 @@
-import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../util.js';
+import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../utils.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';

@@ -78,11 +78,13 @@ const removeAllChildren = (parent) => {
   }
 };
 
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
 const renderTemplate = (container, template, place = PLACE_DEFAULT) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const render = (container, element, place) => {
+const render = (container, element, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -102,4 +104,4 @@ const createElement = (template) => {
 export { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray,
   getRandomDate, convertTime, generateRandomText,
   DateFormat, formatDate, addClassName, removeAllChildren,
-  RenderPosition, renderTemplate, render, createElement };
+  RenderPosition, renderTemplate, render, createElement, isEscEvent };
