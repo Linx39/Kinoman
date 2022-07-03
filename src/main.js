@@ -12,8 +12,8 @@ import NoMoviesView from './view/no-movies.js';
 import FilmDetailsView from './view/film-details.js';
 import { createFilmsFilter, createCommentsFilter } from './view/filter.js';
 
-import { render, isEscEvent } from './utils.js';
-
+import { isEscEvent } from './utils/common.js';
+import { render, removeComponent } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
 
 import { generateFilm } from './mock/film';
@@ -65,17 +65,15 @@ const renderFilm = (filmsContainer, film) => {
     }
   };
 
-  filmComponent.getElement().querySelector('.film-card__poster').addEventListener('click', openFilmDetails);
-  filmComponent.getElement().querySelector('.film-card__title').addEventListener('click', openFilmDetails);
-  filmComponent.getElement().querySelector('.film-card__comments').addEventListener('click', openFilmDetails);
+  filmComponent.setClickFilmDetailsHandler(openFilmDetails);
 
-  filmDetailsComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', closeFilmDetails);
+  filmDetailsComponent.setClickButtonCloseHandler(closeFilmDetails);
 
-  render(filmsContainer, filmComponent.getElement());
+  render(filmsContainer, filmComponent);
 };
 
 //функция рендеринга основного списка фильмов
-const renderFilmsList = (container, buttonComponent) => {
+const renderFilmsList = (container, button) => {
   let renderCount = 0;
   const renderList = (count = 0) => {
     renderCount = Math.min(films.length, count + FILM_CARD_COUNT);
@@ -85,44 +83,43 @@ const renderFilmsList = (container, buttonComponent) => {
     }
 
     if (renderCount === films.length) {
-      buttonComponent.getElement().remove();
-      buttonComponent.removeElement();
+      removeComponent(button);
     }
   };
 
   renderList();
 
-  buttonComponent.getElement().addEventListener('click', () => renderList(renderCount));
+  button.setClickHandler(() => renderList(renderCount));
 };
 
 const renderPage = () => {
-  render(headerElement, new HeaderProfileView(filmFilters).getElement());
-  render(mainElement, new MainNavigationView(filmFilters).getElement());
-  render(footerElement, new FooterStatisticsView(films).getElement());
+  render(headerElement, new HeaderProfileView(filmFilters));
+  render(mainElement, new MainNavigationView(filmFilters));
+  render(footerElement, new FooterStatisticsView(films));
 
   if (films.length === 0) {
-    render(mainElement, new NoMoviesView().getElement());
+    render(mainElement, new NoMoviesView());
     return;
   }
 
-  render(mainElement, new SortView().getElement());
+  render(mainElement, new SortView());
 
-  const filmsElement = new FilmsView().getElement();
+  const filmsElement = new FilmsView();
   render(mainElement, filmsElement);
 
-  render(filmsElement, new FilmsListView().getElement());
+  render(filmsElement, new FilmsListView());
 
   const showMoreComponent = new ShowMoreView();
-  render(filmsElement, showMoreComponent.getElement());
+  render(filmsElement, showMoreComponent);
 
-  render(filmsElement, new FilmsListTopRatedView().getElement());
-  render(filmsElement, new FilmsListMostCommentedView().getElement());
+  render(filmsElement, new FilmsListTopRatedView());
+  render(filmsElement, new FilmsListMostCommentedView());
 
-  const filmsListContainer = filmsElement.querySelector('.films-list__container');
+  const filmsListContainer = filmsElement.getElement().querySelector('.films-list__container');
   renderFilmsList(filmsListContainer, showMoreComponent);
 
-  const filmsListTopRatedContainer = filmsElement.querySelector('[name="Top rated"] .films-list__container');
-  const filmsListMostCommentedContainer = filmsElement.querySelector('[name="Most commented"] .films-list__container');
+  const filmsListTopRatedContainer = filmsElement.getElement().querySelector('[name="Top rated"] .films-list__container');
+  const filmsListMostCommentedContainer = filmsElement.getElement().querySelector('[name="Most commented"] .films-list__container');
   for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
     renderFilm(filmsListTopRatedContainer, films[i]);
   }

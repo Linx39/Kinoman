@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { addClassName, convertTime, formatDate, DateFormat } from '../utils.js';
+import { addClassName, convertTime, formatDate, DateFormat } from '../utils/utils.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
@@ -177,9 +177,20 @@ export default class FilmDetails extends AbstractView {
     super();
     this._film = film;
     this._filmComments = filmComments;
+    this._clickButtonCloseHandler = this._clickButtonCloseHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film, this._filmComments);
+  }
+
+  _clickButtonCloseHandler(evt) {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  setClickButtonCloseHandler(callback) {
+    this._callback.click = callback;
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._clickButtonCloseHandler);
   }
 }
