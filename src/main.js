@@ -12,7 +12,7 @@ import NoMoviesView from './view/no-movies.js';
 import FilmDetailsView from './view/film-details.js';
 import { createFilmsFilter, createCommentsFilter } from './view/filter.js';
 
-import { render, RenderPosition, isEscEvent } from './utils.js';
+import { render, isEscEvent } from './utils.js';
 
 import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
 
@@ -39,7 +39,7 @@ const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
-//функция отрисовки отдельной карточки с фильмом
+//функция рендеринга карточки с фильмом
 const renderFilm = (filmsContainer, film) => {
   const filmComponent = new FilmCardView(film);
   const filmDetailsComponent = new FilmDetailsView(film, createCommentsFilter(film, comments));
@@ -74,8 +74,8 @@ const renderFilm = (filmsContainer, film) => {
   render(filmsContainer, filmComponent.getElement());
 };
 
-//функция отрисовки основного списка фильмов
-const renderFilmsList = (container, button) => {
+//функция рендеринга основного списка фильмов
+const renderFilmsList = (container, buttonComponent) => {
   let renderCount = 0;
   const renderList = (count = 0) => {
     renderCount = Math.min(films.length, count + FILM_CARD_COUNT);
@@ -85,20 +85,14 @@ const renderFilmsList = (container, button) => {
     }
 
     if (renderCount === films.length) {
-      button.getElement().remove();
-      button.removeElement();
+      buttonComponent.getElement().remove();
+      buttonComponent.removeElement();
     }
   };
 
   renderList();
 
-  button.getElement().addEventListener('click', () => renderList(renderCount));
-
-  // () => {
-  //   if (renderCount < films.length) {
-  //     renderList(renderCount);
-  //   }
-  // });
+  buttonComponent.getElement().addEventListener('click', () => renderList(renderCount));
 };
 
 const renderPage = () => {

@@ -1,4 +1,5 @@
-import { addClassName, convertTime, formatDate, DateFormat, createElement } from '../utils.js';
+import AbstractView from './abstract.js';
+import { addClassName, convertTime, formatDate, DateFormat } from '../utils.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
@@ -171,26 +172,14 @@ const createFilmDetailsTemplate = (film, filmComments) => {
     </section>`);
 };
 
-export default class FilmDetails {
+export default class FilmDetails extends AbstractView {
   constructor(film, filmComments) {
+    super();
     this._film = film;
     this._filmComments = filmComments;
-    this._element = null;
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._film, this._filmComments);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

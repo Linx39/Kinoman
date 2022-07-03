@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../utils.js';
+import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../utils/common.js';
 import { COMMENTS_COUNT } from '../const.js';
 
 const Rating = {
