@@ -11,4 +11,8 @@ export default class FilmsList extends AbstractView {
   getTemplate() {
     return createFilmsListTemplate();
   }
+
+  getContainer() {
+    return this.getElement().querySelector('.films-list__container');
+  }
 }

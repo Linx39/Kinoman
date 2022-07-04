@@ -74,22 +74,22 @@ const renderFilm = (filmsContainer, film) => {
 
 //функция рендеринга основного списка фильмов
 const renderFilmsList = (container, button) => {
-  let renderCount = 0;
-  const renderList = (count = 0) => {
-    renderCount = Math.min(films.length, count + FILM_CARD_COUNT);
+  let renderCountStart = 0;
+  const renderList = () => {
+    const renderCountEnd = Math.min(films.length, renderCountStart + FILM_CARD_COUNT);
 
-    for (let i = count; i < renderCount; i++) {
-      renderFilm(container, films[i]);
-    }
+    films.slice(renderCountStart, renderCountEnd).map((film) => renderFilm(container, film));
 
-    if (renderCount === films.length) {
+    if (renderCountEnd === films.length) {
       removeComponent(button);
     }
+
+    renderCountStart = renderCountEnd;
   };
 
   renderList();
 
-  button.setClickHandler(() => renderList(renderCount));
+  button.setClickHandler(renderList);
 };
 
 const renderPage = () => {
@@ -107,25 +107,21 @@ const renderPage = () => {
   const filmsElement = new FilmsView();
   render(mainElement, filmsElement);
 
-  render(filmsElement, new FilmsListView());
+  const filmsListComponent = new FilmsListView();
+  render(filmsElement, filmsListComponent);
 
   const showMoreComponent = new ShowMoreView();
   render(filmsElement, showMoreComponent);
 
-  render(filmsElement, new FilmsListTopRatedView());
-  render(filmsElement, new FilmsListMostCommentedView());
+  const filmsListTopRatedComponent = new FilmsListTopRatedView();
+  render(filmsElement, filmsListTopRatedComponent);
+  const filmsListMostCommentedComponent = new FilmsListMostCommentedView();
+  render(filmsElement, filmsListMostCommentedComponent);
 
-  const filmsListContainer = filmsElement.getElement().querySelector('.films-list__container');
-  renderFilmsList(filmsListContainer, showMoreComponent);
+  renderFilmsList(filmsListComponent.getContainer(), showMoreComponent);
 
-  const filmsListTopRatedContainer = filmsElement.getElement().querySelector('[name="Top rated"] .films-list__container');
-  const filmsListMostCommentedContainer = filmsElement.getElement().querySelector('[name="Most commented"] .films-list__container');
-  for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
-    renderFilm(filmsListTopRatedContainer, films[i]);
-  }
-  for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
-    renderFilm(filmsListMostCommentedContainer, films[i+2]);
-  }
+  films.slice(0, FILM_EXTRA_CARD_COUNT).map((film) => renderFilm(filmsListTopRatedComponent.getContainer(), film));
+  films.slice(2, FILM_EXTRA_CARD_COUNT + 2).map((film) => renderFilm(filmsListMostCommentedComponent.getContainer(), film));
 };
 
 renderPage();
