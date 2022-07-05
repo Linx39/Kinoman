@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { addClassName, convertTime, formatDate, DateFormat } from '../utils/utils.js';
+import { addClassName, convertTime, formatDate, DateFormat } from '../utils/film.js';
 
 const DESCRIPTON_LENGTH = 139;
 

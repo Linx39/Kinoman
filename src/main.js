@@ -46,16 +46,16 @@ const renderFilm = (filmsContainer, film) => {
 
   let onEscKeyDown = null;
 
-  const openFilmDetails = () => {
-    bodyElement.appendChild(filmDetailsComponent.getElement());
-    bodyElement.classList.add('hide-overflow');
-    document.addEventListener('keydown', onEscKeyDown);
-  };
-
   const closeFilmDetails =() => {
     bodyElement.removeChild(filmDetailsComponent.getElement());
     bodyElement.classList.remove('hide-overflow');
     document.removeEventListener('keydown', onEscKeyDown);
+  };
+
+  const openFilmDetails = () => {
+    bodyElement.appendChild(filmDetailsComponent.getElement());
+    bodyElement.classList.add('hide-overflow');
+    document.addEventListener('keydown', onEscKeyDown);
   };
 
   onEscKeyDown = (evt) => {
