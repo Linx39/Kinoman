@@ -1,6 +1,8 @@
 import Abstract from '../view/abstract.js';
 
-const RenderPosition = {
+const bodyElement = document.querySelector('body');
+
+export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
 };
@@ -30,11 +32,21 @@ export const render = (container, element, place = RenderPosition.BEFOREEND) => 
   }
 };
 
-export const removeComponent = (component) => {
+export const remove = (component) => {
   if (!(component instanceof Abstract)) {
     throw new Error('Can remove only components');
   }
 
   component.getElement().remove();
   component.removeElement();
+};
+
+export const close = (component) =>{
+  bodyElement.removeChild(component.getElement());
+  bodyElement.classList.remove('hide-overflow');
+};
+
+export const open = (component) => {
+  bodyElement.appendChild(component.getElement());
+  bodyElement.classList.add('hide-overflow');
 };
