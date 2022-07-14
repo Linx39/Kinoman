@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../utils/common.js';
 import { COMMENTS_COUNT } from '../const.js';
 
@@ -119,7 +120,7 @@ const DESCRIPTIONS = [
 const arrayIdComments = new Array(COMMENTS_COUNT).fill().map((id, index) => id = index + 1);
 
 export const generateFilm = () => ({
-  id: 0,
+  id: nanoid(),
   poster: `./images/posters/${getRandomElementFromArray(POSTERS)}`,
   title: getRandomElementFromArray(TITLES),
   alternativeTitle: getRandomElementFromArray(TITLES),
