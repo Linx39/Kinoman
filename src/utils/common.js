@@ -9,10 +9,10 @@ export const getRandomInteger = (a = 0, b = 1) => {
 
 export const getRandomElementFromArray = (array) => array[getRandomInteger(0, array.length - 1)];
 
-export const getRandomArrayFromArray = (array, arrayLength = array.length) => {
+export const getRandomArrayFromArray = (array, arrayLengthMin = 0, arrayLengthMax = array.length) => {
   const copyArray = array.slice();
 
-  return new Array(getRandomInteger(1, arrayLength))
+  return new Array(getRandomInteger(arrayLengthMin, arrayLengthMax))
     .fill(null)
     .map((element) => {
       const index = getRandomInteger(0, copyArray.length-1);
@@ -35,4 +35,4 @@ export const generateRandomText = (arrayTexts, textCountMin = 1, textCountMax = 
   .map(() => getRandomElementFromArray(arrayTexts))
   .join(' ');
 
-export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+export const isEscEvent = (evt) => (evt.key === 'Escape' || evt.key === 'Esc');

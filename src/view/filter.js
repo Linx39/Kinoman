@@ -1,3 +1,5 @@
+import { comments as arrayComments } from '../main.js';
+
 const filmsToFilterMap = {
   all: (films) => films.length,
   watchlist: (films) => films.filter((film) => film.watchlist).length,
@@ -13,9 +15,9 @@ const createFilmsFilter = (films) => Object
   }),
   );
 
-const createCommentsFilter = (film, commentsData) => {
+const createCommentsFilter = (film) => {
   const {comments} = film;
-  return commentsData.slice().filter((comment) => comments.some((id) => id === comment.id));
+  return arrayComments.slice().filter((comment) => comments.some((id) => id === comment.id));
 };
 
 export { createFilmsFilter, createCommentsFilter };

@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { getRandomElementFromArray, getRandomDate } from '../utils/common.js';
 
 const path = './images/emoji/';
@@ -28,6 +29,7 @@ const Emotion = {
 };
 
 export const generateComment = () => ({
+  id: nanoid(),
   author: getRandomElementFromArray(AUTHOR),
   comment: getRandomElementFromArray(COMMENTS),
   date: getRandomDate('2019.01.01', undefined, true),

@@ -1,10 +1,11 @@
 import AbstractView from './abstract.js';
 import { addClassName, convertTime, formatDate, DateFormat } from '../utils/film.js';
+import { createCommentsFilter } from '../view/filter.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
 
-const createFilmDetailsTemplate = (film, filmComments) => {
+const createFilmDetailsTemplate = (film) => {
   const {
     poster,
     title,
@@ -28,6 +29,8 @@ const createFilmDetailsTemplate = (film, filmComments) => {
   const createGenresTemplate = () => genres
     .map((genre) => `<span class="film-details__genre">${genre}</span>`)
     .join('');
+
+  const filmComments = createCommentsFilter(film);
 
   const createCommentsTemplate = () => filmComments
     .map(({author, comment, date, emotion}) => (
@@ -173,15 +176,14 @@ const createFilmDetailsTemplate = (film, filmComments) => {
 };
 
 export default class FilmDetails extends AbstractView {
-  constructor(film, filmComments) {
+  constructor(film) {
     super();
     this._film = film;
-    this._filmComments = filmComments;
     this._clickButtonCloseHandler = this._clickButtonCloseHandler.bind(this);
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._film, this._filmComments);
+    return createFilmDetailsTemplate(this._film);
   }
 
   _clickButtonCloseHandler(evt) {

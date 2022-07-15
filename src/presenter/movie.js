@@ -1,9 +1,6 @@
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
-
-import { createCommentsFilter } from '../view/filter.js';
 import { isEscEvent } from '../utils/common.js';
-import { comments } from '../main.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
 
 export default class Movie {
@@ -15,16 +12,16 @@ export default class Movie {
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
   }
 
-  init(card) {
-    this._card = card;
+  init(filmCard) {
+    // this._filmCard = filmCard;
     const prevFilmCardComponent = this._filmCardComponent;
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
-    this._filmCardComponent = new FilmCardView(this._card);
-    this._filmDetailsComponent = new FilmDetailsView(this._card, createCommentsFilter(this._card, comments));
+    this._filmCardComponent = new FilmCardView(filmCard);
+    this._filmDetailsComponent = new FilmDetailsView(filmCard);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmDetailsComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
@@ -34,11 +31,11 @@ export default class Movie {
       return;
     }
 
-    if (this._filmContainer.contains(prevFilmCardComponent.getElement())) {
+    if (this._filmContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
-    if (this._filmContainer.contains(prevFilmDetailsComponent.getElement())) {
+    if (this._filmContainer.getElement().contains(prevFilmDetailsComponent.getElement())) {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
     }
 
@@ -53,12 +50,12 @@ export default class Movie {
 
   _closeFilmDetails(){
     close(this._filmDetailsComponent);
-    document.removeEventListener('keydown', this._escKeyDownHandler);
+    document.removeEventListener('keydown', this._handleEscKeyDown);
   }
 
   _openFilmDetails () {
     open(this._filmDetailsComponent);
-    document.addEventListener('keydown', this._escKeyDownHandler);
+    document.addEventListener('keydown', this._handleEscKeyDown);
   }
 
   _handleFilmCardClick () {
@@ -69,8 +66,8 @@ export default class Movie {
     this._closeFilmDetails();
   }
 
-  _escKeyDownHandler(evt) {
-    if (isEscEvent) {
+  _handleEscKeyDown(evt) {
+    if (isEscEvent(evt)) {
       evt.preventDefault();
       this._closeFilmDetails();
     }

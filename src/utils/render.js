@@ -41,13 +41,21 @@ export const remove = (component) => {
   component.removeElement();
 };
 
-export const close = (component) =>{
-  bodyElement.removeChild(component.getElement());
+export const close = (component) => {
+  if (component instanceof Abstract) {
+    component = component.getElement();
+  }
+
+  bodyElement.removeChild(component);
   bodyElement.classList.remove('hide-overflow');
 };
 
 export const open = (component) => {
-  bodyElement.appendChild(component.getElement());
+  if (component instanceof Abstract) {
+    component = component.getElement();
+  }
+
+  bodyElement.appendChild(component);
   bodyElement.classList.add('hide-overflow');
 };
 
