@@ -8,7 +8,7 @@ import FilmsListMostCommentedView from '../view/films-list-most-commented';
 import FilmsListContainerView from '../view/film-list-container';
 import MoviePresenter from './movie';
 import { RenderPosition, render, remove} from '../utils/render.js';
-import { getRandomInteger } from '../utils/common.js';
+import { getRandomInteger, updateItem } from '../utils/common.js';
 
 const FILM_CARD_COUNT = 5;
 const FILM_EXTRA_CARD_COUNT = 2;
@@ -30,6 +30,7 @@ export default class MoviesList {
     this._filmListMostCommentedContainerComponent = new FilmsListContainerView;
     this._showMoreButtonComponent = new ShowMoreButtonView;
 
+    this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
@@ -50,12 +51,17 @@ export default class MoviesList {
     this._renderMovieList();
   }
 
+  _handleFilmChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._moviePresenter[updatedFilm.id].init(updatedFilm);
+  }
+
   _renderSort() {
     render(this._moviesListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderFilmCard(filmCardContainer, film) {
-    const moviePresenter = new MoviePresenter(filmCardContainer);
+    const moviePresenter = new MoviePresenter(filmCardContainer, this._handleFilmChange);
     moviePresenter.init(film);
     this._moviePresenter[film.id] = moviePresenter;
   }
