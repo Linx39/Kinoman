@@ -19,19 +19,23 @@ export default class Movie {
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
   }
 
-  init(filmCard) {
-    this._filmCard = filmCard;
+  init(film) {
+    this._film = film;
     const prevFilmCardComponent = this._filmCardComponent;
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
-    this._filmCardComponent = new FilmCardView(filmCard);
-    this._filmDetailsComponent = new FilmDetailsView(filmCard);
+    this._filmCardComponent = new FilmCardView(film);
+    this._filmDetailsComponent = new FilmDetailsView(film);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
     this._filmDetailsComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
+    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmDetailsComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
       render(this._filmContainer, this._filmCardComponent);
@@ -80,9 +84,9 @@ export default class Movie {
     this._changeData(
       Object.assign(
         {},
-        this._filmCard,
+        this._film,
         {
-          watchlist: !this._filmCard.watchlist,
+          watchlist: !this._film.watchlist,
         },
       ),
     );
@@ -92,9 +96,9 @@ export default class Movie {
     this._changeData(
       Object.assign(
         {},
-        this._filmCard,
+        this._film,
         {
-          watched: !this._filmCard.watched,
+          watched: !this._film.watched,
         },
       ),
     );
@@ -104,16 +108,16 @@ export default class Movie {
     this._changeData(
       Object.assign(
         {},
-        this._filmCard,
+        this._film,
         {
-          favorite: !this._filmCard.favorite,
+          favorite: !this._film.favorite,
         },
       ),
     );
   }
 
-  _handleButtonCloseClick(filmCard) {              //вот тут какие то непонятки с параметром
-    this._changeData(filmCard);
+  _handleButtonCloseClick(film) {  //тут наверное не нужно параметр передавать
+    this._changeData(film);
     this._closeFilmDetails();
   }
 }
