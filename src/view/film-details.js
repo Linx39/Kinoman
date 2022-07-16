@@ -52,13 +52,10 @@ const createFilmDetailsTemplate = (film) => {
   const ageRatingFilm = `${ageRating}+`;
   const filmReleaseDate = formatDate(releaseDate, DateFormat.FULL_DATE);
   const filmRuntime = convertTime(runtime);
-
   const watchlistClassName = addClassName(watchlist, CONTROL_ACTIVE_CLASS);
   const watchedClassName = addClassName(watched, CONTROL_ACTIVE_CLASS);
   const favoriteClassName = addClassName(favorite, CONTROL_ACTIVE_CLASS);
-
-  const genresHeader = genres.length > 1 ? `${GENRE}s` : GENRE;
-
+  const genresTitle = genres.length > 1 ? `${GENRE}s` : GENRE;
   const genresTemplate = createGenresTemplate();
   const commentsTemplate = createCommentsTemplate();
   const commentsCount = comments.length;
@@ -115,7 +112,7 @@ const createFilmDetailsTemplate = (film) => {
                   <td class="film-details__cell">${country}</td>
                 </tr>
                 <tr class="film-details__row">
-                  <td class="film-details__term">${genresHeader}</td>
+                  <td class="film-details__term">${genresTitle}</td>
                   <td class="film-details__cell">
                     ${genresTemplate}
                 </tr>

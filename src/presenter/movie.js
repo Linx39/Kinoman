@@ -13,7 +13,7 @@ export default class Movie {
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
-    this._handleHistoryClick = this._handleHistoryClick.bind(this);
+    this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
@@ -29,7 +29,7 @@ export default class Movie {
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmCardComponent.setHistoryClickHandler(this._handleHistoryClick);
+    this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._filmDetailsComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
 
@@ -88,7 +88,7 @@ export default class Movie {
     );
   }
 
-  _handleHistoryClick() {
+  _handleWatchedClick() {
     this._changeData(
       Object.assign(
         {},
@@ -112,7 +112,7 @@ export default class Movie {
     );
   }
 
-  _handleButtonCloseClick(filmCard) {
+  _handleButtonCloseClick(filmCard) {              //вот тут какие то непонятки с параметром
     this._changeData(filmCard);
     this._closeFilmDetails();
   }
