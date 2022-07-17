@@ -8,6 +8,7 @@ export default class Movie {
     this._filmCardContainer = filmCardContainer;
     this._changeData = changeData;
 
+    this._filmDetailsContainer = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
 
@@ -46,8 +47,7 @@ export default class Movie {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
-    // this._filmDetailsContainer = this._filmDetailsComponent.getElement().parentElement;
-    if (this._filmDetailsContainer.contains(prevFilmDetailsComponent.getElement())) {
+    if (this._filmDetailsContainer && this._filmDetailsContainer.contains(prevFilmDetailsComponent.getElement())) {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
     }
 
@@ -62,13 +62,13 @@ export default class Movie {
 
   _closeFilmDetails(){
     close(this._filmDetailsComponent);
+    this._filmDetailsContainer = null;
     document.removeEventListener('keydown', this._handleEscKeyDown);
   }
 
   _openFilmDetails () {
     open(this._filmDetailsComponent);
     this._filmDetailsContainer = this._filmDetailsComponent.getElement().parentElement;
-    console.log (this._filmDetailsContainer);
     document.addEventListener('keydown', this._handleEscKeyDown);
   }
 
