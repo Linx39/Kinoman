@@ -4,8 +4,8 @@ import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
 
 export default class Movie {
-  constructor (filmContainer, changeData) {
-    this._filmContainer = filmContainer;
+  constructor (filmCardContainer, changeData) {
+    this._filmCardContainer = filmCardContainer;
     this._changeData = changeData;
 
     this._filmCardComponent = null;
@@ -38,15 +38,16 @@ export default class Movie {
     this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
     if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
-      render(this._filmContainer, this._filmCardComponent);
+      render(this._filmCardContainer, this._filmCardComponent);
       return;
     }
 
-    if (this._filmContainer.getElement().contains(prevFilmCardComponent.getElement())) {
+    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
       replace(this._filmCardComponent, prevFilmCardComponent);
     }
 
-    if (this._filmContainer.getElement().contains(prevFilmDetailsComponent.getElement())) {
+    // this._filmDetailsContainer = this._filmDetailsComponent.getElement().parentElement;
+    if (this._filmDetailsContainer.contains(prevFilmDetailsComponent.getElement())) {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
     }
 
@@ -66,6 +67,8 @@ export default class Movie {
 
   _openFilmDetails () {
     open(this._filmDetailsComponent);
+    this._filmDetailsContainer = this._filmDetailsComponent.getElement().parentElement;
+    console.log (this._filmDetailsContainer);
     document.addEventListener('keydown', this._handleEscKeyDown);
   }
 
@@ -116,8 +119,8 @@ export default class Movie {
     );
   }
 
-  _handleButtonCloseClick(film) {  //тут наверное не нужно параметр передавать
-    this._changeData(film);
+  _handleButtonCloseClick() {  //тут наверное не нужно параметр передавать. без него всё работает
+    // this._changeData(film);
     this._closeFilmDetails();
   }
 }

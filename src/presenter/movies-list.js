@@ -17,7 +17,9 @@ export default class MoviesList {
   constructor(moviesListContainer) {
     this._moviesListContainer = moviesListContainer;
     this._renderFilmCardCount = FILM_CARD_COUNT;
-    this._moviePresentersStorage = {};
+    this._moviePresentersAllStorage = {};
+    this._moviePresentersTopRatedStorage = {};
+    this._moviePresentersMostCommentedStorage = {};
 
     this._sortComponent = new SortView();
     this._noMoviesComponent = new NoMoviesView();
@@ -35,8 +37,6 @@ export default class MoviesList {
   }
 
   init(films) {
-    // console.log (this._filmListAllContainerComponent);
-    // console.log (this._filmListTopRatedContainerComponent);
     this._films = films.slice();
 
     render(this._moviesListContainer, this._filmsComponent);
@@ -55,7 +55,16 @@ export default class MoviesList {
 
   _handleFilmChange(updatedFilm) {
     this._films = updateItem(this._films, updatedFilm);
-    this._moviePresentersStorage[updatedFilm.id].init(updatedFilm);
+
+    if (this._moviePresentersAllStorage[updatedFilm.id]) {
+      this._moviePresentersAllStorage[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._moviePresentersTopRatedStorage[updatedFilm.id]) {
+      this._moviePresentersTopRatedStorage[updatedFilm.id].init(updatedFilm);
+    }
+    if (this._moviePresentersMostCommentedStorage[updatedFilm.id]) {
+      this._moviePresentersMostCommentedStorage[updatedFilm.id].init(updatedFilm);
+    }
   }
 
   _renderSort() {
@@ -65,7 +74,16 @@ export default class MoviesList {
   _renderFilmCard(filmContainer, film) {
     const moviePresenter = new MoviePresenter(filmContainer, this._handleFilmChange);
     moviePresenter.init(film);
-    this._moviePresentersStorage[film.id] = moviePresenter;
+
+    if (filmContainer === this._filmListAllContainerComponent) {
+      this._moviePresentersAllStorage[film.id] = moviePresenter;
+    }
+    if (filmContainer === this._filmListTopRatedContainerComponent) {
+      this._moviePresentersTopRatedStorage[film.id] = moviePresenter;
+    }
+    if (filmContainer === this._filmListMostCommentedContainerComponent) {
+      this._moviePresentersMostCommentedStorage[film.id] = moviePresenter;
+    }
   }
 
   _renderFilmsCards(from, to) {
@@ -94,9 +112,20 @@ export default class MoviesList {
 
   _clearFilmList() {
     Object
-      .values(this._moviePresentersStorage)
+      .values(this._moviePresentersAllStorage)
       .forEach((presenter) => presenter.destroy());
-    this._moviePresentersStorage = {};
+    this._moviePresentersAllStorage = {};
+
+    Object
+      .values(this._moviePresentersTopRatedStorage)
+      .forEach((presenter) => presenter.destroy());
+    this._moviePresentersTopRatedStorage = {};
+
+    Object
+      .values(this._moviePresentersMostCommentedStorage)
+      .forEach((presenter) => presenter.destroy());
+    this._moviePresentersMostCommentedStorage = {};
+
     this._renderFilmCardCount = FILM_CARD_COUNT;
     remove(this._showMoreButtonComponent);
   }
