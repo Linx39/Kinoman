@@ -3,14 +3,21 @@ import FilmDetailsView from '../view/film-details.js';
 import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
 
+const Mode = {
+  CARD: 'CARD',
+  DETAILS: 'DETAILS',
+};
+
 export default class Movie {
-  constructor (filmCardContainer, changeData) {
+  constructor (filmCardContainer, changeData, changeMode) {
     this._filmCardContainer = filmCardContainer;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._filmDetailsContainer = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
+    this._mode = Mode.CARD;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -38,21 +45,26 @@ export default class Movie {
     this._filmDetailsComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
+    // if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
+    if (prevFilmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
       return;
     }
 
-    if (this._filmCardContainer.getElement().contains(prevFilmCardComponent.getElement())) {
-      replace(this._filmCardComponent, prevFilmCardComponent);
-    }
+    replace(this._filmCardComponent, prevFilmCardComponent);
 
-    if (this._filmDetailsContainer && this._filmDetailsContainer.contains(prevFilmDetailsComponent.getElement())) {
+    if (this._mode === Mode.DETAILS) {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
     }
 
     remove(prevFilmCardComponent);
     remove(prevFilmDetailsComponent);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.CARD) {
+      this._closeFilmDetails();
+    }
   }
 
   destroy() {
@@ -62,14 +74,15 @@ export default class Movie {
 
   _closeFilmDetails(){
     close(this._filmDetailsComponent);
-    this._filmDetailsContainer = null;
     document.removeEventListener('keydown', this._handleEscKeyDown);
+    this._mode = Mode.CARD;
   }
 
   _openFilmDetails () {
+    this._changeMode();
     open(this._filmDetailsComponent);
-    this._filmDetailsContainer = this._filmDetailsComponent.getElement().parentElement;
     document.addEventListener('keydown', this._handleEscKeyDown);
+    this._mode = Mode.DETAILS;
   }
 
   _handleEscKeyDown(evt) {
@@ -119,8 +132,7 @@ export default class Movie {
     );
   }
 
-  _handleButtonCloseClick() {  //тут наверное не нужно параметр передавать. без него всё работает
-    // this._changeData(film);
+  _handleButtonCloseClick() {
     this._closeFilmDetails();
   }
 }

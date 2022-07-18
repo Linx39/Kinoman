@@ -1,4 +1,8 @@
-const FILMS_COUNT = 14;
-const COMMENTS_COUNT = 50;
+export const FILMS_COUNT = 14;
+export const COMMENTS_COUNT = 50;
 
-export { FILMS_COUNT, COMMENTS_COUNT };
+export const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RAITING: 'rating',
+};
