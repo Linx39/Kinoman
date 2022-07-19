@@ -1,6 +1,7 @@
 import Abstract from '../view/abstract.js';
 
 const bodyElement = document.querySelector('body');
+const classHideOverflow = 'hide-overflow';
 
 export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
@@ -47,7 +48,7 @@ export const close = (component) => {
   }
 
   bodyElement.removeChild(component);
-  bodyElement.classList.remove('hide-overflow');
+  bodyElement.classList.remove(classHideOverflow);
 };
 
 export const open = (component) => {
@@ -56,7 +57,7 @@ export const open = (component) => {
   }
 
   bodyElement.appendChild(component);
-  bodyElement.classList.add('hide-overflow');
+  bodyElement.classList.add(classHideOverflow);
 };
 
 export const replace = (newChild, oldChild) => {

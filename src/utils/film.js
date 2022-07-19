@@ -47,17 +47,17 @@ export const sortFilmsDate = (filmA, filmB) => {
   const weight = getWeightForNullData(filmA.releaseDate, filmB.releaseDate);
 
   if (weight !== null) {
-    return weight;
+    return -weight;
   }
 
-  return dayjs(filmA.releaseDate).diff(dayjs(filmB.releaseDate));
+  return -dayjs(filmA.releaseDate).diff(dayjs(filmB.releaseDate));
 };
 
 export const sortFilmsRating = (filmA, filmB) => {
   const weight = getWeightForNullData(filmA.rating, filmB.rating);
   if (weight !== null) {
-    return weight;
+    return -weight;
   }
 
-  return filmA.rating - filmB.rating;
+  return -(filmA.rating - filmB.rating);
 };

@@ -1,4 +1,4 @@
-export const FILMS_COUNT = 14;
+export const FILMS_COUNT = 16;
 export const COMMENTS_COUNT = 50;
 
 export const SortType = {

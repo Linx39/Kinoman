@@ -63,9 +63,11 @@ export default class MoviesList {
     Object
       .values(this._moviePresentersAllStorage)
       .forEach((presenter) => presenter.resetView());
+
     Object
       .values(this._moviePresentersTopRatedStorage)
       .forEach((presenter) => presenter.resetView());
+
     Object
       .values(this._moviePresentersMostCommentedStorage)
       .forEach((presenter) => presenter.resetView());
@@ -107,8 +109,12 @@ export default class MoviesList {
     }
 
     this._sortFilms(sortType);
-    this._clearFilmList();
-    this._renderFilmList();
+    this._clearFilmsListAll();
+    this._clearFilmsListTopRated();
+    this._clearFilmsListMostCommented();
+    this._renderFilmsListAll();
+    this._renderFilmsListTopRated();
+    this._renderFilmsListMostCommented();
   }
 
   _renderSort() {
@@ -120,14 +126,16 @@ export default class MoviesList {
     const moviePresenter = new MoviePresenter(filmContainer, this._handleFilmChange, this._handleModeChange);
     moviePresenter.init(film);
 
-    if (filmContainer === this._filmListAllContainerComponent) {
-      this._moviePresentersAllStorage[film.id] = moviePresenter;
-    }
-    if (filmContainer === this._filmListTopRatedContainerComponent) {
-      this._moviePresentersTopRatedStorage[film.id] = moviePresenter;
-    }
-    if (filmContainer === this._filmListMostCommentedContainerComponent) {
-      this._moviePresentersMostCommentedStorage[film.id] = moviePresenter;
+    switch (filmContainer) {
+      case this._filmListAllContainerComponent:
+        this._moviePresentersAllStorage[film.id] = moviePresenter;
+        break;
+      case this._filmListTopRatedContainerComponent:
+        this._moviePresentersTopRatedStorage[film.id] = moviePresenter;
+        break;
+      case this._filmListMostCommentedContainerComponent:
+        this._moviePresentersMostCommentedStorage[film.id] = moviePresenter;
+        break;
     }
   }
 
@@ -155,27 +163,31 @@ export default class MoviesList {
     this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
   }
 
-  _clearFilmList() {
+  _clearFilmsListAll() {
     Object
       .values(this._moviePresentersAllStorage)
       .forEach((presenter) => presenter.destroy());
     this._moviePresentersAllStorage = {};
 
-    Object
-      .values(this._moviePresentersTopRatedStorage)
-      .forEach((presenter) => presenter.destroy());
-    this._moviePresentersTopRatedStorage = {};
-
-    Object
-      .values(this._moviePresentersMostCommentedStorage)
-      .forEach((presenter) => presenter.destroy());
-    this._moviePresentersMostCommentedStorage = {};
-
     this._renderFilmCardCount = FILM_CARD_COUNT;
     remove(this._showMoreButtonComponent);
   }
 
-  _renderFilmList() {
+  _clearFilmsListTopRated() {
+    Object
+      .values(this._moviePresentersTopRatedStorage)
+      .forEach((presenter) => presenter.destroy());
+    this._moviePresentersTopRatedStorage = {};
+  }
+
+  _clearFilmsListMostCommented() {
+    Object
+      .values(this._moviePresentersMostCommentedStorage)
+      .forEach((presenter) => presenter.destroy());
+    this._moviePresentersMostCommentedStorage = {};
+  }
+
+  _renderFilmsListAll() {
     this._renderFilmsCards(0, Math.min(this._films.length, FILM_CARD_COUNT));
     if (this._films.length > FILM_CARD_COUNT) {
       this._renderShowMoreButton();
@@ -203,7 +215,7 @@ export default class MoviesList {
     }
 
     this._renderSort();
-    this._renderFilmList();
+    this._renderFilmsListAll();
     this._renderFilmsListTopRated();
     this._renderFilmsListMostCommented();
   }

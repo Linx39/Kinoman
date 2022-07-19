@@ -1,9 +1,11 @@
 import AbstractView from './abstract.js';
 import { SortType } from '../const.js';
 
+const classSortButtonActive = 'sort__button--active';
+
 const createSortTemplate = () => (
   `<ul class="sort">
-    <li><a href="#" class="sort__button sort__button--active" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${classSortButtonActive}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
     <li><a href="#" class="sort__button" data-sort-type="${SortType.DATE}">Sort by date</a></li>
     <li><a href="#" class="sort__button" data-sort-type="${SortType.RAITING}">Sort by rating</a></li>
   </ul>`);
@@ -25,6 +27,12 @@ export default class Sort extends AbstractView {
     }
 
     evt.preventDefault();
+
+    for (const button of evt.currentTarget.children) {
+      button.firstChild.classList.remove(classSortButtonActive);
+    }
+    evt.target.classList.add(classSortButtonActive);
+
     this._callback.sortTypeChange(evt.target.dataset.sortType);
   }
 

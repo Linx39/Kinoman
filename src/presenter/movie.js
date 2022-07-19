@@ -45,8 +45,8 @@ export default class Movie {
     this._filmDetailsComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    // if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
-    if (prevFilmCardComponent === null) {
+    if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
+    // if (prevFilmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
       return;
     }
@@ -68,6 +68,7 @@ export default class Movie {
   }
 
   destroy() {
+    this.resetView();
     remove(this._filmCardComponent);
     remove(this._filmDetailsComponent);
   }
@@ -98,37 +99,19 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          watchlist: !this._film.watchlist,
-        },
-      ),
+      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
     );
   }
 
   _handleWatchedClick() {
     this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          watched: !this._film.watched,
-        },
-      ),
+      Object.assign({}, this._film, {watched: !this._film.watched}),
     );
   }
 
   _handleFavoriteClick() {
     this._changeData(
-      Object.assign(
-        {},
-        this._film,
-        {
-          favorite: !this._film.favorite,
-        },
-      ),
+      Object.assign({}, this._film, {favorite: !this._film.favorite}),
     );
   }
 
