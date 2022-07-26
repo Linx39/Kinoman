@@ -9,12 +9,12 @@ const Mode = {
 };
 
 export default class Movie {
-  constructor (filmCardContainer, changeData, changeMode) {
+  constructor (filmCardContainer, changeFilm, changeMode) {
     this._filmCardContainer = filmCardContainer;
-    this._changeData = changeData;
+    this._changeFilm = changeFilm;
     this._changeMode = changeMode;
 
-    this._filmDetailsContainer = null;
+    this._filmDetailsContainer = null;           //зачем это?
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
     this._mode = Mode.CARD;
@@ -61,14 +61,14 @@ export default class Movie {
     remove(prevFilmDetailsComponent);
   }
 
-  resetView() {
+  resetFilmDetailsView() {
     if (this._mode !== Mode.CARD) {
       this._closeFilmDetails();
     }
   }
 
   destroy() {
-    this.resetView();
+    this.resetFilmDetailsView();
     remove(this._filmCardComponent);
     remove(this._filmDetailsComponent);
   }
@@ -79,7 +79,7 @@ export default class Movie {
     this._mode = Mode.CARD;
   }
 
-  _openFilmDetails () {
+  _openFilmDetails () {                  //сохранить открытый попап и передать его в _close, а там сделать параметр по умолчанию this
     this._changeMode();
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
@@ -98,19 +98,19 @@ export default class Movie {
   }
 
   _handleWatchlistClick() {
-    this._changeData(
+    this._changeFilm(
       Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
     );
   }
 
   _handleWatchedClick() {
-    this._changeData(
+    this._changeFilm(
       Object.assign({}, this._film, {watched: !this._film.watched}),
     );
   }
 
   _handleFavoriteClick() {
-    this._changeData(
+    this._changeFilm(
       Object.assign({}, this._film, {favorite: !this._film.favorite}),
     );
   }

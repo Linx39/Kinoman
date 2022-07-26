@@ -30,10 +30,10 @@ export default class MoviesList {
     this._filmsListAllComponent = new FilmsListAllView();
     this._filmsListTopRatedComponent = new FilmsListTopRatedView();
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
-    this._filmListAllContainerComponent = new FilmsListContainerView;
-    this._filmListTopRatedContainerComponent = new FilmsListContainerView;
-    this._filmListMostCommentedContainerComponent = new FilmsListContainerView;
-    this._showMoreButtonComponent = new ShowMoreButtonView;
+    this._filmListAllContainer = new FilmsListContainerView();
+    this._filmListTopRatedContainer = new FilmsListContainerView();
+    this._filmListMostCommentedContainer = new FilmsListContainerView();
+    this._showMoreButtonComponent = new ShowMoreButtonView();
 
     this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
@@ -48,29 +48,15 @@ export default class MoviesList {
     render(this._moviesListContainer, this._filmsComponent);
 
     render(this._filmsComponent, this._filmsListAllComponent);
-    render(this._filmsListAllComponent, this._filmListAllContainerComponent);
+    render(this._filmsListAllComponent, this._filmListAllContainer);
 
     render(this._filmsComponent, this._filmsListTopRatedComponent);
-    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainerComponent);
+    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
 
     render(this._filmsComponent, this._filmsListMostCommentedComponent);
-    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainerComponent);
+    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
 
     this._renderMovieList();
-  }
-
-  _handleModeChange() {
-    Object
-      .values(this._moviePresentersAllStorage)
-      .forEach((presenter) => presenter.resetView());
-
-    Object
-      .values(this._moviePresentersTopRatedStorage)
-      .forEach((presenter) => presenter.resetView());
-
-    Object
-      .values(this._moviePresentersMostCommentedStorage)
-      .forEach((presenter) => presenter.resetView());
   }
 
   _handleFilmChange(updatedFilm) {
@@ -86,6 +72,20 @@ export default class MoviesList {
     if (this._moviePresentersMostCommentedStorage[updatedFilm.id]) {
       this._moviePresentersMostCommentedStorage[updatedFilm.id].init(updatedFilm);
     }
+  }
+
+  _handleModeChange() {
+    Object
+      .values(this._moviePresentersAllStorage)
+      .forEach((presenter) => presenter.resetFilmDetailsView());
+
+    Object
+      .values(this._moviePresentersTopRatedStorage)
+      .forEach((presenter) => presenter.resetFilmDetailsView());
+
+    Object
+      .values(this._moviePresentersMostCommentedStorage)
+      .forEach((presenter) => presenter.resetFilmDetailsView());
   }
 
   _sortFilms(sortType) {
@@ -113,7 +113,7 @@ export default class MoviesList {
     this._clearFilmsListTopRated();
     this._clearFilmsListMostCommented();
     this._renderFilmsListAll();
-    this._renderFilmsListTopRated();
+    this._renderFilmsListTopRated();          //надо подумать как сделать по другому, тут не надо заново рендерить
     this._renderFilmsListMostCommented();
   }
 
@@ -127,13 +127,13 @@ export default class MoviesList {
     moviePresenter.init(film);
 
     switch (filmContainer) {
-      case this._filmListAllContainerComponent:
+      case this._filmListAllContainer:
         this._moviePresentersAllStorage[film.id] = moviePresenter;
         break;
-      case this._filmListTopRatedContainerComponent:
+      case this._filmListTopRatedContainer:
         this._moviePresentersTopRatedStorage[film.id] = moviePresenter;
         break;
-      case this._filmListMostCommentedContainerComponent:
+      case this._filmListMostCommentedContainer:
         this._moviePresentersMostCommentedStorage[film.id] = moviePresenter;
         break;
     }
@@ -142,7 +142,7 @@ export default class MoviesList {
   _renderFilmsCards(from, to) {
     this._films
       .slice(from, to)
-      .forEach((film) => this._renderFilmCard(this._filmListAllContainerComponent, film));
+      .forEach((film) => this._renderFilmCard(this._filmListAllContainer, film));
   }
 
   _renderNoMovies() {
@@ -197,14 +197,14 @@ export default class MoviesList {
   _renderFilmsListTopRated() {
     for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
       const index = getRandomInteger(0, this._films.length-1);
-      this._renderFilmCard(this._filmListTopRatedContainerComponent, this._films[index]);
+      this._renderFilmCard(this._filmListTopRatedContainer, this._films[index]);
     }
   }
 
   _renderFilmsListMostCommented() {
     for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
       const index = getRandomInteger(0, this._films.length-1);
-      this._renderFilmCard(this._filmListMostCommentedContainerComponent, this._films[index]);
+      this._renderFilmCard(this._filmListMostCommentedContainer, this._films[index]);
     }
   }
 
