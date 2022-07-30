@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { addClassName, convertTime, formatDate, DateFormat } from '../utils/film.js';
+import { addClassName, convertTime, formatDate, DateFormats } from '../utils/film.js';
 
 const DESCRIPTON_LENGTH = 139;
 
@@ -20,7 +20,7 @@ const createFilmCardTemplate = (film) => {
     favorite,
   } = film;
 
-  const filmReleaseDate = formatDate(releaseDate, DateFormat.ONLY_YEAR);
+  const filmReleaseDate = formatDate(releaseDate, DateFormats.ONLY_YEAR);
   const filmRuntime = convertTime(runtime);
   const descriptionText = description.length < DESCRIPTON_LENGTH
     ? description

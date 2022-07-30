@@ -1,7 +1,11 @@
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
+import FilmDetailsFormView from '../view/film-details-form.js';
+import FilmDetailsTopView from '../view/film-details-top.js';
+import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
+import { comments as filmsComments } from '../main.js';
 
 const Mode = {
   CARD: 'CARD',
@@ -32,21 +36,28 @@ export default class Movie {
     const prevFilmCardComponent = this._filmCardComponent;
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
+    const filmComments = filmsComments
+      .slice()
+      .filter((comment) => film.comments.some((id) => id === comment.id));
+
     this._filmCardComponent = new FilmCardView(film);
-    this._filmDetailsComponent = new FilmDetailsView(film);
+    this._filmDetailsComponent = new FilmDetailsView();
+    this._filmDetailsFormComponent = new FilmDetailsFormView();
+    this._filmDetailsTopComponent = new FilmDetailsTopView(film);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(filmComments);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    this._filmDetailsComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
-    this._filmDetailsComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmDetailsComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
+    this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
-    // if (prevFilmCardComponent === null) {
+    // if (prevFilmCardComponent === null || prevFilmDetailsComponent === null) {
+    if (prevFilmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
       return;
     }
@@ -55,6 +66,7 @@ export default class Movie {
 
     if (this._mode === Mode.DETAILS) {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
+      this._renderFilmDetails();
     }
 
     remove(prevFilmCardComponent);
@@ -73,15 +85,22 @@ export default class Movie {
     remove(this._filmDetailsComponent);
   }
 
-  _closeFilmDetails(){
+  _renderFilmDetails() {
+    render(this._filmDetailsComponent, this._filmDetailsFormComponent);
+    render(this._filmDetailsFormComponent, this._filmDetailsTopComponent);
+    render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
+  }
+
+  _closeFilmDetails() {
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._mode = Mode.CARD;
   }
 
-  _openFilmDetails () {                  //сохранить открытый попап и передать его в _close, а там сделать параметр по умолчанию this
+  _openFilmDetails() {                  //сохранить открытый попап и передать его в _close, а там сделать параметр по умолчанию this
     this._changeMode();
     open(this._filmDetailsComponent);
+    this._renderFilmDetails();
     document.addEventListener('keydown', this._handleEscKeyDown);
     this._mode = Mode.DETAILS;
   }

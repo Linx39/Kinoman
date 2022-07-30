@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 const HOUR = 60;
 
-export const DateFormat = {
+export const DateFormats = {
   ONLY_YEAR: 'YYYY',
   FULL_DATE: 'DD MMMM YYYY',
   DATE_AND_TIME: 'YYYY/MM/DD hh:mm',
@@ -60,4 +60,13 @@ export const sortFilmsRating = (filmA, filmB) => {
   }
 
   return -(filmA.rating - filmB.rating);
+};
+
+export const sortFilmsComments = (filmA, filmB) => {
+  const weight = getWeightForNullData(filmA.comments.length, filmB.comments.length);
+  if (weight !== null) {
+    return -weight;
+  }
+
+  return -(filmA.comments.length - filmB.comments.length);
 };

@@ -8,8 +8,8 @@ import FilmsListMostCommentedView from '../view/films-list-most-commented';
 import FilmsListContainerView from '../view/film-list-container';
 import MoviePresenter from './movie';
 import { RenderPosition, render, remove} from '../utils/render.js';
-import { getRandomInteger, updateItem } from '../utils/common.js';
-import { sortFilmsDate, sortFilmsRating } from '../utils/film.js';
+import { updateItem } from '../utils/common.js';
+import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
 import { SortType } from '../const.js';
 
 const FILM_CARD_COUNT = 5;
@@ -139,10 +139,10 @@ export default class MoviesList {
     }
   }
 
-  _renderFilmsCards(from, to) {
-    this._films
+  _renderFilmsCards(container, films, from, to) {
+    films
       .slice(from, to)
-      .forEach((film) => this._renderFilmCard(this._filmListAllContainer, film));
+      .forEach((film) => this._renderFilmCard(container, film));
   }
 
   _renderNoMovies() {
@@ -188,24 +188,18 @@ export default class MoviesList {
   }
 
   _renderFilmsListAll() {
-    this._renderFilmsCards(0, Math.min(this._films.length, FILM_CARD_COUNT));
+    this._renderFilmsCards(this._filmListAllContainer, this._films, 0, Math.min(this._films.length, FILM_CARD_COUNT));
     if (this._films.length > FILM_CARD_COUNT) {
       this._renderShowMoreButton();
     }
   }
 
   _renderFilmsListTopRated() {
-    for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
-      const index = getRandomInteger(0, this._films.length-1);
-      this._renderFilmCard(this._filmListTopRatedContainer, this._films[index]);
-    }
+    this._renderFilmsCards(this._filmListTopRatedContainer, this._films.sort(sortFilmsRating), 0, FILM_EXTRA_CARD_COUNT);
   }
 
   _renderFilmsListMostCommented() {
-    for (let i = 0; i < FILM_EXTRA_CARD_COUNT; i++) {
-      const index = getRandomInteger(0, this._films.length-1);
-      this._renderFilmCard(this._filmListMostCommentedContainer, this._films[index]);
-    }
+    this._renderFilmsCards(this._filmListMostCommentedContainer, this._films.sort(sortFilmsComments), 0, FILM_EXTRA_CARD_COUNT);
   }
 
   _renderMovieList() {

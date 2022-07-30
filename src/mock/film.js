@@ -116,7 +116,7 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((comment) => comment.id), 0, 5);
+const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((comment) => comment.id), 0, 10);
 
 export const generateFilm = (comments) => ({
   id: nanoid(),
