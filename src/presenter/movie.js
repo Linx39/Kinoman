@@ -33,18 +33,18 @@ export default class Movie {
 
   init(film) {
     this._film = film;
-    const prevFilmCardComponent = this._filmCardComponent;
-    const prevFilmDetailsComponent = this._filmDetailsComponent;
-
-    const filmComments = filmsComments
+    this._filmComments = filmsComments
       .slice()
       .filter((comment) => film.comments.some((id) => id === comment.id));
+
+    const prevFilmCardComponent = this._filmCardComponent;
+    const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmCardComponent = new FilmCardView(film);
     this._filmDetailsComponent = new FilmDetailsView();
     this._filmDetailsFormComponent = new FilmDetailsFormView();
     this._filmDetailsTopComponent = new FilmDetailsTopView(film);
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(filmComments);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
@@ -92,6 +92,7 @@ export default class Movie {
   }
 
   _closeFilmDetails() {
+    this._filmDetailsBottomComponent.reset(this._filmComments);
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._mode = Mode.CARD;

@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import { formatDate, DateFormats } from '../utils/film.js';
 
 const createFilmDetailsTemplate = (filmComments) => {
@@ -40,9 +40,7 @@ const createFilmDetailsTemplate = (filmComments) => {
           ${emotiomTemplate}
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">
-            ${commentTemplate}
-          </textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentTemplate}</textarea>
         </label>
         <div class="film-details__emoji-list">
           <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
@@ -82,32 +80,28 @@ const createFilmDetailsTemplate = (filmComments) => {
     </div>`);
 };
 
-export default class FilmDetailsBottom extends AbstractView {
+export default class FilmDetailsBottom extends SmartView {
   constructor(filmComments) {
     super();
 
-    this._newComment = {
-      id: null,
-      author: null,
-      comment: null,
-      date: null,
-      emotion: null,
-      isNewComment: true,
-    };
+    this._state = FilmDetailsBottom.parseFilmCommentsToState(filmComments);
 
-    this._state = FilmDetailsBottom.parseFilmCommentsToState(filmComments, this._newComment);
-
-    // console.log (this._state);
+    this._newComment = this._state.find((element) => element.isNewComment);
 
     this._emojiListToggleHandler = this._emojiListToggleHandler.bind(this);
+    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
 
-    this.getElement()
-      .querySelector('.film-details__emoji-list')
-      .addEventListener('click', this._emojiListToggleHandler);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
     return createFilmDetailsTemplate(this._state);
+  }
+
+  reset(film) {
+    this.updateData(
+      FilmDetailsBottom.parseStateToFilmComments(film),
+    );
   }
 
   _emojiListToggleHandler(evt) {
@@ -117,46 +111,54 @@ export default class FilmDetailsBottom extends AbstractView {
       {
         emotion: evt.target.src,
       });
-    console.log ('3', this._newComment);
   }
 
-  updateElement() {
-    console.log ('2', this._newComment);
-    const prevElement = this.getElement();
-    // console.log (prevElement);
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-    // console.log (newElement);
-    parent.replaceChild(newElement, prevElement);
+  _descriptionInputHandler(evt) {
+    evt.preventDefault();
+    this.updateData(
+      this._newComment,
+      {
+        comment: evt.target.value,
+      },
+      true);
   }
 
-  updateData(data, update) {
-    if (!update) {
-      return;
-    }
-
-    data = Object.assign(
-      {},
-      data,
-      update,
-    );
-    console.log ('1', data);
-    this.updateElement();
+  restoreHandlers() {
+    this._setInnerHandlers();
+    // this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
-  static parseFilmCommentsToState(filmComments, newComment) {
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('click', this._emojiListToggleHandler);
+
+    this.getElement()
+      .querySelector('.film-details__comment-input')
+      .addEventListener('input', this._descriptionInputHandler);
+  }
+
+  static parseFilmCommentsToState(filmComments) {
     filmComments = filmComments
       .slice()
       .map((filmComment) => ({...filmComment, isNewComment: false}));
 
-    filmComments.push(newComment);
+    filmComments.push(
+      {
+        id: null,
+        author: null,
+        comment: null,
+        date: null,
+        emotion: null,
+        isNewComment: true,
+      },
+    );
 
     return filmComments;
   }
 
   static parseStateToFilmComments(state) {
+    console.log (state);
     state.splice(state.length - 1);
 
     state = state
