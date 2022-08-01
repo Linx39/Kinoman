@@ -62,7 +62,6 @@ export default class MoviesList {
   _handleFilmChange(updatedFilm) {
     this._films = updateItem(this._films, updatedFilm);
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
-
     if (this._moviePresentersAllStorage[updatedFilm.id]) {
       this._moviePresentersAllStorage[updatedFilm.id].init(updatedFilm);
     }
@@ -110,11 +109,7 @@ export default class MoviesList {
 
     this._sortFilms(sortType);
     this._clearFilmsListAll();
-    this._clearFilmsListTopRated();
-    this._clearFilmsListMostCommented();
     this._renderFilmsListAll();
-    this._renderFilmsListTopRated();          //надо подумать как сделать по другому, тут не надо заново рендерить
-    this._renderFilmsListMostCommented();
   }
 
   _renderSort() {
@@ -150,7 +145,7 @@ export default class MoviesList {
   }
 
   _handleShowMoreButtonClick() {
-    this._renderFilmsCards(this._renderFilmCardCount, this._renderFilmCardCount + FILM_CARD_COUNT);
+    this._renderFilmsCards(this._filmListAllContainer, this._films, this._renderFilmCardCount, this._renderFilmCardCount + FILM_CARD_COUNT);
     this._renderFilmCardCount += FILM_CARD_COUNT;
 
     if (this._renderFilmCardCount >= this._films.length) {
@@ -173,7 +168,7 @@ export default class MoviesList {
     remove(this._showMoreButtonComponent);
   }
 
-  _clearFilmsListTopRated() {
+  _clearFilmsListTopRated() {//нигде не используется
     Object
       .values(this._moviePresentersTopRatedStorage)
       .forEach((presenter) => presenter.destroy());
@@ -195,11 +190,11 @@ export default class MoviesList {
   }
 
   _renderFilmsListTopRated() {
-    this._renderFilmsCards(this._filmListTopRatedContainer, this._films.sort(sortFilmsRating), 0, FILM_EXTRA_CARD_COUNT);
+    this._renderFilmsCards(this._filmListTopRatedContainer, this._films.slice().sort(sortFilmsRating), 0, FILM_EXTRA_CARD_COUNT);
   }
 
   _renderFilmsListMostCommented() {
-    this._renderFilmsCards(this._filmListMostCommentedContainer, this._films.sort(sortFilmsComments), 0, FILM_EXTRA_CARD_COUNT);
+    this._renderFilmsCards(this._filmListMostCommentedContainer, this._films.slice().sort(sortFilmsComments), 0, FILM_EXTRA_CARD_COUNT);
   }
 
   _renderMovieList() {

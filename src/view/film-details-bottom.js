@@ -2,7 +2,6 @@ import SmartView from './smart.js';
 import { formatDate, DateFormats } from '../utils/film.js';
 
 const createFilmDetailsTemplate = (filmComments) => {
-// console.log (filmComments);
   const createCommentTemplate = (filmComment) => {
     const {author, comment, date, emotion, isNewComment} = filmComment;
 
@@ -98,13 +97,11 @@ export default class FilmDetailsBottom extends SmartView {
     return createFilmDetailsTemplate(this._state);
   }
 
-  reset(film) {
-    this.updateData(
-      FilmDetailsBottom.parseStateToFilmComments(film),
-    );
-  }
-
   _emojiListToggleHandler(evt) {
+    if (evt.target.tagName !== 'IMG') {
+      return;
+    }
+
     evt.preventDefault();
     this.updateData(
       this._newComment,
@@ -125,7 +122,6 @@ export default class FilmDetailsBottom extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
-    // this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
   _setInnerHandlers() {
@@ -140,7 +136,6 @@ export default class FilmDetailsBottom extends SmartView {
 
   static parseFilmCommentsToState(filmComments) {
     filmComments = filmComments
-      .slice()
       .map((filmComment) => ({...filmComment, isNewComment: false}));
 
     filmComments.push(
@@ -158,12 +153,10 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   static parseStateToFilmComments(state) {
-    console.log (state);
     state.splice(state.length - 1);
 
     state = state
-      .map((filmComment) => delete filmComment.isNewComment);
-
+      .forEach((filmComment) => delete filmComment.isNewComment);
     return state;
   }
 }
