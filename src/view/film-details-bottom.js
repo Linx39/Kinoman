@@ -27,9 +27,9 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
     .join('');
 
   const createNewCommentTemplate = () => {
-    const {author, comment, date, emotion} = newComment;
+    const {comment, emotion, imgAlt} = newComment;
 
-    const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="emoji-smile"></img>` : '';
+    const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
     const commentTemplate = comment !== null? comment : '';
 
     return (
@@ -80,25 +80,21 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 export default class FilmDetailsBottom extends SmartView {
   constructor(film, filmsComments) {
     super();
-    this._film = film;
+    this._filmState = FilmDetailsBottom.parseFilmToState(film);
+
+    this._filmComments = filmsComments
+      .slice()
+      .filter((comment) => film.comments.some((id) => id === comment.id));
 
     this._newComment = {
-      id: null,
-      author: null,
       comment: null,
-      date: null,
       emotion: null,
-      isNewComment: true,
+      imgAlt: null,
     };
-
-    this._stateFilmsComments = FilmDetailsBottom.parseFilmsCommentsToState(filmsComments, this._newComment);
-
-    this._filmComments = this._stateFilmsComments
-      .slice()
-      .filter((comment) => film.comments.some((id) => id === comment.id && !comment.isNewComment));
 
     this._emojiListHandler = this._emojiListHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
+    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -113,21 +109,43 @@ export default class FilmDetailsBottom extends SmartView {
     }
 
     evt.preventDefault();
-    this.updateData(
+
+    // this.updateData(
+    //   this._newComment,
+    //   {
+    //     emotion: evt.target.src,
+    //     imgAlt: evt.target.parentElement.htmlFor,
+    //   });
+    this._newComment = Object.assign(
+      {},
       this._newComment,
       {
         emotion: evt.target.src,
+        imgAlt: evt.target.parentElement.htmlFor,
       });
+    this.updateElement();
+    for (const child of evt.currentTarget.querySelectorAll('input')) {
+      child.checked = false;
+    }
+
+    evt.currentTarget.querySelector(`#${this._newComment.imgAlt}`).checked = true;
   }
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-    this.updateData(
+    // this.updateData(
+    //   this._newComment,
+    //   {
+    //     comment: evt.target.value,
+    //   },
+    //   true);
+
+    Object.assign(
+      this._newComment,
       this._newComment,
       {
         comment: evt.target.value,
-      },
-      true);
+      });
   }
 
   _commentDeleteHandler(evt) {
@@ -152,20 +170,22 @@ export default class FilmDetailsBottom extends SmartView {
       .forEach((buttonDelete) => buttonDelete.addEventListener('click', this._commentDeleteHandler));
   }
 
-  static parseFilmsCommentsToState(filmsComments, newComment) {
-    filmsComments = filmsComments
-      .map((filmComment) => ({...filmComment, isNewComment: false}));// объединить со следующим
+  static parseFilmToState(film) {
+    film = Object.assign(
+      {},
+      film,
+      {},
+    );
 
-    filmsComments.push(newComment);
-
-    return filmsComments;
+    return film;
   }
 
-  static parseStateToFilmComments(stateFilmsComments) {
-    stateFilmsComments.splice(stateFilmsComments.length - 1);
-
-    stateFilmsComments = stateFilmsComments
-      .forEach((filmComment) => delete filmComment.isNewComment);
-    return stateFilmsComments;
+  static parseStateToFilm(state) {
+    state = Object.assign(
+      {},
+      state,
+      {},
+    );
+    return state;
   }
 }

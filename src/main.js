@@ -17,11 +17,13 @@ const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
-const moviesListPresenter = new MoviesListPresenter(mainElement);
-
 render(headerElement, new HeaderProfileView(filmFilters));
-render(mainElement, new MainNavigationView(filmFilters));
 
+const MainNavigationComponent =  new MainNavigationView(filmFilters);
+render(mainElement, MainNavigationComponent);
+MainNavigationComponent.setNavigationItemChangeHandler();
+
+const moviesListPresenter = new MoviesListPresenter(mainElement);
 moviesListPresenter.init(films, filmsComments);
 
 render(footerElement, new FooterStatisticsView(films));

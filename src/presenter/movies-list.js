@@ -7,7 +7,7 @@ import FilmsListTopRatedView from '../view/films-list-top-rated.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented';
 import FilmsListContainerView from '../view/film-list-container';
 import MoviePresenter from './movie';
-import { RenderPosition, render, remove} from '../utils/render.js';
+import { render, remove } from '../utils/render.js';
 import { updateItem } from '../utils/common.js';
 import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
 import { SortType } from '../const.js';
@@ -45,17 +45,6 @@ export default class MoviesList {
     this._films = films.slice();
     this._sourcedFilms = films.slice();
     this._filmsComments = filmsComments;
-
-    render(this._moviesListContainer, this._filmsComponent);
-
-    render(this._filmsComponent, this._filmsListAllComponent);
-    render(this._filmsListAllComponent, this._filmListAllContainer);
-
-    render(this._filmsComponent, this._filmsListTopRatedComponent);
-    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
-
-    render(this._filmsComponent, this._filmsListMostCommentedComponent);
-    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
 
     this._renderMovieList();
   }
@@ -114,7 +103,7 @@ export default class MoviesList {
   }
 
   _renderSort() {
-    render(this._moviesListContainer, this._sortComponent, RenderPosition.AFTERBEGIN);
+    render(this._moviesListContainer, this._sortComponent);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
@@ -205,6 +194,17 @@ export default class MoviesList {
     }
 
     this._renderSort();
+
+    render(this._moviesListContainer, this._filmsComponent);
+    render(this._filmsComponent, this._filmsListAllComponent);
+    render(this._filmsListAllComponent, this._filmListAllContainer);
+
+    render(this._filmsComponent, this._filmsListTopRatedComponent);
+    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
+
+    render(this._filmsComponent, this._filmsListMostCommentedComponent);
+    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
+
     this._renderFilmsListAll();
     this._renderFilmsListTopRated();
     this._renderFilmsListMostCommented();

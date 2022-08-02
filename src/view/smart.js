@@ -3,25 +3,19 @@ import Abstract from './abstract';
 export default class Smart extends Abstract {
   constructor() {
     super();
-    // this._data = {};
+    this._state = {};
   }
 
-  updateData(data, update, justDataUpdating) {
+  updateData(update, justDataUpdating) {
     if (!update) {
       return;
     }
 
-    Object.assign(
-      data,
-      data,
+    this._state = Object.assign(
+      {},
+      this._state,
       update,
     );
-
-    // this._data = Object.assign(
-    //   {},
-    //   this._data,
-    //   update,
-    // );
 
     if (justDataUpdating) {
       return;
