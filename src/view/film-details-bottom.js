@@ -1,37 +1,36 @@
 import SmartView from './smart.js';
 import { formatDate, DateFormats } from '../utils/film.js';
 
-const createFilmDetailsTemplate = (filmComments) => {
-  const createCommentTemplate = (filmComment) => {
-    const {author, comment, date, emotion, isNewComment} = filmComment;
+const createFilmDetailsTemplate = (filmComments, newComment) => {
 
-    if (!isNewComment) {
-      return (
-        `<li class="film-details__comment">
-          <span class="film-details__comment-emoji">
-            <img src="${emotion}" width="55" height="55" alt="emoji-smile">
-          </span>
-          <div>
-            <p class="film-details__comment-text">${comment}</p>
-            <p class="film-details__comment-info">
-              <span class="film-details__comment-author">${author}</span>
-              <span class="film-details__comment-day">${formatDate(date, DateFormats.DATE_AND_TIME)}</span>
-              <button class="film-details__comment-delete">Delete</button>
-            </p>
-          </div>
-        </li>`);
-    }
+  const createCommentTemplate = (filmComment) => {
+    const {author, comment, date, emotion} = filmComment;
+
+    return (
+      `<li class="film-details__comment">
+        <span class="film-details__comment-emoji">
+          <img src="${emotion}" width="55" height="55" alt="emoji-smile">
+        </span>
+        <div>
+          <p class="film-details__comment-text">${comment}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${formatDate(date, DateFormats.DATE_AND_TIME)}</span>
+            <button class="film-details__comment-delete">Delete</button>
+          </p>
+        </div>
+      </li>`);
   };
 
   const createCommentsTemplate = () => filmComments
     .map((filmComment) => createCommentTemplate(filmComment))
     .join('');
 
-  const createNewCommentTemplate = (filmComment) => {
-    const {author, comment, date, emotion} = filmComment;
+  const createNewCommentTemplate = () => {
+    const {author, comment, date, emotion} = newComment;
 
-    const emotiomTemplate = emotion? `<img src="${emotion}" width="55" height="55" alt="emoji-smile"></img>` : '';
-    const commentTemplate = comment? comment : '';
+    const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="emoji-smile"></img>` : '';
+    const commentTemplate = comment !== null? comment : '';
 
     return (
       `<div class="film-details__new-comment">
@@ -63,9 +62,8 @@ const createFilmDetailsTemplate = (filmComments) => {
   };
 
   const commentsTemplate = createCommentsTemplate();
-  const newFilmComment = filmComments.find((filmComment) => filmComment.isNewComment);
-  const newCommentsTemplate = createNewCommentTemplate(newFilmComment);
-  const commentsCount = filmComments.length - 1;
+  const newCommentsTemplate = createNewCommentTemplate();
+  const commentsCount = filmComments.length;
 
   return (
     `<div class="film-details__bottom-container">
@@ -80,24 +78,36 @@ const createFilmDetailsTemplate = (filmComments) => {
 };
 
 export default class FilmDetailsBottom extends SmartView {
-  constructor(filmComments) {
+  constructor(film, filmsComments) {
     super();
+    this._film = film;
 
-    this._state = FilmDetailsBottom.parseFilmCommentsToState(filmComments);
+    this._newComment = {
+      id: null,
+      author: null,
+      comment: null,
+      date: null,
+      emotion: null,
+      isNewComment: true,
+    };
 
-    this._newComment = this._state.find((element) => element.isNewComment);
+    this._stateFilmsComments = FilmDetailsBottom.parseFilmsCommentsToState(filmsComments, this._newComment);
 
-    this._emojiListToggleHandler = this._emojiListToggleHandler.bind(this);
-    this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
+    this._filmComments = this._stateFilmsComments
+      .slice()
+      .filter((comment) => film.comments.some((id) => id === comment.id && !comment.isNewComment));
+
+    this._emojiListHandler = this._emojiListHandler.bind(this);
+    this._commentInputHandler = this._commentInputHandler.bind(this);
 
     this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._state);
+    return createFilmDetailsTemplate(this._filmComments, this._newComment);
   }
 
-  _emojiListToggleHandler(evt) {
+  _emojiListHandler(evt) {
     if (evt.target.tagName !== 'IMG') {
       return;
     }
@@ -110,7 +120,7 @@ export default class FilmDetailsBottom extends SmartView {
       });
   }
 
-  _descriptionInputHandler(evt) {
+  _commentInputHandler(evt) {
     evt.preventDefault();
     this.updateData(
       this._newComment,
@@ -120,6 +130,10 @@ export default class FilmDetailsBottom extends SmartView {
       true);
   }
 
+  _commentDeleteHandler(evt) {
+    evt.preventDefault();
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
   }
@@ -127,36 +141,31 @@ export default class FilmDetailsBottom extends SmartView {
   _setInnerHandlers() {
     this.getElement()
       .querySelector('.film-details__emoji-list')
-      .addEventListener('click', this._emojiListToggleHandler);
+      .addEventListener('click', this._emojiListHandler);
 
     this.getElement()
       .querySelector('.film-details__comment-input')
-      .addEventListener('input', this._descriptionInputHandler);
+      .addEventListener('input', this._commentInputHandler);
+
+    this.getElement()
+      .querySelectorAll('.film-details__comment-delete')
+      .forEach((buttonDelete) => buttonDelete.addEventListener('click', this._commentDeleteHandler));
   }
 
-  static parseFilmCommentsToState(filmComments) {
-    filmComments = filmComments
-      .map((filmComment) => ({...filmComment, isNewComment: false}));
+  static parseFilmsCommentsToState(filmsComments, newComment) {
+    filmsComments = filmsComments
+      .map((filmComment) => ({...filmComment, isNewComment: false}));// объединить со следующим
 
-    filmComments.push(
-      {
-        id: null,
-        author: null,
-        comment: null,
-        date: null,
-        emotion: null,
-        isNewComment: true,
-      },
-    );
+    filmsComments.push(newComment);
 
-    return filmComments;
+    return filmsComments;
   }
 
-  static parseStateToFilmComments(state) {
-    state.splice(state.length - 1);
+  static parseStateToFilmComments(stateFilmsComments) {
+    stateFilmsComments.splice(stateFilmsComments.length - 1);
 
-    state = state
+    stateFilmsComments = stateFilmsComments
       .forEach((filmComment) => delete filmComment.isNewComment);
-    return state;
+    return stateFilmsComments;
   }
 }

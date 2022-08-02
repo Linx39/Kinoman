@@ -5,7 +5,7 @@ import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
-import { comments as filmsComments } from '../main.js';
+// import { comments as filmsComments } from '../main.js';
 
 const Mode = {
   CARD: 'CARD',
@@ -30,11 +30,9 @@ export default class Movie {
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
   }
 
-  init(film) {
+  init(film, filmsComments) {
     this._film = film;
-    this._filmComments = filmsComments
-      .slice()
-      .filter((comment) => film.comments.some((id) => id === comment.id));
+    this._filmsComments = filmsComments;
 
     const prevFilmCardComponent = this._filmCardComponent;
     const prevFilmDetailsComponent = this._filmDetailsComponent;
@@ -67,7 +65,7 @@ export default class Movie {
     this._filmDetailsComponent = new FilmDetailsView();
     this._filmDetailsFormComponent = new FilmDetailsFormView();
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._film, this._filmsComments);
 
     this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
     this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);

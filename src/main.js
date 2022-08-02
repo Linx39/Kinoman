@@ -8,8 +8,8 @@ import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
 import { generateFilm } from './mock/film';
 import { generateComment } from './mock/comment.js';
 
-const comments = new Array(COMMENTS_COUNT).fill().map(generateComment);
-const films = new Array(FILMS_COUNT).fill().map(() => generateFilm(comments));
+const filmsComments = new Array(COMMENTS_COUNT).fill().map(generateComment);
+const films = new Array(FILMS_COUNT).fill().map(() => generateFilm(filmsComments));
 
 const filmFilters = createFilmsFilter(films);
 
@@ -22,8 +22,8 @@ const moviesListPresenter = new MoviesListPresenter(mainElement);
 render(headerElement, new HeaderProfileView(filmFilters));
 render(mainElement, new MainNavigationView(filmFilters));
 
-moviesListPresenter.init(films);
+moviesListPresenter.init(films, filmsComments);
 
 render(footerElement, new FooterStatisticsView(films));
 
-export { comments };
+export { filmsComments };

@@ -41,9 +41,10 @@ export default class MoviesList {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(films) {
+  init(films, filmsComments) {
     this._films = films.slice();
     this._sourcedFilms = films.slice();
+    this._filmsComments = filmsComments;
 
     render(this._moviesListContainer, this._filmsComponent);
 
@@ -63,13 +64,13 @@ export default class MoviesList {
     this._films = updateItem(this._films, updatedFilm);
     this._sourcedFilms = updateItem(this._sourcedFilms, updatedFilm);
     if (this._moviePresentersAllStorage[updatedFilm.id]) {
-      this._moviePresentersAllStorage[updatedFilm.id].init(updatedFilm);
+      this._moviePresentersAllStorage[updatedFilm.id].init(updatedFilm, this._filmsComments);
     }
     if (this._moviePresentersTopRatedStorage[updatedFilm.id]) {
-      this._moviePresentersTopRatedStorage[updatedFilm.id].init(updatedFilm);
+      this._moviePresentersTopRatedStorage[updatedFilm.id].init(updatedFilm, this._filmsComments);
     }
     if (this._moviePresentersMostCommentedStorage[updatedFilm.id]) {
-      this._moviePresentersMostCommentedStorage[updatedFilm.id].init(updatedFilm);
+      this._moviePresentersMostCommentedStorage[updatedFilm.id].init(updatedFilm, this._filmsComments);
     }
   }
 
@@ -119,7 +120,7 @@ export default class MoviesList {
 
   _renderFilmCard(filmContainer, film) {
     const moviePresenter = new MoviePresenter(filmContainer, this._handleFilmChange, this._handleModeChange);
-    moviePresenter.init(film);
+    moviePresenter.init(film, this._filmsComments);
 
     switch (filmContainer) {
       case this._filmListAllContainer:
