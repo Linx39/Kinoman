@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
-import { addClassName, convertTime, formatDate, DateFormats } from '../utils/film.js';
+import { addClassName } from '../utils/film.js';
+import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
 
 const CONTROL_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';
@@ -30,7 +31,7 @@ const createFilmDetailsTemplate = (film) => {
 
   const ageRatingFilm = `${ageRating}+`;
   const filmReleaseDate = formatDate(releaseDate, DateFormats.FULL_DATE);
-  const filmRuntime = convertTime(runtime);
+  const filmRuntime = convertTimeToHoursAndMinutes(runtime);
   const watchlistClassName = addClassName(watchlist, CONTROL_ACTIVE_CLASS);
   const watchedClassName = addClassName(watched, CONTROL_ACTIVE_CLASS);
   const favoriteClassName = addClassName(favorite, CONTROL_ACTIVE_CLASS);

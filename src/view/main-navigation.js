@@ -2,17 +2,17 @@ import AbstractView from './abstract.js';
 
 const classMainNavigationItemActive = 'main-navigation__item--active';
 
+const createMainNavigationItemTemplate = (item) => {
+  const {name, count} = item;
+  const capitalizedName = name.slice(0, 1).toUpperCase() + name.slice(1);
+
+  return (
+    `<a href="#${name}" class="main-navigation__item">${capitalizedName} 
+      <span class="main-navigation__item-count">${count}</span>
+    </a>`);
+};
+
 const createMainNavigationTemplate = (filters) => {
-  const createMainNavigationItemTemplate = (item) => {
-    const {name, count} = item;
-    const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-
-    return (
-      `<a href="#${name}" class="main-navigation__item">${capitalizedName} 
-        <span class="main-navigation__item-count">${count}</span>
-      </a>`);
-  };
-
   const mainNavigationItemsTemplate = filters
     .map((filter) => createMainNavigationItemTemplate(filter))
     .slice(1)

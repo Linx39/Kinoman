@@ -1,17 +1,7 @@
 import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../utils/common.js';
 
-const Rating = {
-  MIN: 0,
-  MAX: 100,
-};
-
-const DATE_MIN = '1900.01.01';
-
-const DescriptionCount = {
-  MIN: 1,
-  MAX: 5,
-};
+const path = './images/posters/';
 
 const POSTERS = [
   'made-for-each-other.png',
@@ -120,18 +110,18 @@ const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((c
 
 export const generateFilm = (comments) => ({
   id: nanoid(),
-  poster: `./images/posters/${getRandomElementFromArray(POSTERS)}`,
+  poster: `${path}${getRandomElementFromArray(POSTERS)}`,
   title: getRandomElementFromArray(TITLES),
   alternativeTitle: getRandomElementFromArray(TITLES),
-  rating: getRandomInteger(Rating.MIN, Rating.MAX)/10,
+  rating: getRandomInteger(0, 100)/10,
   director: getRandomElementFromArray(DIRECTORS),
   writers: getRandomArrayFromArray(WRITERS, 1, 3),
   actors: getRandomArrayFromArray(ACTORS, 1, 10),
-  releaseDate: getRandomDate(DATE_MIN),
+  releaseDate: getRandomDate('1900.01.01'),
   runtime: getRandomInteger(1, 360),
   country: getRandomElementFromArray(COUNTRES),
   genres: getRandomArrayFromArray(GENRES, 1, 4),
-  description: generateRandomText(DESCRIPTIONS, DescriptionCount.MIN, DescriptionCount.MAX),
+  description: generateRandomText(DESCRIPTIONS, 1, 5),
   ageRating: getRandomInteger(0,99),
   comments: getArrayIdComments(comments),
   watchlist: Boolean(getRandomInteger(0, 1)),

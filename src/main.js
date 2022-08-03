@@ -1,7 +1,7 @@
 import HeaderProfileView from './view/header-profile.js';
 import MainNavigationView from './view/main-navigation.js';
 import FooterStatisticsView from './view/footer-statistics.js';
-import MoviesListPresenter from './presenter/movies-list.js';
+import MoviesBlockPresenter from './presenter/movies-block.js';
 import { createFilmsFilter } from './view/filter.js';
 import { render } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
@@ -19,12 +19,12 @@ const footerElement = document.querySelector('.footer');
 
 render(headerElement, new HeaderProfileView(filmFilters));
 
-const MainNavigationComponent =  new MainNavigationView(filmFilters);
-render(mainElement, MainNavigationComponent);
-MainNavigationComponent.setNavigationItemChangeHandler();
+const mainNavigationComponent =  new MainNavigationView(filmFilters);
+render(mainElement, mainNavigationComponent);
+mainNavigationComponent.setNavigationItemChangeHandler();
 
-const moviesListPresenter = new MoviesListPresenter(mainElement);
-moviesListPresenter.init(films, filmsComments);
+const moviesBlockPresenter = new MoviesBlockPresenter(mainElement);
+moviesBlockPresenter.init(films, filmsComments);
 
 render(footerElement, new FooterStatisticsView(films));
 

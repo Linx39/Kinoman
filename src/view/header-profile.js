@@ -3,30 +3,32 @@ import AbstractView from './abstract.js';
 const FILTER_NAME = 'history';
 
 const ProfileRatingName = [
-  {filmCountMin: 1, ratingName: 'Novice'},
-  {filmCountMin: 11, ratingName: 'Fan'},
-  {filmCountMin: 21, ratingName: 'Movie Buff'},
+  {filmsCountMin: 1, ratingName: 'Novice'},
+  {filmsCountMin: 11, ratingName: 'Fan'},
+  {filmsCountMin: 21, ratingName: 'Movie Buff'},
 ];
 
-const getProfileRating = (filmCount) => ProfileRatingName
+const getProfileRating = (filmsCount) => ProfileRatingName
   .reverse()
-  .find((item) => filmCount >= item.filmCountMin)
+  .find((profile) => filmsCount >= profile.filmsCountMin)
   .ratingName;
 
 
-const createHeaderProfileTemplate = (filterItems) => {
-  const itemCount = filterItems.find((item) => item.name === FILTER_NAME).count;
-  let profileRatingTemplate = '';
+const createHeaderProfileTemplate = (filters) => {
+  const filmsCount = filters.find((filter) => filter.name === FILTER_NAME).count;
 
-  if (itemCount > 0) {
-    const profileRatingName = getProfileRating(itemCount);
-    profileRatingTemplate = `<p class="profile__rating">${profileRatingName}</p>`;
-  }
+  const profileRatingTemplate = filmsCount > 0
+    ? `<p class="profile__rating">${getProfileRating(filmsCount)}</p>`
+    : '';
+
+  const profileAvatarTemplate = filmsCount > 0
+    ? '<img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35"></img>'
+    : '';
 
   return (
     `<section class="header__profile profile">
       ${profileRatingTemplate}
-      <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+      ${profileAvatarTemplate}
     </section>`);
 };
 

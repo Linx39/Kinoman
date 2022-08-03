@@ -5,7 +5,6 @@ import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
-// import { comments as filmsComments } from '../main.js';
 
 const Mode = {
   CARD: 'CARD',
@@ -17,7 +16,6 @@ export default class Movie {
     this._filmCardContainer = filmCardContainer;
     this._changeFilm = changeFilm;
     this._changeMode = changeMode;
-
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
     this._mode = Mode.CARD;
@@ -32,11 +30,11 @@ export default class Movie {
 
   init(film, filmsComments) {
     this._film = film;
-    this._filmsComments = filmsComments;
-
+    this._filmComments = filmsComments
+      .slice()
+      .filter((comment) => film.comments.some((id) => id === comment.id));
     const prevFilmCardComponent = this._filmCardComponent;
     const prevFilmDetailsComponent = this._filmDetailsComponent;
-
     this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
@@ -50,6 +48,7 @@ export default class Movie {
     }
 
     replace(this._filmCardComponent, prevFilmCardComponent);
+    remove(prevFilmCardComponent);
 
     if (this._mode === Mode.DETAILS) {
       this._initFilmDetails();
@@ -57,15 +56,13 @@ export default class Movie {
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
       remove(prevFilmDetailsComponent);
     }
-
-    remove(prevFilmCardComponent);
   }
 
   _initFilmDetails() {
     this._filmDetailsComponent = new FilmDetailsView();
     this._filmDetailsFormComponent = new FilmDetailsFormView();
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._film, this._filmsComments);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._film, this._filmComments);
 
     this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
     this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);

@@ -15,9 +15,9 @@ import { SortType } from '../const.js';
 const FILM_CARD_COUNT = 5;
 const FILM_EXTRA_CARD_COUNT = 2;
 
-export default class MoviesList {
-  constructor(moviesListContainer) {
-    this._moviesListContainer = moviesListContainer;
+export default class MoviesBlock {
+  constructor(moviesBlockContainer) {
+    this._moviesBlockContainer = moviesBlockContainer;
     this._renderFilmCardCount = FILM_CARD_COUNT;
     this._moviePresentersAllStorage = {};
     this._moviePresentersTopRatedStorage = {};
@@ -46,7 +46,7 @@ export default class MoviesList {
     this._sourcedFilms = films.slice();
     this._filmsComments = filmsComments;
 
-    this._renderMovieList();
+    this._renderMoviesBlock();
   }
 
   _handleFilmChange(updatedFilm) {
@@ -103,8 +103,20 @@ export default class MoviesList {
   }
 
   _renderSort() {
-    render(this._moviesListContainer, this._sortComponent);
+    render(this._moviesBlockContainer, this._sortComponent);
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+  }
+
+  _renderFilms() {
+    render(this._moviesBlockContainer, this._filmsComponent);
+    render(this._filmsComponent, this._filmsListAllComponent);
+    render(this._filmsListAllComponent, this._filmListAllContainer);
+
+    render(this._filmsComponent, this._filmsListTopRatedComponent);
+    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
+
+    render(this._filmsComponent, this._filmsListMostCommentedComponent);
+    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
   }
 
   _renderFilmCard(filmContainer, film) {
@@ -131,7 +143,7 @@ export default class MoviesList {
   }
 
   _renderNoMovies() {
-    render(this._moviesListContainer, new NoMoviesView());
+    render(this._moviesBlockContainer, new NoMoviesView());
   }
 
   _handleShowMoreButtonClick() {
@@ -165,7 +177,7 @@ export default class MoviesList {
     this._moviePresentersTopRatedStorage = {};
   }
 
-  _clearFilmsListMostCommented() {
+  _clearFilmsListMostCommented() {//нигде не используется
     Object
       .values(this._moviePresentersMostCommentedStorage)
       .forEach((presenter) => presenter.destroy());
@@ -187,24 +199,14 @@ export default class MoviesList {
     this._renderFilmsCards(this._filmListMostCommentedContainer, this._films.slice().sort(sortFilmsComments), 0, FILM_EXTRA_CARD_COUNT);
   }
 
-  _renderMovieList() {
+  _renderMoviesBlock() {
     if (this._films.length === 0) {
       this._renderNoMovies();
       return;
     }
 
     this._renderSort();
-
-    render(this._moviesListContainer, this._filmsComponent);
-    render(this._filmsComponent, this._filmsListAllComponent);
-    render(this._filmsListAllComponent, this._filmListAllContainer);
-
-    render(this._filmsComponent, this._filmsListTopRatedComponent);
-    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
-
-    render(this._filmsComponent, this._filmsListMostCommentedComponent);
-    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
-
+    this._renderFilms();
     this._renderFilmsListAll();
     this._renderFilmsListTopRated();
     this._renderFilmsListMostCommented();

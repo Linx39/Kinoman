@@ -1,10 +1,12 @@
 import SmartView from './smart.js';
-import { formatDate, DateFormats } from '../utils/film.js';
+import { convertDateToHumanFormat } from '../utils/common.js';
 
 const createFilmDetailsTemplate = (filmComments, newComment) => {
 
   const createCommentTemplate = (filmComment) => {
     const {author, comment, date, emotion} = filmComment;
+
+    const dateTemplate = convertDateToHumanFormat(date);
 
     return (
       `<li class="film-details__comment">
@@ -15,7 +17,7 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
           <p class="film-details__comment-text">${comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${formatDate(date, DateFormats.DATE_AND_TIME)}</span>
+            <span class="film-details__comment-day">${dateTemplate}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -78,13 +80,11 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 };
 
 export default class FilmDetailsBottom extends SmartView {
-  constructor(film, filmsComments) {
+  constructor(film, filmComments) {
     super();
     this._filmState = FilmDetailsBottom.parseFilmToState(film);
 
-    this._filmComments = filmsComments
-      .slice()
-      .filter((comment) => film.comments.some((id) => id === comment.id));
+    this._filmComments = filmComments;
 
     this._newComment = {
       comment: null,
@@ -110,22 +110,15 @@ export default class FilmDetailsBottom extends SmartView {
 
     evt.preventDefault();
 
-    // this.updateData(
-    //   this._newComment,
-    //   {
-    //     emotion: evt.target.src,
-    //     imgAlt: evt.target.parentElement.htmlFor,
-    //   });
-    this._newComment = Object.assign(
-      {},
+    this.updateState(
       this._newComment,
       {
         emotion: evt.target.src,
         imgAlt: evt.target.parentElement.htmlFor,
       });
-    this.updateElement();
-    for (const child of evt.currentTarget.querySelectorAll('input')) {
-      child.checked = false;
+
+    for (const input of evt.currentTarget.querySelectorAll('input')) {
+      input.checked = false;
     }
 
     evt.currentTarget.querySelector(`#${this._newComment.imgAlt}`).checked = true;
@@ -133,19 +126,12 @@ export default class FilmDetailsBottom extends SmartView {
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-    // this.updateData(
-    //   this._newComment,
-    //   {
-    //     comment: evt.target.value,
-    //   },
-    //   true);
-
-    Object.assign(
-      this._newComment,
+    this.updateState(
       this._newComment,
       {
         comment: evt.target.value,
-      });
+      },
+      true);
   }
 
   _commentDeleteHandler(evt) {

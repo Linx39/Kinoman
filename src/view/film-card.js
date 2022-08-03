@@ -1,5 +1,6 @@
 import AbstractView from './abstract.js';
-import { addClassName, convertTime, formatDate, DateFormats } from '../utils/film.js';
+import { addClassName } from '../utils/film.js';
+import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
 
 const DESCRIPTON_LENGTH = 139;
 
@@ -21,7 +22,7 @@ const createFilmCardTemplate = (film) => {
   } = film;
 
   const filmReleaseDate = formatDate(releaseDate, DateFormats.ONLY_YEAR);
-  const filmRuntime = convertTime(runtime);
+  const filmRuntime = convertTimeToHoursAndMinutes(runtime);
   const descriptionText = description.length < DESCRIPTON_LENGTH
     ? description
     : `${description.substring(0, DESCRIPTON_LENGTH-1)}...`;

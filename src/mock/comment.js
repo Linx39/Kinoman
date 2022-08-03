@@ -32,6 +32,6 @@ export const generateComment = () => ({
   id: nanoid(),
   author: getRandomElementFromArray(AUTHOR),
   comment: getRandomElementFromArray(COMMENTS),
-  date: getRandomDate('2019.01.01', undefined, true),
+  date: getRandomDate('2020.01.01', undefined, true),
   emotion: `${path}${getRandomElementFromArray(Object.values(Emotion))}`,
 });

@@ -1,4 +1,36 @@
 import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+const HOUR = 60;
+export const DateFormats = {
+  ONLY_YEAR: 'YYYY',
+  FULL_DATE: 'DD MMMM YYYY',
+  DATE_AND_TIME: 'YYYY/MM/DD hh:mm',
+};
+
+export const getDayDiff = (dateA, dateB) => dayjs(dateA).diff(dayjs(dateB));
+
+export const formatDate = (date, dateFormat) => dayjs(date).format(dateFormat);
+
+export const convertDateToHumanFormat = (date) => {
+  dayjs.extend(relativeTime);
+  return dayjs(date).fromNow();
+};
+
+export const convertTimeToHoursAndMinutes = (time) => {
+  const hours = Math.floor(time / HOUR);
+  let minutes = time - hours * HOUR;
+
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  if (hours === 0) {
+    return `${minutes}m`;
+  }
+
+  return `${hours}h ${minutes}m`;
+};
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -22,12 +54,12 @@ export const getRandomArrayFromArray = (array, arrayLengthMin = 0, arrayLengthMa
     });
 };
 
-export const getRandomDate = (dateMin, dateMax = Date(), isMinute = false) => {
-  const diffValue = isMinute ? 'minute' : 'day';
-  const dateDiff = dayjs(dateMax).diff(dayjs(dateMin), diffValue) + 1;
+export const getRandomDate = (dateA, dateB = Date(), isMinute = false) => {
+  const unitOfTime = isMinute ? 'minute' : 'day';
+  const dateDiff = dayjs(dateB).diff(dayjs(dateA), unitOfTime) + 1;
   const dateAdd = getRandomInteger(1, dateDiff);
 
-  return dayjs(dateMin).add(dateAdd, diffValue).toDate();
+  return dayjs(dateA).add(dateAdd, unitOfTime).toDate();
 };
 
 export const generateRandomText = (arrayTexts, textCountMin = 1, textCountMax = 1) => new Array(getRandomInteger(textCountMin, textCountMax))
