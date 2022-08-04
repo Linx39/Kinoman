@@ -25,7 +25,7 @@ const createFilmCardTemplate = (film) => {
   const filmRuntime = convertTimeToHoursAndMinutes(runtime);
   const descriptionText = description.length < DESCRIPTON_LENGTH
     ? description
-    : `${description.substring(0, DESCRIPTON_LENGTH-1)}...`;
+    : `${description.slice(0, DESCRIPTON_LENGTH)}...`;
 
   const commentsCount = comments.length;
 

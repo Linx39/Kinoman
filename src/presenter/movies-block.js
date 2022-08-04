@@ -5,7 +5,7 @@ import FilmsListAllView from '../view/films-list-all.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented';
-import FilmsListContainerView from '../view/film-list-container';
+import FilmsListContainerView from '../view/films-list-container';
 import MoviePresenter from './movie';
 import { render, remove } from '../utils/render.js';
 import { updateItem } from '../utils/common.js';

@@ -1,11 +1,14 @@
 import SmartView from './smart.js';
 import { convertDateToHumanFormat } from '../utils/common.js';
 
-const createFilmDetailsTemplate = (filmComments, newComment) => {
+const createFilmDetailsTemplate = (filmComments) => {
 
   const createCommentTemplate = (filmComment) => {
-    const {author, comment, date, emotion} = filmComment;
-
+    const {author, comment, date, emotion, isNewComment} = filmComment;
+    // console.log (isNewComment);
+    if(isNewComment) {
+      return;
+    }
     const dateTemplate = convertDateToHumanFormat(date);
 
     return (
@@ -24,13 +27,12 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
       </li>`);
   };
 
-  const createCommentsTemplate = () => filmComments
+  const createCommentsTemplate = () => Object.values(filmComments)
     .map((filmComment) => createCommentTemplate(filmComment))
     .join('');
 
   const createNewCommentTemplate = () => {
-    const {comment, emotion, imgAlt} = newComment;
-
+    const {comment, emotion, imgAlt} = filmComments.newComment;
     const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
     const commentTemplate = comment !== null? comment : '';
 
@@ -82,15 +84,7 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 export default class FilmDetailsBottom extends SmartView {
   constructor(film, filmComments) {
     super();
-    this._filmState = FilmDetailsBottom.parseFilmToState(film);
-
-    this._filmComments = filmComments;
-
-    this._newComment = {
-      comment: null,
-      emotion: null,
-      imgAlt: null,
-    };
+    this._state = FilmDetailsBottom.parseDataToState(filmComments);
 
     this._emojiListHandler = this._emojiListHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
@@ -100,7 +94,7 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._filmComments, this._newComment);
+    return createFilmDetailsTemplate(this._state);
   }
 
   _emojiListHandler(evt) {
@@ -110,31 +104,32 @@ export default class FilmDetailsBottom extends SmartView {
 
     evt.preventDefault();
 
-    this.updateState(
-      this._newComment,
-      {
-        emotion: evt.target.src,
-        imgAlt: evt.target.parentElement.htmlFor,
-      });
+    const newComment = {...this._state.newComment, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
+    this.updateState({newComment});
 
     for (const input of evt.currentTarget.querySelectorAll('input')) {
       input.checked = false;
     }
 
-    evt.currentTarget.querySelector(`#${this._newComment.imgAlt}`).checked = true;
+    evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;//или добавить это в if
+
   }
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-    this.updateState(
-      this._newComment,
-      {
-        comment: evt.target.value,
-      },
-      true);
+
+    const newComment = {
+      ...this._state.newComment,
+      comment: evt.target.value,
+    };
+    this.updateState({newComment}, true);
+
   }
 
   _commentDeleteHandler(evt) {
+    if (evt.target.tagName !== 'BUTTON') {
+      return;
+    }
     evt.preventDefault();
   }
 
@@ -152,21 +147,32 @@ export default class FilmDetailsBottom extends SmartView {
       .addEventListener('input', this._commentInputHandler);
 
     this.getElement()
-      .querySelectorAll('.film-details__comment-delete')
+      .querySelectorAll('.film-details__comments-list')
       .forEach((buttonDelete) => buttonDelete.addEventListener('click', this._commentDeleteHandler));
   }
 
-  static parseFilmToState(film) {
-    film = Object.assign(
+  static parseDataToState(data) {
+    data = data.map((comment) => ({...comment, isNewComment: false}));
+
+    data = Object.assign(
       {},
-      film,
-      {},
+      data,
+      {
+        newComment: {
+          author: null,
+          comment: null,
+          date: null,
+          emotion: null,
+          imgAlt: null,
+          isNewComment: true,
+        },
+      },
     );
 
-    return film;
+    return data;
   }
 
-  static parseStateToFilm(state) {
+  static parseStateToData(state) {
     state = Object.assign(
       {},
       state,

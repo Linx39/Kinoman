@@ -3,14 +3,14 @@ import AbstractView from './abstract.js';
 const FILTER_NAME = 'history';
 
 const ProfileRatingName = [
-  {filmsCountMin: 1, ratingName: 'Novice'},
-  {filmsCountMin: 11, ratingName: 'Fan'},
-  {filmsCountMin: 21, ratingName: 'Movie Buff'},
+  {watchedFilmsCountMin: 1, ratingName: 'Novice'},
+  {watchedFilmsCountMin: 11, ratingName: 'Fan'},
+  {watchedFilmsCountMin: 21, ratingName: 'Movie Buff'},
 ];
 
 const getProfileRating = (filmsCount) => ProfileRatingName
   .reverse()
-  .find((profile) => filmsCount >= profile.filmsCountMin)
+  .find((profile) => filmsCount >= profile.watchedFilmsCountMin)
   .ratingName;
 
 
