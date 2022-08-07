@@ -4,8 +4,7 @@ import { convertDateToHumanFormat } from '../utils/common.js';
 const createFilmDetailsTemplate = (filmComments) => {
 
   const createCommentTemplate = (filmComment) => {
-    const {author, comment, date, emotion, isNewComment} = filmComment;
-    // console.log (isNewComment);
+    const {id, author, comment, date, emotion, isNewComment} = filmComment;
     if(isNewComment) {
       return;
     }
@@ -21,7 +20,7 @@ const createFilmDetailsTemplate = (filmComments) => {
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
             <span class="film-details__comment-day">${dateTemplate}</span>
-            <button class="film-details__comment-delete">Delete</button>
+            <button class="film-details__comment-delete" data-id = "${id}">Delete</button>
           </p>
         </div>
       </li>`);
@@ -67,7 +66,7 @@ const createFilmDetailsTemplate = (filmComments) => {
 
   const commentsTemplate = createCommentsTemplate();
   const newCommentsTemplate = createNewCommentTemplate();
-  const commentsCount = filmComments.length;
+  const commentsCount = Object.keys(filmComments).length - 1;
 
   return (
     `<div class="film-details__bottom-container">
@@ -131,6 +130,14 @@ export default class FilmDetailsBottom extends SmartView {
       return;
     }
     evt.preventDefault();
+
+    const deletedCommentKey = Object
+      .entries(this._state)
+      .map(([key, comment]) => ({key: key, id: comment.id}))
+      .find((item) => (item.id === evt.target.dataset.id)).key;// ппробовать вместо этого filter как в демонстрации
+
+    delete this._state[deletedCommentKey];
+    this.updateState(this._state);
   }
 
   restoreHandlers() {
@@ -147,7 +154,11 @@ export default class FilmDetailsBottom extends SmartView {
       .addEventListener('input', this._commentInputHandler);
 
     this.getElement()
-      .querySelectorAll('.film-details__comments-list')
+      .querySelector('.film-details__comments-list')
+      .addEventListener('click', this._commentDeleteHandler);
+
+    this.getElement()
+      .querySelectorAll('.film-details__comments-list')//зачем здесь all - убрать и проверить
       .forEach((buttonDelete) => buttonDelete.addEventListener('click', this._commentDeleteHandler));
   }
 
@@ -159,6 +170,7 @@ export default class FilmDetailsBottom extends SmartView {
       data,
       {
         newComment: {
+          id: null,
           author: null,
           comment: null,
           date: null,
@@ -173,11 +185,13 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   static parseStateToData(state) {
-    state = Object.assign(
-      {},
-      state,
-      {},
-    );
+    delete state.newComment;
+    // state.pop(); удаление последнего элемкнта из масива
+    // state = Object.assign(
+    //   {},
+    //   state,
+    //   {},
+    // );
     return state;
   }
 }
