@@ -6,6 +6,6 @@ const createFilmDetailsFormTemplate = () => (
 
 export default class FilmDetailsForm extends AbstractView {
   getTemplate() {
-    return createFilmDetailsFormTemplate(this._film);
+    return createFilmDetailsFormTemplate();
   }
 }

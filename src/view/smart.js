@@ -22,6 +22,7 @@ export default class Smart extends Abstract {
     }
 
     this.updateElement();
+    this.restoreHandlers();
   }
 
   updateElement() {
@@ -32,8 +33,6 @@ export default class Smart extends Abstract {
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, prevElement);
-
-    this.restoreHandlers();
   }
 
   restoreHandlers() {

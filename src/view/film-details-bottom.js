@@ -81,13 +81,13 @@ const createFilmDetailsTemplate = (filmComments) => {
 };
 
 export default class FilmDetailsBottom extends SmartView {
-  constructor(film, filmComments) {
+  constructor(filmComments) {
     super();
     this._state = FilmDetailsBottom.parseDataToState(filmComments);
 
     this._emojiListHandler = this._emojiListHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
-    this._commentDeleteHandler = this._commentDeleteHandler.bind(this);
+    this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -111,7 +111,6 @@ export default class FilmDetailsBottom extends SmartView {
     }
 
     evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;//или добавить это в if
-
   }
 
   _commentInputHandler(evt) {
@@ -125,41 +124,28 @@ export default class FilmDetailsBottom extends SmartView {
 
   }
 
-  _commentDeleteHandler(evt) {
+  _commentDeleteClickHandler(evt) {
     if (evt.target.tagName !== 'BUTTON') {
       return;
     }
     evt.preventDefault();
 
-    const deletedCommentKey = Object
-      .entries(this._state)
-      .map(([key, comment]) => ({key: key, id: comment.id}))
-      .find((item) => (item.id === evt.target.dataset.id)).key;// ппробовать вместо этого filter как в демонстрации
-
-    delete this._state[deletedCommentKey];
-    this.updateState(this._state);
+    this._callback.commentDeleteClick();
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this.setCommentDeleteClickHandler(this._callback.commentDeleteClick);
   }
 
   _setInnerHandlers() {
-    this.getElement()
-      .querySelector('.film-details__emoji-list')
-      .addEventListener('click', this._emojiListHandler);
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._emojiListHandler);
+    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._commentInputHandler);
+  }
 
-    this.getElement()
-      .querySelector('.film-details__comment-input')
-      .addEventListener('input', this._commentInputHandler);
-
-    this.getElement()
-      .querySelector('.film-details__comments-list')
-      .addEventListener('click', this._commentDeleteHandler);
-
-    this.getElement()
-      .querySelectorAll('.film-details__comments-list')//зачем здесь all - убрать и проверить
-      .forEach((buttonDelete) => buttonDelete.addEventListener('click', this._commentDeleteHandler));
+  setCommentDeleteClickHandler(callback) {
+    this._callback.commentDeleteClick = callback;
+    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._commentDeleteClickHandler);
   }
 
   static parseDataToState(data) {
@@ -186,7 +172,6 @@ export default class FilmDetailsBottom extends SmartView {
 
   static parseStateToData(state) {
     delete state.newComment;
-    // state.pop(); удаление последнего элемкнта из масива
     // state = Object.assign(
     //   {},
     //   state,

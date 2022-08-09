@@ -18,6 +18,7 @@ export default class Movie {
     this._changeMode = changeMode;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
+    this._filmDetailsTopComponent = null;
     this._mode = Mode.CARD;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
@@ -34,7 +35,7 @@ export default class Movie {
       .slice()
       .filter((comment) => film.comments.some((id) => id === comment.id));
     const prevFilmCardComponent = this._filmCardComponent;
-    const prevFilmDetailsComponent = this._filmDetailsComponent;
+
     this._filmCardComponent = new FilmCardView(film);
 
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
@@ -51,23 +52,34 @@ export default class Movie {
     remove(prevFilmCardComponent);
 
     if (this._mode === Mode.DETAILS) {
-      this._initFilmDetails();
-      this._renderFilmDetails();
-      replace(this._filmDetailsComponent, prevFilmDetailsComponent);
-      remove(prevFilmDetailsComponent);
+      const prevFilmDetailsTopComponent = this._filmDetailsTopComponent;
+      this._initFilmDetailsTop();
+      replace(this._filmDetailsTopComponent, prevFilmDetailsTopComponent);
+      remove(prevFilmDetailsTopComponent);
     }
   }
 
   _initFilmDetails() {
     this._filmDetailsComponent = new FilmDetailsView();
     this._filmDetailsFormComponent = new FilmDetailsFormView();
+
+    this._initFilmDetailsTop();
+    this._initFilmDetailsBottom();
+  }
+
+  _initFilmDetailsTop() {
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._film, this._filmComments);
 
     this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
     this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+  }
+
+  _initFilmDetailsBottom() {
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
+
+    this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
   }
 
   _renderFilmDetails() {
@@ -136,5 +148,9 @@ export default class Movie {
 
   _handleButtonCloseClick() {
     this._closeFilmDetails();
+  }
+
+  _handleCommentDeleteClick() {
+    console.log ('yes!!!');
   }
 }
