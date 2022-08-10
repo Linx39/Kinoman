@@ -5,6 +5,7 @@ import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
 import { render, remove, close, open, replace } from '../utils/render.js';
+import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
   CARD: 'CARD',
@@ -12,7 +13,7 @@ const Mode = {
 };
 
 export default class Movie {
-  constructor (filmCardContainer, changeFilm, changeMode) {
+  constructor (filmCardContainer, changeFilm, changeComment, changeMode) {
     this._filmCardContainer = filmCardContainer;
     this._changeFilm = changeFilm;
     this._changeMode = changeMode;
@@ -130,18 +131,24 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeFilm(
-      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
+      UserAction.UPDATE,
+      UpdateType.PATCH,
+      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),//в демонстрвции куда то делся апдейт из обджект ассайн - 3й параметр
     );
   }
 
   _handleWatchedClick() {
     this._changeFilm(
+      UserAction.UPDATE,
+      UpdateType.PATCH,
       Object.assign({}, this._film, {watched: !this._film.watched}),
     );
   }
 
   _handleFavoriteClick() {
     this._changeFilm(
+      UserAction.UPDATE,
+      UpdateType.PATCH,
       Object.assign({}, this._film, {favorite: !this._film.favorite}),
     );
   }

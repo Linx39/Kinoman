@@ -3,6 +3,8 @@ import MainNavigationView from './view/main-navigation.js';
 import FooterStatisticsView from './view/footer-statistics.js';
 import MoviesBlockPresenter from './presenter/movies-block.js';
 import { createFilmsFilter } from './view/filter.js';
+import FilmsModel from './model/films.js';
+import CommentsModel from './model/comments.js';
 import { render } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
 import { generateFilm } from './mock/film';
@@ -12,6 +14,11 @@ const filmsComments = new Array(COMMENTS_COUNT).fill().map(generateComment);
 const films = new Array(FILMS_COUNT).fill().map(() => generateFilm(filmsComments));
 
 const filmFilters = createFilmsFilter(films);
+
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(films);
+const commentsModel = new CommentsModel();
+commentsModel.setComments(filmsComments);
 
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
@@ -23,8 +30,8 @@ const mainNavigationComponent =  new MainNavigationView(filmFilters);
 render(mainElement, mainNavigationComponent);
 mainNavigationComponent.setNavigationItemChangeHandler();
 
-const moviesBlockPresenter = new MoviesBlockPresenter(mainElement);
-moviesBlockPresenter.init(films, filmsComments);
+const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, commentsModel);
+moviesBlockPresenter.init();
 
 render(footerElement, new FooterStatisticsView(films));
 
