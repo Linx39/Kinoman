@@ -14,7 +14,7 @@ export default class Films extends Observer {
     return this._films;
   }
 
-  updateFilm(updateType, update) {
+  editFilm(updateType, update) {
     const index = this._films.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
@@ -28,5 +28,13 @@ export default class Films extends Observer {
     ];
 
     this._notify(updateType, update);
+  }
+
+  addFilm() {
+    throw new Error('Sorry... This action is not available');
+  }
+
+  deleteFilm() {
+    throw new Error('Sorry... This action is not available');
   }
 }

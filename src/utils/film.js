@@ -1,7 +1,5 @@
 import { getDayDiff } from './common.js';
 
-export const addClassName = (isAdd, className) => isAdd ? className : '';
-
 const getWeightForNullData = (dataA, dataB) => {
   if (dataA === null && dataB === null) {
     return 0;

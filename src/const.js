@@ -7,15 +7,10 @@ export const SortType = {
   RAITING: 'rating',
 };
 
-// export const UserAction = {
-//   ADD_COMMENT: 'ADD_COMMENT',
-//   DELETE_COMMENT: 'DELETE_COMMENT',
-// };
-
 export const UserAction = {
   ADD: 'ADD',
   DELETE: 'DELETE',
-  UPDATE: 'UPDATE',
+  EDIT: 'EDIT',
 };
 
 export const UpdateType = {

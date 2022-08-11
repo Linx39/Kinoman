@@ -14,6 +14,10 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
+  editComment() {
+    throw new Error('Sorry... This action is not available');
+  }
+
   addComment(updateType, update) {
     this._comments = [
       update,

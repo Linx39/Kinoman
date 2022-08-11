@@ -43,11 +43,13 @@ export default class MoviesBlock {
     this._handleViewTopAction = this._handleViewTopAction.bind(this);
     this._handleViewBottomAction = this._handleViewBottomAction.bind(this);
     this._handleFilmsModelEvent = this._handleFilmsModelEvent.bind(this);
+    this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._filmsModel.addObserver(this._handleFilmsModelEvent);
+    this._commentsModel.addObserver(this._handleCommentsModelEvent);
   }
 
   init() {
@@ -65,8 +67,10 @@ export default class MoviesBlock {
     return this._filmsModel.getFilms();
   }
 
-  _getComments() {
-    return this._commentsModel.getComments();
+  _getComments(film) {
+    return this._commentsModel.getComments()
+      .slice()
+      .filter((comment) => film.comments.some((id) => id === comment.id));
   }
 
   _renderNoMovies() {
@@ -98,7 +102,9 @@ export default class MoviesBlock {
 
   _renderCard(container, film) {
     const moviePresenter = new MoviePresenter(container, this._handleViewTopAction,  this._handleViewBottomAction, this._handleModeChange);
-    moviePresenter.init(film, this._getComments());
+    const filmComments = this._getComments(film);
+    moviePresenter.init(film, filmComments);
+
     switch (container) {
       case this._filmListAllContainer:
         this._moviePresentersStorage.all[film.id] = moviePresenter;
@@ -238,29 +244,23 @@ export default class MoviesBlock {
 
   _handleViewTopAction(actionType, updateType, update) {
     switch (actionType) {
-      case UserAction.UPDATE:
-        this._filmsModel.updateFilm(updateType, update);
+      case UserAction.EDIT:
+        this._filmsModel.editFilm(updateType, update);
         break;
       case UserAction.ADD:
-        throw new Error(`This actionType ${actionType} is not available`);
+        this._filmsModel.addFilm();
+        break;
       case UserAction.DELETE:
-        throw new Error(`This actionType ${actionType} is not available`);
+        this._filmsModel.deleteFilm();
+        break;
     }
-
-    // Object
-    //   .keys(this._moviePresentersStorage)
-    //   .forEach((key) => {
-    //     const storage = this._moviePresentersStorage[key];
-    //     if (storage[update.id]) {
-    //       storage[update.id].init(update, this._getComments());
-    //     }
-    //   });
   }
 
   _handleViewBottomAction(actionType, updateType, update) {
     switch (actionType) {
-      case UserAction.UPDATE:
-        throw new Error(`This actionType ${actionType} is not available`);
+      case UserAction.EDIT:
+        this._commentsModel.editComment();
+        break;
       case UserAction.ADD:
         this._commentsModel.addComment(updateType, update);
         break;
@@ -270,7 +270,7 @@ export default class MoviesBlock {
     }
   }
 
-  _handleFilmsModelEvent(updateType, data) {
+  _handleFilmsModelEvent(updateType, film) {
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
@@ -278,8 +278,8 @@ export default class MoviesBlock {
           .keys(this._moviePresentersStorage)
           .forEach((key) => {
             const storage = this._moviePresentersStorage[key];
-            if (storage[data.id]) {
-              storage[data.id].init(data, this._getComments());
+            if (storage[film.id]) {
+              storage[film.id].init(film, this._getComments(film));
             }
           });
         break;

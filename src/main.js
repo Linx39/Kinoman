@@ -26,9 +26,9 @@ const footerElement = document.querySelector('.footer');
 
 render(headerElement, new HeaderProfileView(filmFilters));
 
-const mainNavigationComponent =  new MainNavigationView(filmFilters);
-render(mainElement, mainNavigationComponent);
-mainNavigationComponent.setNavigationItemChangeHandler();
+// const mainNavigationComponent =  new MainNavigationView(filmFilters);
+render(mainElement, new MainNavigationView(filmFilters));
+// mainNavigationComponent.setNavigationItemChangeHandler();
 
 const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, commentsModel);
 moviesBlockPresenter.init();

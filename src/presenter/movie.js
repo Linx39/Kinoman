@@ -16,6 +16,7 @@ export default class Movie {
   constructor (filmCardContainer, changeFilm, changeComment, changeMode) {
     this._filmCardContainer = filmCardContainer;
     this._changeFilm = changeFilm;
+    this._changeComment = changeComment;
     this._changeMode = changeMode;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
@@ -28,17 +29,16 @@ export default class Movie {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
+    this._handleCommentDeleteClick = this.this._handleCommentDeleteClick.bind(this);
   }
 
-  init(film, filmsComments) {
+  init(film, filmComments) {
     this._film = film;
-    this._filmComments = filmsComments
-      .slice()
-      .filter((comment) => film.comments.some((id) => id === comment.id));
+    this._filmComments = filmComments;
+
     const prevFilmCardComponent = this._filmCardComponent;
 
     this._filmCardComponent = new FilmCardView(film);
-
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
@@ -53,10 +53,11 @@ export default class Movie {
     remove(prevFilmCardComponent);
 
     if (this._mode === Mode.DETAILS) {
-      const prevFilmDetailsTopComponent = this._filmDetailsTopComponent;
-      this._initFilmDetailsTop();
-      replace(this._filmDetailsTopComponent, prevFilmDetailsTopComponent);
-      remove(prevFilmDetailsTopComponent);
+      const prevFilmDetailsComponent = this._filmDetailsComponent;
+      this._initFilmDetails();
+      this._renderFilmDetails();
+      replace(this._filmDetailsComponent, prevFilmDetailsComponent);
+      remove(prevFilmDetailsComponent);
     }
   }
 
@@ -70,7 +71,6 @@ export default class Movie {
 
   _initFilmDetailsTop() {
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-
     this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
     this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
@@ -79,7 +79,6 @@ export default class Movie {
 
   _initFilmDetailsBottom() {
     this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
-
     this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
   }
 
@@ -131,15 +130,15 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeFilm(
-      UserAction.UPDATE,
+      UserAction.EDIT,
       UpdateType.PATCH,
-      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),//в демонстрвции куда то делся апдейт из обджект ассайн - 3й параметр
+      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
     );
   }
 
   _handleWatchedClick() {
     this._changeFilm(
-      UserAction.UPDATE,
+      UserAction.EDIT,
       UpdateType.PATCH,
       Object.assign({}, this._film, {watched: !this._film.watched}),
     );
@@ -147,7 +146,7 @@ export default class Movie {
 
   _handleFavoriteClick() {
     this._changeFilm(
-      UserAction.UPDATE,
+      UserAction.EDIT,
       UpdateType.PATCH,
       Object.assign({}, this._film, {favorite: !this._film.favorite}),
     );
@@ -157,7 +156,17 @@ export default class Movie {
     this._closeFilmDetails();
   }
 
-  _handleCommentDeleteClick() {
-    console.log ('yes!!!');
+  _handleCommentDeleteClick(comment) {
+    this._changeFilm(
+      UserAction.EDIT,
+      UpdateType.MINOR,
+      comment,
+    );
+
+    this._changeComment(
+      UserAction.DELETE,
+      UpdateType.MINOR,
+      comment,
+    );
   }
 }

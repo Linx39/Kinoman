@@ -1,10 +1,9 @@
 import AbstractView from './abstract.js';
-import { addClassName } from '../utils/film.js';
 import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
 
 const DESCRIPTON_LENGTH = 139;
 
-const controlActiveClass = 'film-card__controls-item--active';
+const CONTROL_ACTIVE_CLASS = 'film-card__controls-item--active';
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -23,15 +22,11 @@ const createFilmCardTemplate = (film) => {
 
   const filmReleaseDate = formatDate(releaseDate, DateFormats.ONLY_YEAR);
   const filmRuntime = convertTimeToHoursAndMinutes(runtime);
-  const descriptionText = description.length < DESCRIPTON_LENGTH
-    ? description
-    : `${description.slice(0, DESCRIPTON_LENGTH)}...`;
-
+  const descriptionText = description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH)}...`;
   const commentsCount = comments.length;
-
-  const watchlistClassName = addClassName(watchlist, controlActiveClass);
-  const watchedClassName = addClassName(watched, controlActiveClass);
-  const favoriteClassName = addClassName(favorite, controlActiveClass);
+  const watchlistClassName = watchlist? CONTROL_ACTIVE_CLASS : '';
+  const watchedClassName = watched? CONTROL_ACTIVE_CLASS : '';
+  const favoriteClassName = favorite? CONTROL_ACTIVE_CLASS : '';
 
   return (
     `<article class="film-card">
