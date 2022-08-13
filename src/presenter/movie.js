@@ -23,7 +23,6 @@ export default class Movie {
     this._filmComments = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
-    // this._mode = Mode.CARD;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -38,21 +37,13 @@ export default class Movie {
     this._film = film;
     this._filmComments = filmComments;
 
-    // const prevFilmCardComponent = this._filmCardComponent;
-
     this._filmCardComponent = new FilmCardView(this._film);
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    // if (prevFilmCardComponent === null) {
-      render(this._filmCardContainer, this._filmCardComponent);
-    //   return;
-    // }
-
-    // replace(this._filmCardComponent, prevFilmCardComponent);
-    // remove(prevFilmCardComponent);
+    render(this._filmCardContainer, this._filmCardComponent);
   }
 
   initFilmDetails(film, filmComments) {
@@ -87,18 +78,7 @@ export default class Movie {
     render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
   }
 
-  // resetFilmDetailsView() {
-    // if (this._mode !== Mode.CARD) {
-      // this.closeFilmDetails();
-    // }
-  // }
-
-  destroy() {
-    // this.resetFilmDetailsView();
-    // if (this._filmDetailsComponent !== null) {
-    //   remove(this._filmDetailsComponent);
-    // }
-
+  destroyFilmCard() {
     remove(this._filmCardComponent);
   }
 
@@ -107,16 +87,11 @@ export default class Movie {
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     remove(this._filmDetailsComponent);
-    // this._mode = Mode.CARD;
   }
 
   openFilmDetails() {
-    // this._changeMode();
-    // this.initFilmDetails();
-    // this._renderFilmDetails();
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
-    // this._mode = Mode.DETAILS;
   }
 
   _handleEscKeyDown(evt) {
@@ -128,7 +103,6 @@ export default class Movie {
 
   _handleFilmCardClick () {
     this._openPopup(this._film);
-    // this.openFilmDetails();
   }
 
   _handleWatchlistClick() {

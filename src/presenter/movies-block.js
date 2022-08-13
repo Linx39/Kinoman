@@ -43,9 +43,9 @@ export default class MoviesBlock {
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleModeChange = this._handleModeChange.bind(this);
-    this._openPopup = this._openPopup.bind(this);
-    this._closePopup = this._closePopup.bind(this);
+    // this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleOpeningPopup = this._handleOpeningPopup.bind(this);
+    this._handleClosingPopup = this._handleClosingPopup.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
@@ -90,6 +90,7 @@ export default class MoviesBlock {
 
   _renderFilms() {
     render(this._moviesBlockContainer, this._filmsComponent);
+
     render(this._filmsComponent, this._filmsListAllComponent);
     render(this._filmsListAllComponent, this._filmListAllContainer);
 
@@ -102,7 +103,7 @@ export default class MoviesBlock {
 
   _renderCard(container, film) {
     const filmComments = this._getComments(film);
-    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._openPopup, this._closePopup);
+    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
 
     moviePresenter.initFilmCard(film, filmComments);
 
@@ -163,7 +164,6 @@ export default class MoviesBlock {
     this._renderCards(this._filmListAllContainer, films);
 
     this._renderedCardsCount = newRenderedCardsCount;
-
     if (this._renderedCardsCount >= filmsCount) {
       remove(this._showMoreButtonComponent);
     }
@@ -181,44 +181,30 @@ export default class MoviesBlock {
     this._renderFilmsListTopRated();
     this._renderFilmsListMostCommented();
 
-    const popupFilm = this._getFilms().find((film) => film.id === this._popupFilmId);
-
     if (this._popupMoviePresenter !== null) {
-      this._openPopup(popupFilm);
+      const popupFilm = this._getFilms().find((film) => film.id === this._popupFilmId);
+      this._handleOpeningPopup(popupFilm);
     }
   }
 
-  _clearFilmsListAll() {//объединить эти 3 функции
+  _clearFilmsLists() {
     Object
-      .values(this._moviePresentersStorage.all)
-      .forEach((presenter) => presenter.destroy());
+      .keys(this._moviePresentersStorage)
+      .forEach((key) => Object
+        .values(this._moviePresentersStorage[key])
+        .forEach((presenter) => presenter.destroyFilmCard()));
 
-    this._moviePresentersStorage.all = {};
-  }
-
-  _clearFilmsListTopRated() {
-    Object
-      .values(this._moviePresentersStorage.topRated)
-      .forEach((presenter) => presenter.destroy());
-
-    this._moviePresentersStorage.topRated = {};
-  }
-
-  _clearFilmsListMostCommented() {
-    Object
-      .values(this._moviePresentersStorage.mostCommented)
-      .forEach((presenter) => presenter.destroy());
-
-    this._moviePresentersStorage.mostCommented = {};
+    this._moviePresentersStorage = {
+      all: {},
+      topRated: {},
+      mostCommented: {},
+    };
   }
 
   _clearMoviesBlock({resetRenderedCardsCount = false, resetSortType = false} = {}) {
     const filmsCount = this._getFilms().length;
 
-    this._clearFilmsListAll();
-    this._clearFilmsListTopRated();
-    this._clearFilmsListMostCommented();
-
+    this._clearFilmsLists();
     remove(this._sortComponent);
     remove(this._noMoviesComponent);
     remove(this._showMoreButtonComponent);
@@ -243,22 +229,18 @@ export default class MoviesBlock {
     }
 
     this._currentSortType = sortType;
-    // this._clearFilmsListAll();
-    // this._renderFilmsListAll();
     this._clearMoviesBlock({resetRenderedCardsCount: true});
     this._renderMoviesBlock();
   }
 
   _initFilmDetails () {
-    const filmComments = this._getComments(this._popupFilm);
-    const container = null;
-    this._popupMoviePresenter = new MoviePresenter(container, this._handleViewAction, this._openPopup, this._closePopup);
-    this._popupMoviePresenter.initFilmDetails(this._popupFilm, filmComments);
+    this._popupMoviePresenter = new MoviePresenter(null, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
   }
 
-  _openPopup(film) {
-    this._popupFilmId = film.id;
-    this._popupFilm = film;
+  _handleOpeningPopup(popupFilm) {
+    this._popupFilmId = popupFilm.id;
+    this._popupFilm = popupFilm;
     if (this._popupMoviePresenter !== null) {
       this._popupMoviePresenter.closeFilmDetails();
     }
@@ -266,13 +248,8 @@ export default class MoviesBlock {
     this._popupMoviePresenter.openFilmDetails();
   }
 
-  _closePopup() {
-    // this._moviePresenterPopup.closeFilmDetails();
+  _handleClosingPopup() {
     this._popupMoviePresenter = null;
-  }
-
-  _changeMode() {
-
   }
 
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
@@ -315,14 +292,6 @@ export default class MoviesBlock {
         this._renderMoviesBlock();
         break;
     }
-  }
-
-  _handleModeChange() {
-    // Object
-    //   .keys(this._moviePresentersStorage)
-    //   .forEach((key) => Object
-    //     .values(this._moviePresentersStorage[key])
-    //     .forEach((presenter) => presenter.resetFilmDetailsView()));
   }
 }
 
