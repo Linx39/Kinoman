@@ -4,26 +4,26 @@ import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
-import { render, remove, close, open } from '../utils/render.js';
+import { render, remove, close, open, replace } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
 
-// const Mode = {
-//   CARD: 'CARD',
-//   DETAILS: 'DETAILS',
-// };
+const Mode = {
+  CARD: 'CARD',
+  DETAILS: 'DETAILS',
+};
 
 export default class Movie {
-  constructor (filmCardContainer, changeData, openPopup, closePopup) {
+  constructor (filmCardContainer, changeData, changeMode, getFilmId) {
     this._filmCardContainer = filmCardContainer;
     this._changeData = changeData;
-    this._openPopup = openPopup;
-    this._closePopup = closePopup;
 
-    this._film = null;
-    this._filmComments = null;
+    this._changeMode = changeMode;
+    this._getFilmId = getFilmId;
+
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
-    // this._mode = Mode.CARD;
+    this._filmDetailsTopComponent = null;
+    this._mode = Mode.CARD;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -34,38 +34,41 @@ export default class Movie {
     this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
   }
 
-  initFilmCard(film, filmComments) {
+  init(film, filmComments) {
     this._film = film;
     this._filmComments = filmComments;
 
-    // const prevFilmCardComponent = this._filmCardComponent;
+    const prevFilmCardComponent = this._filmCardComponent;
 
-    this._filmCardComponent = new FilmCardView(this._film);
+    this._filmCardComponent = new FilmCardView(film);
     this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    // if (prevFilmCardComponent === null) {
+    if (prevFilmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
-    //   return;
-    // }
+      return;
+    }
 
-    // replace(this._filmCardComponent, prevFilmCardComponent);
-    // remove(prevFilmCardComponent);
+    replace(this._filmCardComponent, prevFilmCardComponent);
+    remove(prevFilmCardComponent);
+
+    if (this._mode === Mode.DETAILS) {
+      const prevFilmDetailsComponent = this._filmDetailsComponent;
+      this._initFilmDetails();
+      this._renderFilmDetails();
+      replace(this._filmDetailsComponent, prevFilmDetailsComponent);
+      remove(prevFilmDetailsComponent);
+    }
   }
 
-  initFilmDetails(film, filmComments) {
-    this._film = film;
-    this._filmComments = filmComments;
-
+  _initFilmDetails() {
     this._filmDetailsComponent = new FilmDetailsView();
     this._filmDetailsFormComponent = new FilmDetailsFormView();
 
     this._initFilmDetailsTop();
     this._initFilmDetailsBottom();
-
-    this._renderFilmDetails();
   }
 
   _initFilmDetailsTop() {
@@ -87,54 +90,53 @@ export default class Movie {
     render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
   }
 
-  // resetFilmDetailsView() {
-    // if (this._mode !== Mode.CARD) {
-      // this.closeFilmDetails();
-    // }
-  // }
+  resetFilmDetailsView() {
+    if (this._mode !== Mode.CARD) {
+      this._closeFilmDetails();
+    }
+  }
 
   destroy() {
-    // this.resetFilmDetailsView();
-    // if (this._filmDetailsComponent !== null) {
-    //   remove(this._filmDetailsComponent);
-    // }
+    
+    this.resetFilmDetailsView();
+    if (this._filmDetailsComponent !== null) {
+      remove(this._filmDetailsComponent);
+    }
 
     remove(this._filmCardComponent);
   }
 
-  closeFilmDetails() {
-    this._closePopup();
+  _closeFilmDetails() {
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
-    remove(this._filmDetailsComponent);
-    // this._mode = Mode.CARD;
+    this._mode = Mode.CARD;
   }
 
-  openFilmDetails() {
-    // this._changeMode();
-    // this.initFilmDetails();
-    // this._renderFilmDetails();
+  _openFilmDetails() {
+    this._changeMode();
+    this._initFilmDetails();
+    this._renderFilmDetails();
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
-    // this._mode = Mode.DETAILS;
+    this._mode = Mode.DETAILS;
   }
 
   _handleEscKeyDown(evt) {
     if (isEscEvent(evt)) {
       evt.preventDefault();
-      this.closeFilmDetails();
+      this._closeFilmDetails();
     }
   }
 
   _handleFilmCardClick () {
-    this._openPopup(this._film);
-    // this.openFilmDetails();
+    this._getFilmId(this._film);
+    this._openFilmDetails();
   }
 
   _handleWatchlistClick() {
     this._changeData(
       UserAction.EDITFILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
     );
   }
@@ -142,7 +144,7 @@ export default class Movie {
   _handleWatchedClick() {
     this._changeData(
       UserAction.EDITFILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign({}, this._film, {watched: !this._film.watched}),
     );
   }
@@ -150,7 +152,7 @@ export default class Movie {
   _handleFavoriteClick() {
     this._changeData(
       UserAction.EDITFILM,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       Object.assign({}, this._film, {favorite: !this._film.favorite}),
     );
   }
@@ -165,6 +167,6 @@ export default class Movie {
   }
 
   _handleButtonCloseClick() {
-    this.closeFilmDetails();
+    this._closeFilmDetails();
   }
 }

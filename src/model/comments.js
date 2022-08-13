@@ -14,31 +14,29 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  editComment() {
-    throw new Error('Sorry... This action is not available');
-  }
-
-  addComment(updateType, update) {
+  // addComment(updateType, update) {
+  addComment(update) {
     this._comments = [
       update,
       ...this._comments,
     ];
 
-    this._notify(updateType, update);
+    // this._notify(updateType, update);
   }
 
-  deleteComment(updateType, update) {
-    const index = this._comments.findIndex((task) => task.id === update.id);
+  // deleteComment(updateType, update) {
+  deleteComment(update) {
+    const index = this._comments.findIndex((comment) => comment.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
+      throw new Error('Can\'t delete unexisting comment');
     }
 
-    this._tasks = [
+    this._comment = [
       ...this._comments.slice(0, index),
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(updateType);
+    // this._notify(updateType);
   }
 }

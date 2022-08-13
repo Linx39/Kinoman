@@ -27,9 +27,10 @@ export default class MoviesBlock {
       mostCommented: {},
     };
     this._currentSortType = SortType.DEFAULT;
-
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
+    this._popupFilm = null;
+    this._popupMoviePresenter = null;
 
     this._noMoviesComponent = new NoMoviesView();
     this._filmsComponent = new FilmsView();
@@ -40,16 +41,15 @@ export default class MoviesBlock {
     this._filmListTopRatedContainer = new FilmsListContainerView();
     this._filmListMostCommentedContainer = new FilmsListContainerView();
 
-    this._handleViewTopAction = this._handleViewTopAction.bind(this);
-    this._handleViewBottomAction = this._handleViewBottomAction.bind(this);
-    this._handleFilmsModelEvent = this._handleFilmsModelEvent.bind(this);
-    this._handleCommentsModelEvent = this._handleCommentsModelEvent.bind(this);
+    this._handleViewAction = this._handleViewAction.bind(this);
+    this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleModeChange = this._handleModeChange.bind(this);
+    this._openPopup = this._openPopup.bind(this);
+    this._closePopup = this._closePopup.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._filmsModel.addObserver(this._handleFilmsModelEvent);
-    this._commentsModel.addObserver(this._handleCommentsModelEvent);
+    this._filmsModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -101,9 +101,10 @@ export default class MoviesBlock {
   }
 
   _renderCard(container, film) {
-    const moviePresenter = new MoviePresenter(container, this._handleViewTopAction,  this._handleViewBottomAction, this._handleModeChange);
     const filmComments = this._getComments(film);
-    moviePresenter.init(film, filmComments);
+    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._openPopup, this._closePopup);
+
+    moviePresenter.initFilmCard(film, filmComments);
 
     switch (container) {
       case this._filmListAllContainer:
@@ -122,7 +123,7 @@ export default class MoviesBlock {
     films.forEach((film) => this._renderCard(container, film));
   }
 
-  _renderFilmsListAll() {//новый метод
+  _renderFilmsListAll() {
     const films = this._getFilms();
     const filmsCount = films.length;
 
@@ -179,9 +180,15 @@ export default class MoviesBlock {
     this._renderFilmsListAll();
     this._renderFilmsListTopRated();
     this._renderFilmsListMostCommented();
+
+    const popupFilm = this._getFilms().find((film) => film.id === this._popupFilmId);
+
+    if (this._popupMoviePresenter !== null) {
+      this._openPopup(popupFilm);
+    }
   }
 
-  _clearFilmsListAll() {
+  _clearFilmsListAll() {//объединить эти 3 функции
     Object
       .values(this._moviePresentersStorage.all)
       .forEach((presenter) => presenter.destroy());
@@ -189,7 +196,7 @@ export default class MoviesBlock {
     this._moviePresentersStorage.all = {};
   }
 
-  _clearFilmsListTopRated() {//нигде не используется
+  _clearFilmsListTopRated() {
     Object
       .values(this._moviePresentersStorage.topRated)
       .forEach((presenter) => presenter.destroy());
@@ -197,7 +204,7 @@ export default class MoviesBlock {
     this._moviePresentersStorage.topRated = {};
   }
 
-  _clearFilmsListMostCommented() {//нигде не используется
+  _clearFilmsListMostCommented() {
     Object
       .values(this._moviePresentersStorage.mostCommented)
       .forEach((presenter) => presenter.destroy());
@@ -242,35 +249,49 @@ export default class MoviesBlock {
     this._renderMoviesBlock();
   }
 
-  _handleViewTopAction(actionType, updateType, update) {
+  _initFilmDetails () {
+    const filmComments = this._getComments(this._popupFilm);
+    const container = null;
+    this._popupMoviePresenter = new MoviePresenter(container, this._handleViewAction, this._openPopup, this._closePopup);
+    this._popupMoviePresenter.initFilmDetails(this._popupFilm, filmComments);
+  }
+
+  _openPopup(film) {
+    this._popupFilmId = film.id;
+    this._popupFilm = film;
+    if (this._popupMoviePresenter !== null) {
+      this._popupMoviePresenter.closeFilmDetails();
+    }
+    this._initFilmDetails();
+    this._popupMoviePresenter.openFilmDetails();
+  }
+
+  _closePopup() {
+    // this._moviePresenterPopup.closeFilmDetails();
+    this._popupMoviePresenter = null;
+  }
+
+  _changeMode() {
+
+  }
+
+  _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
-      case UserAction.EDIT:
-        this._filmsModel.editFilm(updateType, update);
+      case UserAction.EDITFILM:
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
-      case UserAction.ADD:
-        this._filmsModel.addFilm();
+      case UserAction.ADDCOMMENT:
+        this._commentsModel.addComment(updateComment);
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
-      case UserAction.DELETE:
-        this._filmsModel.deleteFilm();
+      case UserAction.DELETECOMMENT:
+        this._commentsModel.deleteComment(updateComment);
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
     }
   }
 
-  _handleViewBottomAction(actionType, updateType, update) {
-    switch (actionType) {
-      case UserAction.EDIT:
-        this._commentsModel.editComment();
-        break;
-      case UserAction.ADD:
-        this._commentsModel.addComment(updateType, update);
-        break;
-      case UserAction.DELETE:
-        this._commentsModel.deleteComment(updateType, update);
-        break;
-    }
-  }
-
-  _handleFilmsModelEvent(updateType, film) {
+  _handleModelEvent(updateType, film) {
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
@@ -279,7 +300,7 @@ export default class MoviesBlock {
           .forEach((key) => {
             const storage = this._moviePresentersStorage[key];
             if (storage[film.id]) {
-              storage[film.id].init(film, this._getComments(film));
+              storage[film.id].initFilmCard(film, this._getComments(film));
             }
           });
         break;
@@ -296,27 +317,12 @@ export default class MoviesBlock {
     }
   }
 
-  _handleCommentsModelEvent(updateType, data) {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
-
-        break;
-      case UpdateType.MINOR:
-        // - обновить список (например, когда задача ушла в архив)
-        break;
-      case UpdateType.MAJOR:
-        // - обновить всю доску (например, при переключении фильтра)
-        break;
-    }
-  }
-
   _handleModeChange() {
-    Object
-      .keys(this._moviePresentersStorage)
-      .forEach((key) => Object
-        .values(this._moviePresentersStorage[key])
-        .forEach((presenter) => presenter.resetFilmDetailsView()));
+    // Object
+    //   .keys(this._moviePresentersStorage)
+    //   .forEach((key) => Object
+    //     .values(this._moviePresentersStorage[key])
+    //     .forEach((presenter) => presenter.resetFilmDetailsView()));
   }
 }
 

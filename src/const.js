@@ -8,9 +8,9 @@ export const SortType = {
 };
 
 export const UserAction = {
-  ADD: 'ADD',
-  DELETE: 'DELETE',
-  EDIT: 'EDIT',
+  ADDCOMMENT: 'ADDCOMMENT',
+  DELETECOMMENT: 'DELETECOMMENT',
+  EDITFILM: 'EDITFILM',
 };
 
 export const UpdateType = {
