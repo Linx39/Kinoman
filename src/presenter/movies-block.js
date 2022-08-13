@@ -43,7 +43,7 @@ export default class MoviesBlock {
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    // this._handleModeChange = this._handleModeChange.bind(this);
+    this._handleModePopup = this._handleModePopup.bind(this);
     this._handleOpeningPopup = this._handleOpeningPopup.bind(this);
     this._handleClosingPopup = this._handleClosingPopup.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
@@ -103,7 +103,7 @@ export default class MoviesBlock {
 
   _renderCard(container, film) {
     const filmComments = this._getComments(film);
-    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._handleModePopup);
 
     moviePresenter.initFilmCard(film, filmComments);
 
@@ -182,8 +182,8 @@ export default class MoviesBlock {
     this._renderFilmsListMostCommented();
 
     if (this._popupMoviePresenter !== null) {
-      const popupFilm = this._getFilms().find((film) => film.id === this._popupFilmId);
-      this._handleOpeningPopup(popupFilm);
+      this._popupFilm = this._getFilms().find((film) => film.id === this._popupFilmId);
+      this._handleOpeningPopup();
     }
   }
 
@@ -234,13 +234,13 @@ export default class MoviesBlock {
   }
 
   _initFilmDetails () {
-    this._popupMoviePresenter = new MoviePresenter(null, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    this._popupMoviePresenter = new MoviePresenter(null, this._handleViewAction, this._handleModePopup);
     this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
   }
 
-  _handleOpeningPopup(popupFilm) {
-    this._popupFilmId = popupFilm.id;
-    this._popupFilm = popupFilm;
+  _handleOpeningPopup() {
+    // this._popupFilmId = popupFilm.id;
+    // this._popupFilm = popupFilm;
     if (this._popupMoviePresenter !== null) {
       this._popupMoviePresenter.closeFilmDetails();
     }
@@ -250,6 +250,16 @@ export default class MoviesBlock {
 
   _handleClosingPopup() {
     this._popupMoviePresenter = null;
+  }
+
+  _handleModePopup(popupFilm) {
+    if (popupFilm === null) {
+      this._popupMoviePresenter = null;
+      return;
+    }
+    this._popupFilmId = popupFilm.id;
+    this._popupFilm = popupFilm;
+    this._handleOpeningPopup();
   }
 
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {

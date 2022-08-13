@@ -13,11 +13,12 @@ import { UserAction, UpdateType } from '../const.js';
 // };
 
 export default class Movie {
-  constructor (filmCardContainer, changeData, openPopup, closePopup) {
+  constructor (filmCardContainer, changeData, modePopup) {
     this._filmCardContainer = filmCardContainer;
     this._changeData = changeData;
-    this._openPopup = openPopup;
-    this._closePopup = closePopup;
+    // this._openPopup = openPopup;
+    // this._closePopup = closePopup;
+    this._modePopup = modePopup;
 
     this._film = null;
     this._filmComments = null;
@@ -83,7 +84,7 @@ export default class Movie {
   }
 
   closeFilmDetails() {
-    this._closePopup();
+    this._modePopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     remove(this._filmDetailsComponent);
@@ -102,7 +103,7 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
-    this._openPopup(this._film);
+    this._modePopup(this._film);
   }
 
   _handleWatchlistClick() {
