@@ -1,37 +1,42 @@
 import SmartView from './smart.js';
 import { convertDateToHumanFormat } from '../utils/common.js';
 
-const createCommentTemplate = (filmComment) => {
-  const {id, author, comment, date, emotion } = filmComment;
-  const dateTemplate = convertDateToHumanFormat(date);
+const createFilmDetailsTemplate = (filmComments) => {
 
-  return (
-    `<li class="film-details__comment">
-      <span class="film-details__comment-emoji">
-        <img src="${emotion}" width="55" height="55" alt="emoji-smile">
-      </span>
-      <div>
-        <p class="film-details__comment-text">${comment}</p>
-        <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${dateTemplate}</span>
-          <button class="film-details__comment-delete" data-id = "${id}">Delete</button>
-        </p>
-      </div>
-    </li>`);
-};
+  const createCommentTemplate = (filmComment) => {
+    const {id, author, comment, date, emotion, isNewComment} = filmComment;
+    if(isNewComment) {
+      return;
+    }
+    const dateTemplate = convertDateToHumanFormat(date);
 
-const createCommentsTemplate = (filmComments) => Object.values(filmComments)
-  .map((filmComment) => createCommentTemplate(filmComment))
-  .join('');
+    return (
+      `<li class="film-details__comment">
+        <span class="film-details__comment-emoji">
+          <img src="${emotion}" width="55" height="55" alt="emoji-smile">
+        </span>
+        <div>
+          <p class="film-details__comment-text">${comment}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${dateTemplate}</span>
+            <button class="film-details__comment-delete" data-id = "${id}">Delete</button>
+          </p>
+        </div>
+      </li>`);
+  };
 
-const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion, imgAlt} = newComment;
-  const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
-  const commentTemplate = comment !== null? comment : '';
+  const createCommentsTemplate = () => Object.values(filmComments)
+    .map((filmComment) => createCommentTemplate(filmComment))
+    .join('');
 
-  return (
-    `<div class="film-details__new-comment">
+  const createNewCommentTemplate = () => {
+    const {comment, emotion, imgAlt} = filmComments.newComment;
+    const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
+    const commentTemplate = comment !== null? comment : '';
+
+    return (
+      `<div class="film-details__new-comment">
         <div class="film-details__add-emoji-label">
           ${emotiomTemplate}
         </div>
@@ -57,12 +62,11 @@ const createNewCommentTemplate = (newComment) => {
           </label>
         </div>
       </div>`);
-};
+  };
 
-const createFilmDetailsTemplate = (filmComments, newComment) => {
-  const commentsTemplate = createCommentsTemplate(filmComments);
-  const newCommentsTemplate = createNewCommentTemplate(newComment);
-  const commentsCount = filmComments.length;
+  const commentsTemplate = createCommentsTemplate();
+  const newCommentsTemplate = createNewCommentTemplate();
+  const commentsCount = Object.keys(filmComments).length - 1;
 
   return (
     `<div class="film-details__bottom-container">
@@ -79,16 +83,7 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 export default class FilmDetailsBottom extends SmartView {
   constructor(filmComments) {
     super();
-    this._filmComments = filmComments;
-
-    this._newComment = {
-      id: null,
-      author: null,
-      comment: null,
-      date: null,
-      emotion: null,
-      imgAlt: null,
-    },
+    this._state = FilmDetailsBottom.parseDataToState(filmComments);
 
     this._emojiListHandler = this._emojiListHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
@@ -98,7 +93,7 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._filmComments, this._newComment);
+    return createFilmDetailsTemplate(this._state);
   }
 
   _emojiListHandler(evt) {
@@ -107,8 +102,8 @@ export default class FilmDetailsBottom extends SmartView {
     }
     evt.preventDefault();
 
-    this._newComment = {...this._newComment, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
-    this.updateState(this._newComment);
+    const newComment = {...this._state.newComment, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
+    this.updateState({newComment});
 
     for (const input of evt.currentTarget.querySelectorAll('input')) {
       input.checked = false;
@@ -120,11 +115,11 @@ export default class FilmDetailsBottom extends SmartView {
   _commentInputHandler(evt) {
     evt.preventDefault();
 
-    this._newComment = {
-      ...this._newComment,
+    const newComment = {
+      ...this._state.newComment,
       comment: evt.target.value,
     };
-    this.updateState(this._newComment, true);
+    this.updateState({newComment}, true);
 
   }
 
@@ -133,7 +128,7 @@ export default class FilmDetailsBottom extends SmartView {
       return;
     }
     evt.preventDefault();
-
+console.log (evt.target.dataset.id);
     this._callback.commentDeleteClick(evt.target.dataset.id);
   }
 
@@ -150,5 +145,37 @@ export default class FilmDetailsBottom extends SmartView {
   setCommentDeleteClickHandler(callback) {
     this._callback.commentDeleteClick = callback;
     this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  static parseDataToState(data) {
+    data = data.map((comment) => ({...comment, isNewComment: false}));
+
+    data = Object.assign(
+      {},
+      data,
+      {
+        newComment: {
+          id: null,
+          author: null,
+          comment: null,
+          date: null,
+          emotion: null,
+          imgAlt: null,
+          isNewComment: true,
+        },
+      },
+    );
+
+    return data;
+  }
+
+  static parseStateToData(state) {
+    delete state.newComment;
+    // state = Object.assign(
+    //   {},
+    //   state,
+    //   {},
+    // );
+    return state;
   }
 }
