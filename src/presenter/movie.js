@@ -110,7 +110,8 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
+      // Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
+      {...this._film, watchlist: !this._film.watchlist},
     );
   }
 
@@ -119,6 +120,7 @@ export default class Movie {
       UserAction.EDITFILM,
       UpdateType.MINOR,
       Object.assign({}, this._film, {watched: !this._film.watched}),
+      {...this._film, watched: !this._film.watched},
     );
   }
 
@@ -126,14 +128,22 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, {favorite: !this._film.favorite}),
+      // Object.assign({}, this._film, {favorite: !this._film.favorite}),
+      {...this._film, favorite: !this._film.favorite},
     );
   }
 
   _handleCommentDeleteClick(commentId) {
+    const index = this._film.comments.findIndex((id) => id === commentId);
+    this._film.comments = [
+      ...this._film.comments.slice(0, index),
+      ...this._film.comments.slice(index + 1),
+    ];
+
     this._changeData(
       UserAction.DELETECOMMENT,
       UpdateType.MINOR,
+      this._film,
       commentId,
     );
   }

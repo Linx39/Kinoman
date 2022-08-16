@@ -1,27 +1,26 @@
 import AbstractView from './abstract.js';
+import { FilterType } from '../const.js';
 
 const classMainNavigationItemActive = 'main-navigation__item--active';
 
-const createMainNavigationItemTemplate = (item) => {
-  const {name, count} = item;
-  const capitalizedName = name.slice(0, 1).toUpperCase() + name.slice(1);
+const createMainNavigationItemTemplate = (item, currentFilterType) => {
+  const {type, name, count} = item;
 
   return (
-    `<a href="#${name}" class="main-navigation__item">${capitalizedName} 
-      <span class="main-navigation__item-count">${count}</span>
+    `<a href="#${type}" class="main-navigation__item ${type === currentFilterType ? classMainNavigationItemActive : ''}" data-type = ${type}>${name}
+      ${type !== FilterType.ALL? `<span class="main-navigation__item-count">${count}</span>` : ''}
     </a>`);
 };
 
-const createMainNavigationTemplate = (filters) => {
+const createMainNavigationTemplate = (filters, currentFilterType) => {
   const mainNavigationItemsTemplate = filters
-    .map((filter) => createMainNavigationItemTemplate(filter))
-    .slice(1)
+    .map((filter) => createMainNavigationItemTemplate(filter, currentFilterType))
+    .slice()
     .join('');
 
   return (
     `<nav class="main-navigation">
       <div class="main-navigation__items">
-        <a href="#all" class="main-navigation__item ${classMainNavigationItemActive}">All movies</a>
         ${mainNavigationItemsTemplate}
       </div>
       
@@ -30,30 +29,25 @@ const createMainNavigationTemplate = (filters) => {
 };
 
 export default class MainNavigation extends AbstractView {
-  constructor(filters) {
+  constructor(filters, currentFilter) {
     super();
     this._filters = filters;
+    this._currentFilter = currentFilter;
 
     this._navigationItemChangeHandler = this._navigationItemChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createMainNavigationTemplate(this._filters);
+    return createMainNavigationTemplate(this._filters, this._currentFilter);
   }
 
   _navigationItemChangeHandler(evt) {
     if (evt.target.tagName !== 'A') {
       return;
     }
-
     evt.preventDefault();
 
-    for (const item of evt.currentTarget.children) {
-      item.classList.remove(classMainNavigationItemActive);
-    }
-    evt.target.classList.add(classMainNavigationItemActive);
-
-    // this._callback.navigationItemChange(evt.target.dataset.sortType);
+    this._callback.navigationItemChange(evt.target.dataset.type);
   }
 
   setNavigationItemChangeHandler(callback) {

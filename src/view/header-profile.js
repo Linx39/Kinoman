@@ -1,6 +1,5 @@
 import AbstractView from './abstract.js';
-
-const FILTER_NAME = 'history';
+import { FilterType } from '../const.js';
 
 const ProfileRatingName = [
   {watchedFilmsCountMin: 1, ratingName: 'Novice'},
@@ -9,36 +8,32 @@ const ProfileRatingName = [
 ];
 
 const getProfileRating = (filmsCount) => ProfileRatingName
+  .slice()
   .reverse()
   .find((profile) => filmsCount >= profile.watchedFilmsCountMin)
   .ratingName;
 
+const createHeaderProfileTemplate = (filmsCount) => {
+  // const filmsCount = filter[FilterType.ALL](films).length;
 
-const createHeaderProfileTemplate = (filters) => {
-  const filmsCount = filters.find((filter) => filter.name === FILTER_NAME).count;
-
-  const profileRatingTemplate = filmsCount > 0
-    ? `<p class="profile__rating">${getProfileRating(filmsCount)}</p>`
-    : '';
-
-  const profileAvatarTemplate = filmsCount > 0
-    ? '<img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35"></img>'
+  const profileTemplate = filmsCount > 0
+    ? `<p class="profile__rating">${getProfileRating(filmsCount)}</p>
+      <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35"></img>`
     : '';
 
   return (
     `<section class="header__profile profile">
-      ${profileRatingTemplate}
-      ${profileAvatarTemplate}
+      ${profileTemplate}
     </section>`);
 };
 
 export default class HeaderProfile extends AbstractView {
-  constructor(filters) {
+  constructor(filmsCount) {
     super();
-    this._filters = filters;
+    this._filmsCount = filmsCount;
   }
 
   getTemplate() {
-    return createHeaderProfileTemplate(this._filters);
+    return createHeaderProfileTemplate(this._filmsCount);
   }
 }

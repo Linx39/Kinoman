@@ -1,5 +1,5 @@
-export const FILMS_COUNT = 18;
-export const COMMENTS_COUNT = 50;
+export const FILMS_COUNT = 6;
+export const COMMENTS_COUNT = 100;
 
 export const SortType = {
   DEFAULT: 'default',
@@ -17,4 +17,11 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+};
+
+export const FilterType = {
+  ALL: 'all',
+  WATHLIST: 'watchlist',
+  HISTORY: 'watched',
+  FAVORITES: 'favorites',
 };

@@ -10,15 +10,17 @@ import MoviePresenter from './movie';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
 import { SortType, UpdateType, UserAction } from '../const.js';
+import {filter} from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
 const EXTRA_CARD_COUNT = 2;
 
 export default class MoviesBlock {
-  constructor(moviesBlockContainer, filmsModel, commentsModel) {
+  constructor(moviesBlockContainer, filmsModel, commentsModel, filterModel) {
     this._moviesBlockContainer = moviesBlockContainer;
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
+    this._filterModel = filterModel;
 
     this._renderedCardsCount = CARD_COUNT_STEP;
     this._moviePresentersStorage = {
@@ -50,6 +52,7 @@ export default class MoviesBlock {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -57,17 +60,21 @@ export default class MoviesBlock {
   }
 
   _getFilms() {
+    const filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.getFilms().slice(); //в демо проекте здесь нет slice
+    const filtredFilms = filter[filterType](films);
+
     switch (this._currentSortType) {
       case SortType.DATE:
-        return this._filmsModel.getFilms().slice().sort(sortFilmsDate);
+        return filtredFilms.sort(sortFilmsDate);
       case SortType.RAITING:
-        return this._filmsModel.getFilms().slice().sort(sortFilmsRating);
+        return filtredFilms.sort(sortFilmsRating);
     }
 
-    return this._filmsModel.getFilms();
+    return filtredFilms;
   }
 
-  _getComments(film) {
+  _getComments(film = null) {
     if (film === null) {
       return this._commentsModel.getComments();
     }
@@ -140,12 +147,12 @@ export default class MoviesBlock {
   }
 
   _renderFilmsListTopRated() {
-    const films = this._getFilms().slice().sort(sortFilmsRating).slice(0, EXTRA_CARD_COUNT);
+    const films = this._filmsModel.getFilms().slice().sort(sortFilmsRating).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListTopRatedContainer, films);
   }
 
   _renderFilmsListMostCommented() {
-    const films = this._getFilms().slice().sort(sortFilmsComments).slice(0, EXTRA_CARD_COUNT);
+    const films = this._filmsModel.getFilms().slice().sort(sortFilmsComments).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListMostCommentedContainer, films);
   }
 
@@ -265,18 +272,18 @@ export default class MoviesBlock {
     // this._handleOpeningPopup();
   }
 
-  _handleViewAction(actionType, updateType, update) {
+  _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
       case UserAction.EDITFILM:
-        this._filmsModel.editFilm(updateType, update);
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
       case UserAction.ADDCOMMENT:
         // this._commentsModel.addComment(updateComment);
         // this._filmsModel.editFilm(updateType, update);
         break;
       case UserAction.DELETECOMMENT:
-        this._commentsModel.deleteComment(update);
-        this._filmsModel.editFilm(updateType, update);
+        this._commentsModel.deleteComment(updateComment);
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
     }
   }
@@ -297,11 +304,11 @@ export default class MoviesBlock {
       case UpdateType.MINOR:
         // - обновить список (например, когда задача ушла в архив)
         this._clearMoviesBlock();
-        this._renderMoviesBlock();
+        this._renderMoviesBlock({resetRenderedCardsCount: true});
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
-        this._clearMoviesBlock({resetRenderedCardsCount: true, resetSortType: true});
+        this._clearMoviesBlock({resetRenderedCardsCount: true});
         this._renderMoviesBlock();
         break;
     }
