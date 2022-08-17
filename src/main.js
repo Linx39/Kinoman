@@ -5,10 +5,10 @@ import HeaderProfilePresenter from './presenter/header-profile.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
-import { render } from './utils/render.js';
-import { FILMS_COUNT, COMMENTS_COUNT } from './const.js';
-import { generateFilm } from './mock/film';
-import { generateComment } from './mock/comment.js';
+import {render} from './utils/render.js';
+import {FILMS_COUNT, COMMENTS_COUNT} from './const.js';
+import {generateFilm} from './mock/film';
+import {generateComment} from './mock/comment.js';
 
 const filmsComments = new Array(COMMENTS_COUNT).fill().map(generateComment);
 const films = new Array(FILMS_COUNT).fill().map(() => generateFilm(filmsComments));

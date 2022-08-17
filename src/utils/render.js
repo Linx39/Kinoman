@@ -46,15 +46,6 @@ export const remove = (component) => {
   component.removeElement();
 };
 
-export const close = (component) => {
-  if (component instanceof Abstract) {
-    component = component.getElement();
-  }
-
-  bodyElement.removeChild(component);
-  bodyElement.classList.remove(classHideOverflow);
-};
-
 export const open = (component) => {
   if (component instanceof Abstract) {
     component = component.getElement();
@@ -62,6 +53,15 @@ export const open = (component) => {
 
   bodyElement.appendChild(component);
   bodyElement.classList.add(classHideOverflow);
+};
+
+export const close = (component) => {
+  if (component instanceof Abstract) {
+    component = component.getElement();
+  }
+
+  bodyElement.removeChild(component);
+  bodyElement.classList.remove(classHideOverflow);
 };
 
 export const replace = (newChild, oldChild) => {

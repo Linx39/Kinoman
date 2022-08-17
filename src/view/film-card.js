@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
+import {formatDate, DateFormats, convertTimeToHoursAndMinutes} from '../utils/common.js';
 
 const DESCRIPTON_LENGTH = 139;
 
@@ -22,6 +22,7 @@ const createFilmCardTemplate = (film) => {
 
   const filmReleaseDate = formatDate(releaseDate, DateFormats.ONLY_YEAR);
   const filmRuntime = convertTimeToHoursAndMinutes(runtime);
+  const genre = genres[0];
   const descriptionText = description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH)}...`;
   const commentsCount = comments.length;
   const watchlistClassName = watchlist? CONTROL_ACTIVE_CLASS : '';
@@ -36,7 +37,7 @@ const createFilmCardTemplate = (film) => {
       <p class="film-card__info">
         <span class="film-card__year">${filmReleaseDate}</span>
         <span class="film-card__duration">${filmRuntime}</span>
-        <span class="film-card__genre">${genres[0]}</span>
+        <span class="film-card__genre">${genre}</span>
       </p>
 
       <img src="${poster}" alt="" class="film-card__poster">
@@ -58,7 +59,7 @@ export default class FilmCard extends AbstractView {
     super();
     this._film = film;
 
-    this._clickFilmDetailsHandler = this._clickFilmDetailsHandler.bind(this);
+    this._filmDetailsClickHandler = this._filmDetailsClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
@@ -68,7 +69,7 @@ export default class FilmCard extends AbstractView {
     return createFilmCardTemplate(this._film);
   }
 
-  _clickFilmDetailsHandler(evt) {
+  _filmDetailsClickHandler(evt) {
     evt.preventDefault();
     this._callback.click();
   }
@@ -88,11 +89,11 @@ export default class FilmCard extends AbstractView {
     this._callback.favoriteClick();
   }
 
-  setClickFilmDetailsHandler(callback) {
+  setFilmDetailsClickHandler(callback) {
     this._callback.click = callback;
-    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._clickFilmDetailsHandler);
-    this.getElement().querySelector('.film-card__title').addEventListener('click', this._clickFilmDetailsHandler);
-    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._clickFilmDetailsHandler);
+    this.getElement().querySelector('.film-card__poster').addEventListener('click', this._filmDetailsClickHandler);
+    this.getElement().querySelector('.film-card__title').addEventListener('click', this._filmDetailsClickHandler);
+    this.getElement().querySelector('.film-card__comments').addEventListener('click', this._filmDetailsClickHandler);
   }
 
   setWatchlistClickHandler(callback) {

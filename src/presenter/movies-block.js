@@ -86,7 +86,7 @@ export default class MoviesBlock {
   }
 
   _renderNoMovies() {
-    this._noMoviesPresenter = new NoMoviesPresenter(this._moviesBlockContainer, this._filterModel);
+    this._noMoviesPresenter = new NoMoviesPresenter(this._filmsComponent, this._filterModel);
     this._noMoviesPresenter.init();
   }
 
@@ -99,19 +99,6 @@ export default class MoviesBlock {
     this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
 
     render(this._moviesBlockContainer, this._sortComponent);
-  }
-
-  _renderFilms() {
-    render(this._moviesBlockContainer, this._filmsComponent);
-
-    render(this._filmsComponent, this._filmsListAllComponent);
-    render(this._filmsListAllComponent, this._filmListAllContainer);
-
-    render(this._filmsComponent, this._filmsListTopRatedComponent);
-    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
-
-    render(this._filmsComponent, this._filmsListMostCommentedComponent);
-    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
   }
 
   _renderCard(container, film) {
@@ -138,6 +125,9 @@ export default class MoviesBlock {
   }
 
   _renderFilmsListAll() {
+    render(this._filmsComponent, this._filmsListAllComponent);
+    render(this._filmsListAllComponent, this._filmListAllContainer);
+
     const films = this._getFilms();
     const filmsCount = films.length;
 
@@ -149,11 +139,17 @@ export default class MoviesBlock {
   }
 
   _renderFilmsListTopRated() {
+    render(this._filmsComponent, this._filmsListTopRatedComponent);
+    render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
+
     const films = this._filmsModel.getFilms().slice().sort(sortFilmsRating).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListTopRatedContainer, films);
   }
 
   _renderFilmsListMostCommented() {
+    render(this._filmsComponent, this._filmsListMostCommentedComponent);
+    render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
+
     const films = this._filmsModel.getFilms().slice().sort(sortFilmsComments).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListMostCommentedContainer, films);
   }
@@ -182,25 +178,6 @@ export default class MoviesBlock {
     }
   }
 
-  _renderMoviesBlock() {
-    if (this._getFilms().length === 0) {
-      this._renderNoMovies();
-      return;
-    }
-
-    this._renderSort();
-    this._renderFilms();
-    this._renderFilmsListAll();
-    this._renderFilmsListTopRated();
-    this._renderFilmsListMostCommented();
-
-    if (this._popupMoviePresenter !== null) {
-      const popupFilmId = this._popupFilm.id;
-      const popupFilm = this._getFilms().find((film) => film.id === popupFilmId);
-      this._handleOpeningPopup(popupFilm);
-    }
-  }
-
   _clearFilmsLists() {
     Object
       .keys(this._moviePresentersStorage)
@@ -215,13 +192,41 @@ export default class MoviesBlock {
     };
   }
 
+  _renderMoviesBlock() {
+    const filmsCount = this._getFilms().length;
+    const totalFilmsCount = this._filmsModel.getFilms().length;
+
+    if (filmsCount !== 0) {
+      this._renderSort();
+    }
+
+    render(this._moviesBlockContainer, this._filmsComponent);
+
+    if (filmsCount === 0) {
+      this._renderNoMovies();
+    } else {
+      this._renderFilmsListAll();
+    }
+
+    if (totalFilmsCount !== 0) {
+      this._renderFilmsListTopRated();
+      this._renderFilmsListMostCommented();
+    }
+
+    if (this._popupMoviePresenter !== null) {
+      const popupFilmId = this._popupFilm.id;
+      const popupFilm = this._getFilms().find((film) => film.id === popupFilmId);
+      this._handleOpeningPopup(popupFilm);
+    }
+  }
+
   _clearMoviesBlock({resetRenderedCardsCount = false, resetSortType = false} = {}) {
     const filmsCount = this._getFilms().length;
 
-    this._clearFilmsLists();
     remove(this._sortComponent);
-    // remove(this._noMoviesComponent);
+    this._clearFilmsLists();
     remove(this._showMoreButtonComponent);
+    remove(this._filmsComponent);
 
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = CARD_COUNT_STEP;

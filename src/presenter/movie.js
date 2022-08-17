@@ -39,7 +39,7 @@ export default class Movie {
     this._filmComments = filmComments;
 
     this._filmCardComponent = new FilmCardView(this._film);
-    this._filmCardComponent.setClickFilmDetailsHandler(this._handleFilmCardClick);
+    this._filmCardComponent.setFilmDetailsClickHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
@@ -62,7 +62,7 @@ export default class Movie {
 
   _initFilmDetailsTop() {
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsTopComponent.setClickButtonCloseHandler(this._handleButtonCloseClick);
+    this._filmDetailsTopComponent.setButtonCloseClickHandler(this._handleButtonCloseClick);
     this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
