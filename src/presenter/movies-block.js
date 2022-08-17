@@ -1,5 +1,5 @@
 import SortView from '../view/sort';
-import NoMoviesView from '../view/no-movies.js';
+// import NoMoviesView from '../view/no-movies.js';
 import FilmsView from '../view/films.js';
 import FilmsListAllView from '../view/films-list-all.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
@@ -7,9 +7,10 @@ import FilmsListTopRatedView from '../view/films-list-top-rated.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented';
 import FilmsListContainerView from '../view/films-list-container';
 import MoviePresenter from './movie';
-import { render, remove } from '../utils/render.js';
-import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import NoMoviesPresenter from './no-movies.js';
+import {RenderPosition, render, remove} from '../utils/render.js';
+import {sortFilmsDate, sortFilmsRating, sortFilmsComments} from '../utils/film.js';
+import {SortType, UpdateType, UserAction} from '../const.js';
 import {filter} from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
@@ -31,10 +32,10 @@ export default class MoviesBlock {
     this._currentSortType = SortType.DEFAULT;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
+    this._noMoviesPresenter = null;
     this._popupFilm = null;//нужен ли?
     this._popupMoviePresenter = null;
 
-    this._noMoviesComponent = new NoMoviesView();
     this._filmsComponent = new FilmsView();
     this._filmsListAllComponent = new FilmsListAllView();
     this._filmsListTopRatedComponent = new FilmsListTopRatedView();
@@ -85,7 +86,8 @@ export default class MoviesBlock {
   }
 
   _renderNoMovies() {
-    render(this._moviesBlockContainer, new NoMoviesView());
+    this._noMoviesPresenter = new NoMoviesPresenter(this._moviesBlockContainer, this._filterModel);
+    this._noMoviesPresenter.init();
   }
 
   _renderSort() {
@@ -218,7 +220,7 @@ export default class MoviesBlock {
 
     this._clearFilmsLists();
     remove(this._sortComponent);
-    remove(this._noMoviesComponent);
+    // remove(this._noMoviesComponent);
     remove(this._showMoreButtonComponent);
 
     if (resetRenderedCardsCount) {
@@ -278,11 +280,11 @@ export default class MoviesBlock {
         this._filmsModel.editFilm(updateType, updateFilm);
         break;
       case UserAction.ADDCOMMENT:
-        // this._commentsModel.addComment(updateComment);
+        // this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
         // this._filmsModel.editFilm(updateType, update);
         break;
       case UserAction.DELETECOMMENT:
-        this._commentsModel.deleteComment(updateComment);
+        this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
         this._filmsModel.editFilm(updateType, updateFilm);
         break;
     }
@@ -290,6 +292,8 @@ export default class MoviesBlock {
 
   _handleModelEvent(updateType) {
     switch (updateType) {
+      case UpdateType.NOTHING:
+        break;
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
         // Object

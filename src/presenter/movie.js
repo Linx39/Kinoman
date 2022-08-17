@@ -110,7 +110,6 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      // Object.assign({}, this._film, {watchlist: !this._film.watchlist}),
       {...this._film, watchlist: !this._film.watchlist},
     );
   }
@@ -119,7 +118,6 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, {watched: !this._film.watched}),
       {...this._film, watched: !this._film.watched},
     );
   }
@@ -128,7 +126,6 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      // Object.assign({}, this._film, {favorite: !this._film.favorite}),
       {...this._film, favorite: !this._film.favorite},
     );
   }

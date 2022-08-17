@@ -1,5 +1,5 @@
 import MainNavigationView from '../view/main-navigation.js';
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {render, replace, remove} from '../utils/render.js';
 import {filter} from '../utils/filter.js';
 import {FilterType, UpdateType} from '../const.js';
 
@@ -21,12 +21,13 @@ export default class MainNavigation {
   init() {
     const filters = this._getFilters();
     const mainNavigationComponent = this._mainNavigationComponent;
+    const currentFilterType = this._filterModel.getFilter();
 
-    this._mainNavigationComponent = new MainNavigationView(filters, this._filterModel.getFilter());
+    this._mainNavigationComponent = new MainNavigationView(filters, currentFilterType);
     this._mainNavigationComponent.setNavigationItemChangeHandler(this._handleNavigationItemChange);
 
     if (mainNavigationComponent === null) {
-      render(this._mainNavigationContainer, this._mainNavigationComponent, RenderPosition.BEFOREEND);
+      render(this._mainNavigationContainer, this._mainNavigationComponent);
       return;
     }
 

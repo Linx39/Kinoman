@@ -14,19 +14,16 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  // addComment(updateType, update) {
-  addComment(update) {
+  addComment(updateType, update) {
     this._comments = [
       update,
       ...this._comments,
     ];
 
-    // this._notify(updateType, update);
+    this._notify(updateType, update);
   }
 
-  // deleteComment(updateType, update) {
-  deleteComment(update) {
-    // console.log (update)
+  deleteComment(updateType, update) {
     const index = this._comments.findIndex((comment) => comment.id === update);
 
     if (index === -1) {
@@ -38,7 +35,6 @@ export default class Comments extends Observer {
       ...this._comments.slice(index + 1),
     ];
 
-    // console.log (this._comments);
-    // this._notify(updateType);
+    this._notify(updateType);
   }
 }

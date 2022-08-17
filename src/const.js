@@ -1,4 +1,4 @@
-export const FILMS_COUNT = 6;
+export const FILMS_COUNT = 14;
 export const COMMENTS_COUNT = 100;
 
 export const SortType = {
@@ -14,6 +14,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
+  NOTHING: 'NOTHING',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
