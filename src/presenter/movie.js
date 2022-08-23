@@ -4,13 +4,8 @@ import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent } from '../utils/common.js';
-import { render, remove, close, open } from '../utils/render.js';
+import { render, remove, replace, close, open } from '../utils/render.js';
 import { UserAction, UpdateType } from '../const.js';
-
-// const Mode = {
-//   CARD: 'CARD',
-//   DETAILS: 'DETAILS',
-// };
 
 export default class Movie {
   constructor (filmCardContainer, changeData, openPopup, closePopup, changeModePopup) {
@@ -24,6 +19,8 @@ export default class Movie {
     this._filmComments = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
+    this._filmDetailsTopComponent = null;
+    this._filmDetailsBottomComponent = null;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -38,26 +35,46 @@ export default class Movie {
     this._film = film;
     this._filmComments = filmComments;
 
+    const filmCardComponent = this._filmCardComponent;
+
     this._filmCardComponent = new FilmCardView(this._film);
     this._filmCardComponent.setFilmDetailsClickHandler(this._handleFilmCardClick);
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    render(this._filmCardContainer, this._filmCardComponent);
+    if (filmCardComponent === null) {
+      render(this._filmCardContainer, this._filmCardComponent);
+      return;
+    }
+
+    replace(this._filmCardComponent, filmCardComponent);
+    remove(filmCardComponent);
   }
 
   initFilmDetails(film, filmComments) {
     this._film = film;
     this._filmComments = filmComments;
 
-    this._filmDetailsComponent = new FilmDetailsView();
-    this._filmDetailsFormComponent = new FilmDetailsFormView();
+    const filmDetailsTopComponent = this._filmDetailsTopComponent;
+    const filmDetailsBottomComponent = this._filmDetailsBottomComponent;
 
     this._initFilmDetailsTop();
     this._initFilmDetailsBottom();
 
-    this._renderFilmDetails();
+    if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
+      this._filmDetailsComponent = new FilmDetailsView();
+      this._filmDetailsFormComponent = new FilmDetailsFormView();
+      render(this._filmDetailsComponent, this._filmDetailsFormComponent);
+      render(this._filmDetailsFormComponent, this._filmDetailsTopComponent);
+      render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
+      return;
+    }
+
+    replace(this._filmDetailsTopComponent, filmDetailsTopComponent);
+    replace(this._filmDetailsBottomComponent, filmDetailsBottomComponent);
+    remove(filmDetailsTopComponent);
+    remove(filmDetailsBottomComponent);
   }
 
   _initFilmDetailsTop() {
@@ -71,12 +88,6 @@ export default class Movie {
   _initFilmDetailsBottom() {
     this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
     this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-  }
-
-  _renderFilmDetails() {
-    render(this._filmDetailsComponent, this._filmDetailsFormComponent);
-    render(this._filmDetailsFormComponent, this._filmDetailsTopComponent);
-    render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
   }
 
   destroyFilmCard() {
@@ -139,7 +150,7 @@ export default class Movie {
 
     this._changeData(
       UserAction.DELETECOMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this._film,
       commentId,
     );
