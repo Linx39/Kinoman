@@ -56,6 +56,14 @@ export default class Movie {
     this._film = film;
     this._filmComments = filmComments;
 
+    this._newComment = {
+      id: null,
+      author: null,
+      comment: null,
+      date: null,
+      emotion: null,
+    };
+
     const filmDetailsTopComponent = this._filmDetailsTopComponent;
     const filmDetailsBottomComponent = this._filmDetailsBottomComponent;
 
@@ -65,8 +73,9 @@ export default class Movie {
     this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments, this._newComment);
     this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
+    this._filmDetailsBottomComponent.setCommentSubmitHandler(this._handleCtrlEnterDown);
 
     if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
       this._filmDetailsComponent = new FilmDetailsView();
@@ -91,14 +100,14 @@ export default class Movie {
     this._changeModeClosedPopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
-    document.removeEventListener('keydown', this._handleCtrlEnterDown);
+    // document.removeEventListener('keydown', this._handleCtrlEnterDown);
     remove(this._filmDetailsComponent);
   }
 
   openFilmDetails() {
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
-    document.addEventListener('keydown', this._handleCtrlEnterDown);
+    // document.addEventListener('keydown', this._handleCtrlEnterDown);
   }
 
   _handleEscKeyDown(evt) {
@@ -112,11 +121,12 @@ export default class Movie {
     this._changeModeOpenedPopup(this._film);
   }
 
-  _handleCtrlEnterDown(evt) {
-    if (isCtrlEnterEvent(evt)) {
-      evt.preventDefault();
-      console.log ('CtrEnter');
-    }
+  _handleCtrlEnterDown() {
+    // if (isCtrlEnterEvent(evt)) {
+    //   evt.preventDefault();
+    //   console.log ('CtrEnter');
+    // }
+    console.log (111);
   }
 
   _handleWatchlistClick() {

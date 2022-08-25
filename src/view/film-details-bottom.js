@@ -1,5 +1,6 @@
 import SmartView from './smart.js';
-import { convertDateToHumanFormat } from '../utils/common.js';
+import {convertDateToHumanFormat} from '../utils/common.js';
+import {isCtrlEnterEvent} from '../utils/common.js';
 
 const createCommentTemplate = (filmComment) => {
   const {id, author, comment, date, emotion } = filmComment;
@@ -77,28 +78,22 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 };
 
 export default class FilmDetailsBottom extends SmartView {
-  constructor(filmComments) {
+  constructor(filmComments, newComment) {
     super();
     this._filmComments = filmComments;
 
-    this._newComment = {
-      id: null,
-      author: null,
-      comment: null,
-      date: null,
-      emotion: null,
-      imgAlt: null,
-    },
+    this._newCommentState = FilmDetailsBottom.parseCommentToState(newComment);
 
     this._emojiListHandler = this._emojiListHandler.bind(this);
     this._commentInputHandler = this._commentInputHandler.bind(this);
     this._commentDeleteClickHandler = this._commentDeleteClickHandler.bind(this);
+    this._ctrlEnterDownHandler = this._ctrlEnterDownHandler.bind(this);
 
     this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._filmComments, this._newComment);
+    return createFilmDetailsTemplate(this._filmComments, this._newCommentState);
   }
 
   _emojiListHandler(evt) {
@@ -107,8 +102,8 @@ export default class FilmDetailsBottom extends SmartView {
     }
     evt.preventDefault();
 
-    this._newComment = {...this._newComment, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
-    this.updateState(this._newComment);
+    this._newCommentState = {...this._newCommentState, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
+    this.updateState(this._newCommentState);
 
     for (const input of evt.currentTarget.querySelectorAll('input')) {
       input.checked = false;
@@ -119,12 +114,12 @@ export default class FilmDetailsBottom extends SmartView {
 
   _commentInputHandler(evt) {
     evt.preventDefault();
-
-    this._newComment = {
-      ...this._newComment,
+    console.log ('222', this._newCommentState);
+    this._newCommentState = {
+      ...this._newCommentState,
       comment: evt.target.value,
     };
-    this.updateState(this._newComment, true);
+    this.updateState(this._newCommentState, true);
 
   }
 
@@ -140,6 +135,7 @@ export default class FilmDetailsBottom extends SmartView {
   restoreHandlers() {
     this._setInnerHandlers();
     this.setCommentDeleteClickHandler(this._callback.commentDeleteClick);
+    this.setCommentSubmitHandler();
   }
 
   _setInnerHandlers() {
@@ -150,5 +146,32 @@ export default class FilmDetailsBottom extends SmartView {
   setCommentDeleteClickHandler(callback) {
     this._callback.commentDeleteClick = callback;
     this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._commentDeleteClickHandler);
+  }
+
+  _ctrlEnterDownHandler(evt) {
+    evt.preventDefault();
+    if (isCtrlEnterEvent(evt)) {
+      evt.preventDefault();
+      console.log ('CtrEnter');
+      console.log (this._newCommentState);
+      // this._callback.formSubmit(FilmDetailsBottom.parseStateToComment(this._newCommentState));
+      // document.removeEventListener('keydown', this._ctrlEnterDownHandler);
+    }
+  }
+
+  setCommentSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('.film-details__new-comment')
+      .addEventListener('keydown', this._ctrlEnterDownHandler);
+  }
+
+  static parseCommentToState(comment) {
+    return {...comment, imgAlt: null};
+  }
+
+  static parseStateToComment(state) {
+    state = {...state};
+    delete state.imgAlt;
+    return state;
   }
 }
