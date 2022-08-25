@@ -19,6 +19,18 @@ const Mode = {
   POPUP: 'POPUP',
 };
 
+const StorageType = {
+  ALL: 'all',
+  TOPRATED: 'topRated',
+  MOSTCOMMENTED: 'mostCommented',
+};
+
+const MoviePresentersStorage = {
+  [StorageType.ALL]: {},
+  [StorageType.TOPRATED]: {},
+  [StorageType.MOSTCOMMENTED]: {},
+};
+
 export default class MoviesBlock {
   constructor(moviesBlockContainer, filmsModel, commentsModel, filterModel) {
     this._moviesBlockContainer = moviesBlockContainer;
@@ -27,17 +39,11 @@ export default class MoviesBlock {
     this._filterModel = filterModel;
 
     this._renderedCardsCount = CARD_COUNT_STEP;
-    this._moviePresentersStorage = {
-      all: {},
-      topRated: {},
-      mostCommented: {},
-    };
+    this._moviePresentersStorage = MoviePresentersStorage;
     this._currentSortType = SortType.DEFAULT;
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
     this._noMoviesPresenter = null;
-    this._popupFilm = null;//нужен ли?
-    this._popupMoviePresenter = null;
     this._mode = Mode.CARDS;
 
     this._filmsComponent = new FilmsView();
@@ -50,7 +56,6 @@ export default class MoviesBlock {
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleModePopup = this._handleModePopup.bind(this);//под вопросом
     this._handleOpeningPopup = this._handleOpeningPopup.bind(this);
     this._handleClosingPopup = this._handleClosingPopup.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
@@ -107,19 +112,19 @@ export default class MoviesBlock {
 
   _renderCard(container, film) {
     const filmComments = this._getComments(film);
-    const moviePresenter = new MoviePresenter(container, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup, this._handleModePopup);
+    const moviePresenter = new MoviePresenter(this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
 
-    moviePresenter.initFilmCard(film, filmComments);
+    moviePresenter.initFilmCard(container, film, filmComments);
 
     switch (container) {
       case this._filmListAllContainer:
-        this._moviePresentersStorage.all[film.id] = moviePresenter;
+        this._moviePresentersStorage[StorageType.ALL][film.id] = moviePresenter;
         break;
       case this._filmListTopRatedContainer:
-        this._moviePresentersStorage.topRated[film.id] = moviePresenter;
+        this._moviePresentersStorage[StorageType.TOPRATED][film.id] = moviePresenter;
         break;
       case this._filmListMostCommentedContainer:
-        this._moviePresentersStorage.mostCommented[film.id] = moviePresenter;
+        this._moviePresentersStorage[StorageType.MOSTCOMMENTED][film.id] = moviePresenter;
         break;
     }
   }
@@ -134,7 +139,6 @@ export default class MoviesBlock {
 
     const films = this._getFilms();
     const filmsCount = films.length;
-
     this._renderCards(this._filmListAllContainer, films.slice(0, Math.min(filmsCount, this._renderedCardsCount)));
 
     if (filmsCount > this._renderedCardsCount) {
@@ -189,11 +193,7 @@ export default class MoviesBlock {
         .values(this._moviePresentersStorage[key])
         .forEach((presenter) => presenter.destroyFilmCard()));
 
-    this._moviePresentersStorage = {
-      all: {},
-      topRated: {},
-      mostCommented: {},
-    };
+    this._moviePresentersStorage = MoviePresentersStorage;
   }
 
   _renderMoviesBlock() {
@@ -217,10 +217,10 @@ export default class MoviesBlock {
       this._renderFilmsListMostCommented();
     }
 
-    if (this._popupMoviePresenter !== null) {
+    if (this._mode === Mode.POPUP) {
       const popupFilmId = this._popupFilm.id;
-      const popupFilm = this._getFilms().find((film) => film.id === popupFilmId);
-      this._handleOpeningPopup(popupFilm);
+      const popupFilm = this._filmsModel.getFilms().find((film) => film.id === popupFilmId);
+      this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(popupFilm));
     }
   }
 
@@ -235,11 +235,25 @@ export default class MoviesBlock {
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = CARD_COUNT_STEP;
     } else {
-      // На случай, если перерисовка доски вызвана
-      // уменьшением количества задач (например, удаление или перенос в архив)
-      // нужно скорректировать число показанных задач
-      this._renderedCardsCount = Math.min(filmsCount, this._renderedCardsCount);
+      if (filmsCount <= this._renderedCardsCount) {
+        this._renderedCardsCount = filmsCount;
+      } else {
+        this._renderedCardsCount = this._renderedCardsCount%CARD_COUNT_STEP === 0
+          ? this._renderedCardsCount
+          : this._renderedCardsCount + 1;
+      }
     }
+
+    // switch (filmsCount <= this._renderedCardsCount) {
+    //   case true:
+    //     this._renderedCardsCount = filmsCount;
+    //     return;
+    //   case false:
+    //     this._renderedCardsCount = (this._renderedCardsCount%CARD_COUNT_STEP === 0)
+    //       ? this._renderedCardsCount
+    //       : this._renderedCardsCount + 1;
+    //     return;
+    // }
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
@@ -256,18 +270,15 @@ export default class MoviesBlock {
     this._renderMoviesBlock();
   }
 
-  _initFilmDetails () {
-    this._popupMoviePresenter = new MoviePresenter(null, this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup, this._handleModePopup);
-    this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
-  }
-
   _handleOpeningPopup(popupFilm) {
-    this._mode = Mode.POPUP;
-    this._popupFilm = popupFilm;
-    if (this._popupMoviePresenter !== null) {
+    if (this._mode === Mode.POPUP) {
       this._popupMoviePresenter.closeFilmDetails();
     }
-    this._initFilmDetails();
+    this._mode = Mode.POPUP;
+    this._popupFilm = popupFilm;
+
+    this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
     this._popupMoviePresenter.openFilmDetails();
   }
 
@@ -276,23 +287,14 @@ export default class MoviesBlock {
     this._popupMoviePresenter = null;
   }
 
-  _handleModePopup() {
-    // if (popupFilm === null) {
-    //   this._popupMoviePresenter = null;
-    //   return;
-    // }
-    // this._popupFilm = popupFilm;
-    // this._handleOpeningPopup();
-  }
-
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
       case UserAction.EDITFILM:
         this._filmsModel.editFilm(updateType, updateFilm);
         break;
       case UserAction.ADDCOMMENT:
-        // this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
-        // this._filmsModel.editFilm(updateType, update);
+        this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
+        this._filmsModel.editFilm(updateType, updateFilm);
         break;
       case UserAction.DELETECOMMENT:
         this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
@@ -306,20 +308,19 @@ export default class MoviesBlock {
       case UpdateType.NOTHING:
         break;
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялось описание)
         Object
           .keys(this._moviePresentersStorage)
           .forEach((key) => {
             const storage = this._moviePresentersStorage[key];
             if (storage[film.id]) {
-              storage[film.id].initFilmCard(film, this._getComments(film));
+              storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
             }
           });
         this._popupMoviePresenter.initFilmDetails(film, this._getComments(film));
         break;
       case UpdateType.MINOR:
         this._clearMoviesBlock();
-        this._renderMoviesBlock({resetRenderedCardsCount: false});
+        this._renderMoviesBlock();
         break;
       case UpdateType.MAJOR:
         this._clearMoviesBlock({resetRenderedCardsCount: true});

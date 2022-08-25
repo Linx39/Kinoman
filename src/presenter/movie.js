@@ -3,17 +3,15 @@ import FilmDetailsView from '../view/film-details.js';
 import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
-import { isEscEvent } from '../utils/common.js';
-import { render, remove, replace, close, open } from '../utils/render.js';
-import { UserAction, UpdateType } from '../const.js';
+import {isEscEvent, isCtrlEnterEvent} from '../utils/common.js';
+import {render, remove, replace, close, open} from '../utils/render.js';
+import {UserAction, UpdateType} from '../const.js';
 
 export default class Movie {
-  constructor (filmCardContainer, changeData, openPopup, closePopup, changeModePopup) {
-    this._filmCardContainer = filmCardContainer;
+  constructor (changeData, changeModeOpenedPopup, changeModeClosedPopup) {
     this._changeData = changeData;
-    this._openPopup = openPopup;
-    this._closePopup = closePopup;
-    this._changeModePopup = changeModePopup;
+    this._changeModeOpenedPopup = changeModeOpenedPopup;
+    this._changeModeClosedPopup = changeModeClosedPopup;
 
     this._film = null;
     this._filmComments = null;
@@ -29,9 +27,11 @@ export default class Movie {
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
     this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
+    this._handleCtrlEnterDown = this._handleCtrlEnterDown.bind(this);
   }
 
-  initFilmCard(film, filmComments) {
+  initFilmCard(filmCardContainer, film, filmComments) {
+    this._filmCardContainer = filmCardContainer;
     this._film = film;
     this._filmComments = filmComments;
 
@@ -59,8 +59,14 @@ export default class Movie {
     const filmDetailsTopComponent = this._filmDetailsTopComponent;
     const filmDetailsBottomComponent = this._filmDetailsBottomComponent;
 
-    this._initFilmDetailsTop();
-    this._initFilmDetailsBottom();
+    this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
+    this._filmDetailsTopComponent.setButtonCloseClickHandler(this._handleButtonCloseClick);
+    this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
+    this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
 
     if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
       this._filmDetailsComponent = new FilmDetailsView();
@@ -77,33 +83,22 @@ export default class Movie {
     remove(filmDetailsBottomComponent);
   }
 
-  _initFilmDetailsTop() {
-    this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsTopComponent.setButtonCloseClickHandler(this._handleButtonCloseClick);
-    this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-  }
-
-  _initFilmDetailsBottom() {
-    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments);
-    this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-  }
-
   destroyFilmCard() {
     remove(this._filmCardComponent);
   }
 
   closeFilmDetails() {
-    this._closePopup();
+    this._changeModeClosedPopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
+    document.removeEventListener('keydown', this._handleCtrlEnterDown);
     remove(this._filmDetailsComponent);
   }
 
   openFilmDetails() {
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
+    document.addEventListener('keydown', this._handleCtrlEnterDown);
   }
 
   _handleEscKeyDown(evt) {
@@ -114,7 +109,14 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
-    this._openPopup(this._film);
+    this._changeModeOpenedPopup(this._film);
+  }
+
+  _handleCtrlEnterDown(evt) {
+    if (isCtrlEnterEvent(evt)) {
+      evt.preventDefault();
+      console.log ('CtrEnter');
+    }
   }
 
   _handleWatchlistClick() {
@@ -150,7 +152,7 @@ export default class Movie {
 
     this._changeData(
       UserAction.DELETECOMMENT,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       this._film,
       commentId,
     );

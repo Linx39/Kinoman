@@ -68,3 +68,5 @@ export const generateRandomText = (arrayTexts, textCountMin = 1, textCountMax = 
   .join(' ');
 
 export const isEscEvent = (evt) => (evt.key === 'Escape' || evt.key === 'Esc');
+
+export const isCtrlEnterEvent = (evt) => (evt.ctrlKey && evt.keyCode === 13);
