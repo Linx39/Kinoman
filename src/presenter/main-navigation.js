@@ -24,7 +24,7 @@ export default class MainNavigation {
     const currentFilterType = this._filterModel.getFilter();
 
     this._mainNavigationComponent = new MainNavigationView(filters, currentFilterType);
-    this._mainNavigationComponent.setNavigationItemChangeHandler(this._handleNavigationItemChange);
+    this._mainNavigationComponent.setNavigationItemChangeListener(this._handleNavigationItemChange);
 
     if (mainNavigationComponent === null) {
       render(this._mainNavigationContainer, this._mainNavigationComponent);

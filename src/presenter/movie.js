@@ -3,9 +3,10 @@ import FilmDetailsView from '../view/film-details.js';
 import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
-import {isEscEvent, isCtrlEnterEvent} from '../utils/common.js';
+import {isEscEvent} from '../utils/common.js';
 import {render, remove, replace, close, open} from '../utils/render.js';
 import {UserAction, UpdateType} from '../const.js';
+import { nanoid } from 'nanoid';
 
 export default class Movie {
   constructor (changeData, changeModeOpenedPopup, changeModeClosedPopup) {
@@ -27,7 +28,7 @@ export default class Movie {
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
     this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
-    this._handleCtrlEnterDown = this._handleCtrlEnterDown.bind(this);
+    this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
 
   initFilmCard(filmCardContainer, film, filmComments) {
@@ -38,10 +39,10 @@ export default class Movie {
     const filmCardComponent = this._filmCardComponent;
 
     this._filmCardComponent = new FilmCardView(this._film);
-    this._filmCardComponent.setFilmDetailsClickHandler(this._handleFilmCardClick);
-    this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmCardComponent.setFilmCardClickListener(this._handleFilmCardClick);
+    this._filmCardComponent.setWatchlistClickListener(this._handleWatchlistClick);
+    this._filmCardComponent.setWatchedClickListener(this._handleWatchedClick);
+    this._filmCardComponent.setFavoriteClickListener(this._handleFavoriteClick);
 
     if (filmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
@@ -68,14 +69,14 @@ export default class Movie {
     const filmDetailsBottomComponent = this._filmDetailsBottomComponent;
 
     this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
-    this._filmDetailsTopComponent.setButtonCloseClickHandler(this._handleButtonCloseClick);
-    this._filmDetailsTopComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmDetailsTopComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmDetailsTopComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsTopComponent.setButtonCloseClickListener(this._handleButtonCloseClick);
+    this._filmDetailsTopComponent.setWatchlistClickListener(this._handleWatchlistClick);
+    this._filmDetailsTopComponent.setWatchedClickListener(this._handleWatchedClick);
+    this._filmDetailsTopComponent.setFavoriteClickListener(this._handleFavoriteClick);
 
     this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments, this._newComment);
-    this._filmDetailsBottomComponent.setCommentDeleteClickHandler(this._handleCommentDeleteClick);
-    this._filmDetailsBottomComponent.setCommentSubmitHandler(this._handleCtrlEnterDown);
+    this._filmDetailsBottomComponent.setCommentDeleteClickListener(this._handleCommentDeleteClick);
+    this._filmDetailsBottomComponent.setCommentSubmitListener(this._handleCommentSubmit);
 
     if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
       this._filmDetailsComponent = new FilmDetailsView();
@@ -100,14 +101,12 @@ export default class Movie {
     this._changeModeClosedPopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
-    // document.removeEventListener('keydown', this._handleCtrlEnterDown);
     remove(this._filmDetailsComponent);
   }
 
   openFilmDetails() {
     open(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
-    // document.addEventListener('keydown', this._handleCtrlEnterDown);
   }
 
   _handleEscKeyDown(evt) {
@@ -119,14 +118,6 @@ export default class Movie {
 
   _handleFilmCardClick () {
     this._changeModeOpenedPopup(this._film);
-  }
-
-  _handleCtrlEnterDown() {
-    // if (isCtrlEnterEvent(evt)) {
-    //   evt.preventDefault();
-    //   console.log ('CtrEnter');
-    // }
-    console.log (111);
   }
 
   _handleWatchlistClick() {
@@ -166,6 +157,30 @@ export default class Movie {
       this._film,
       commentId,
     );
+  }
+
+  _handleCommentSubmit(newComment) {
+    if (newComment.emotion === null) {
+      return;
+    }
+    newComment = {
+      ...newComment,
+      id: nanoid(),
+      date: Date(),
+      author: 'I am author'};
+
+    this._film.comments = [
+      newComment.id,
+      ...this._film.comments,
+    ];
+
+    this._changeData(
+      UserAction.ADDCOMMENT,
+      UpdateType.MINOR,
+      this._film,
+      newComment,
+    );
+
   }
 
   _handleButtonCloseClick() {

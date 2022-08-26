@@ -61,7 +61,7 @@ export default class MoviesBlock {
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filmsModel.addObserver(this._handleModelEvent); //onModelEvent переименовать
     this._filterModel.addObserver(this._handleModelEvent);
   }
 
@@ -243,18 +243,7 @@ export default class MoviesBlock {
           : this._renderedCardsCount + 1;
       }
     }
-
-    // switch (filmsCount <= this._renderedCardsCount) {
-    //   case true:
-    //     this._renderedCardsCount = filmsCount;
-    //     return;
-    //   case false:
-    //     this._renderedCardsCount = (this._renderedCardsCount%CARD_COUNT_STEP === 0)
-    //       ? this._renderedCardsCount
-    //       : this._renderedCardsCount + 1;
-    //     return;
-    // }
-
+    
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
@@ -323,7 +312,7 @@ export default class MoviesBlock {
         this._renderMoviesBlock();
         break;
       case UpdateType.MAJOR:
-        this._clearMoviesBlock({resetRenderedCardsCount: true});
+        this._clearMoviesBlock({resetRenderedCardsCount: true, resetSortType: true});
         this._renderMoviesBlock();
         break;
     }

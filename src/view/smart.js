@@ -24,7 +24,7 @@ export default class Smart extends Abstract {
     }
 
     this.updateElement();
-    this.restoreHandlers();
+    this.restoreListeners();
   }
 
   updateElement() {
@@ -37,7 +37,7 @@ export default class Smart extends Abstract {
     parent.replaceChild(newElement, prevElement);
   }
 
-  restoreHandlers() {
+  restoreListeners() {
     throw new Error('Abstract method not implemented: resetHandlers');
   }
 }

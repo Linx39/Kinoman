@@ -41,16 +41,16 @@ export default class HeaderProfile {
 
   _getRatingName() {
     const films = this._filmsModel.getFilms();
-    const filmsCount = filter[FilterType.HISTORY](films).length;
+    const hystoryFilmsCount = filter[FilterType.HISTORY](films).length;
 
-    if (filmsCount === 0) {
+    if (hystoryFilmsCount === 0) {
       return null;
     }
 
     return ProfileRating
       .slice()
       .reverse()
-      .find((profile) => filmsCount >= profile.watchedFilmsMinCount)
+      .find((profile) => hystoryFilmsCount >= profile.watchedFilmsMinCount)
       .ratingName;
   }
 }
