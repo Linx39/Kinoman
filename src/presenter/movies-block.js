@@ -56,9 +56,9 @@ export default class MoviesBlock {
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
-    this._handleOpeningPopup = this._handleOpeningPopup.bind(this);
-    this._handleClosingPopup = this._handleClosingPopup.bind(this);
-    this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
+    this._handlePopupOpening = this._handlePopupOpening.bind(this);
+    this._handlePopupClosing = this._handlePopupClosing.bind(this);
+    this._handleShowMoreButton = this._handleShowMoreButton.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent); //onModelEvent переименовать
@@ -105,14 +105,14 @@ export default class MoviesBlock {
     }
 
     this._sortComponent = new SortView(this._currentSortType);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    this._sortComponent.setSortTypeClickListener(this._handleSortTypeChange);
 
     render(this._moviesBlockContainer, this._sortComponent);
   }
 
   _renderCard(container, film) {
     const filmComments = this._getComments(film);
-    const moviePresenter = new MoviePresenter(this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    const moviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupOpening, this._handlePopupClosing);
 
     moviePresenter.initFilmCard(container, film, filmComments);
 
@@ -168,12 +168,12 @@ export default class MoviesBlock {
     }
 
     this._showMoreButtonComponent = new ShowMoreButtonView();
-    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
+    this._showMoreButtonComponent.setShowMoreButtonClickListener(this._handleShowMoreButton);
 
     render(this._filmsListAllComponent, this._showMoreButtonComponent);
   }
 
-  _handleShowMoreButtonClick() {
+  _handleShowMoreButton() {
     const filmsCount = this._getFilms().length;
     const newRenderedCardsCount = Math.min(filmsCount, this._renderedCardsCount + CARD_COUNT_STEP);
     const films = this._getFilms().slice(this._renderedCardsCount, newRenderedCardsCount);
@@ -235,7 +235,7 @@ export default class MoviesBlock {
     if (resetRenderedCardsCount) {
       this._renderedCardsCount = CARD_COUNT_STEP;
     } else {
-      if (filmsCount <= this._renderedCardsCount) {
+      if (filmsCount < this._renderedCardsCount) {
         this._renderedCardsCount = filmsCount;
       } else {
         this._renderedCardsCount = this._renderedCardsCount%CARD_COUNT_STEP === 0
@@ -243,7 +243,7 @@ export default class MoviesBlock {
           : this._renderedCardsCount + 1;
       }
     }
-    
+
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;
     }
@@ -259,19 +259,19 @@ export default class MoviesBlock {
     this._renderMoviesBlock();
   }
 
-  _handleOpeningPopup(popupFilm) {
+  _handlePopupOpening(popupFilm) {
     if (this._mode === Mode.POPUP) {
       this._popupMoviePresenter.closeFilmDetails();
     }
     this._mode = Mode.POPUP;
     this._popupFilm = popupFilm;
 
-    this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handleOpeningPopup, this._handleClosingPopup);
+    this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupOpening, this._handlePopupClosing);
     this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
     this._popupMoviePresenter.openFilmDetails();
   }
 
-  _handleClosingPopup() {
+  _handlePopupClosing() {
     this._mode = Mode.CARDS;
     this._popupMoviePresenter = null;
   }

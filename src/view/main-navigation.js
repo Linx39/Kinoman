@@ -34,14 +34,14 @@ export default class MainNavigation extends AbstractView {
     this._filters = filters;
     this._currentFilter = currentFilter;
 
-    this._handleNavigationItemChange = this._handleNavigationItemChange.bind(this);
+    this._onNavigationItemChange = this._onNavigationItemChange.bind(this);
   }
 
   getTemplate() {
     return createMainNavigationTemplate(this._filters, this._currentFilter);
   }
 
-  _handleNavigationItemChange(evt) {
+  _onNavigationItemChange(evt) {
     if (evt.target.tagName !== 'A') {
       return;
     }
@@ -54,6 +54,6 @@ export default class MainNavigation extends AbstractView {
     this._callback.navigationItemChange = callback;
     this.getElement()
       .querySelector('.main-navigation__items')
-      .addEventListener('click', this._handleNavigationItemChange);
+      .addEventListener('click', this._onNavigationItemChange);
   }
 }

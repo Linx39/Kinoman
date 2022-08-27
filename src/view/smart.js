@@ -11,12 +11,6 @@ export default class Smart extends Abstract {
       return;
     }
 
-    // this._state = Object.assign(
-    //   {},
-    //   this._state,
-    //   update,
-    // );
-
     this._state = {...this._state, update};
 
     if (justStateUpdating) {

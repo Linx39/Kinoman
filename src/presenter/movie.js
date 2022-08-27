@@ -27,7 +27,7 @@ export default class Movie {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
-    this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
+    this._handleCommentDeleteClick = this._handleCommentDelete.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
 
@@ -75,7 +75,7 @@ export default class Movie {
     this._filmDetailsTopComponent.setFavoriteClickListener(this._handleFavoriteClick);
 
     this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments, this._newComment);
-    this._filmDetailsBottomComponent.setCommentDeleteClickListener(this._handleCommentDeleteClick);
+    this._filmDetailsBottomComponent.setCommentDeleteClickListener(this._handleCommentDelete);
     this._filmDetailsBottomComponent.setCommentSubmitListener(this._handleCommentSubmit);
 
     if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
@@ -144,7 +144,7 @@ export default class Movie {
     );
   }
 
-  _handleCommentDeleteClick(commentId) {
+  _handleCommentDelete(commentId) {
     const index = this._film.comments.findIndex((id) => id === commentId);
     this._film.comments = [
       ...this._film.comments.slice(0, index),

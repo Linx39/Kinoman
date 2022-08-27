@@ -88,10 +88,10 @@ export default class FilmDetailsBottom extends SmartView {
 
     this._newCommentState = FilmDetailsBottom.parseCommentToState(newComment);
 
-    this._handleEmojiList = this._handleEmojiList.bind(this);
-    this._handleCommentInput = this._handleCommentInput.bind(this);
-    this._handleCommentDeleteClick = this._handleCommentDeleteClick.bind(this);
-    this._handleCtrlEnterDown = this._handleCtrlEnterDown.bind(this);
+    this._onEmojiListClick = this._onEmojiListClick.bind(this);
+    this._onCommentInput = this._onCommentInput.bind(this);
+    this._onCommentDeleteClick = this._onCommentDeleteClick.bind(this);
+    this._onCtrlEnterDown = this._onCtrlEnterDown.bind(this);
 
     this._setInnerListeners();
   }
@@ -100,7 +100,7 @@ export default class FilmDetailsBottom extends SmartView {
     return createFilmDetailsTemplate(this._filmComments, this._newCommentState);
   }
 
-  _handleEmojiList(evt) {
+  _onEmojiListClick(evt) {
     if (evt.target.tagName !== 'IMG') {
       return;
     }
@@ -116,7 +116,7 @@ export default class FilmDetailsBottom extends SmartView {
     evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;//или добавить это в if
   }
 
-  _handleCommentInput(evt) {
+  _onCommentInput(evt) {
     evt.preventDefault();
     this._newCommentState = {
       ...this._newCommentState,
@@ -125,18 +125,18 @@ export default class FilmDetailsBottom extends SmartView {
     this.updateState(this._newCommentState, true);
   }
 
-  restoreListeners() { // вместо handlers можно назвать Listeners. и все set тоже
+  restoreListeners() {
     this._setInnerListeners();
     this.setCommentDeleteClickListener(this._callback.commentDeleteClick);
     this.setCommentSubmitListener(this._callback.commentSubmit);
   }
 
   _setInnerListeners() {
-    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._handleEmojiList);
-    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._handleCommentInput);
+    this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._onEmojiListClick);
+    this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onCommentInput);
   }
 
-  _handleCommentDeleteClick(evt) {
+  _onCommentDeleteClick(evt) {
     if (evt.target.tagName !== 'BUTTON') {
       return;
     }
@@ -147,14 +147,14 @@ export default class FilmDetailsBottom extends SmartView {
 
   setCommentDeleteClickListener(callback) {
     this._callback.commentDeleteClick = callback;
-    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._handleCommentDeleteClick);
+    this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._onCommentDeleteClick);
   }
 
-  _handleCtrlEnterDown(evt) {
+  _onCtrlEnterDown(evt) {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
       this._callback.commentSubmit(FilmDetailsBottom.parseStateToComment(this._newCommentState));
-      document.removeEventListener('keydown', this._handleCtrlEnterDown);// еще надо отписаться при закрытии
+      document.removeEventListener('keydown', this._onCtrlEnterDown);// еще надо отписаться при закрытии
     }
   }
 
@@ -162,7 +162,7 @@ export default class FilmDetailsBottom extends SmartView {
     this._callback.commentSubmit = callback;
     // this.getElement().querySelector('.film-details__comment-input')
     document
-      .addEventListener('keydown', this._handleCtrlEnterDown);
+      .addEventListener('keydown', this._onCtrlEnterDown);
   }
 
   static parseCommentToState(comment) {

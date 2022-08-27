@@ -26,3 +26,11 @@ export const FilterType = {
   HISTORY: 'watched',
   FAVORITES: 'favorites',
 };
+
+export const MenuItem = {
+  ALL: 'ALL',
+  WATHLIST: 'WATHLIST',
+  HISTORY: 'HISTORY',
+  FAVORITES: 'FAVORITES',
+  STATISTICS: 'STATISTICS',
+};
