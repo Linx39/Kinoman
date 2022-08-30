@@ -1,4 +1,5 @@
 import { getDayDiff } from './common.js';
+import { ProfileRating } from '../const.js';
 
 const getWeightForNullData = (dataA, dataB) => {
   if (dataA === null && dataB === null) {
@@ -42,4 +43,16 @@ export const sortFilmsComments = (filmA, filmB) => {
   }
 
   return -(filmA.comments.length - filmB.comments.length);
+};
+
+export const getRatingName = (filmsCount) => {
+  if (filmsCount === 0) {
+    return null;
+  }
+
+  return ProfileRating
+    .slice()
+    .reverse()
+    .find((profile) => filmsCount >= profile.watchedFilmsMinCount)
+    .ratingName;
 };

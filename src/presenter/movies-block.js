@@ -60,13 +60,20 @@ export default class MoviesBlock {
     this._handlePopupClosing = this._handlePopupClosing.bind(this);
     this._handleShowMoreButton = this._handleShowMoreButton.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
-
-    this._filmsModel.addObserver(this._handleModelEvent); //onModelEvent переименовать
-    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
     this._renderMoviesBlock();
+
+    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+  }
+
+  destroy() {
+    this._clearMoviesBlock({resetRenderedCardsCount: true, resetSortType: true});
+
+    this._filmsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
   }
 
   _getFilms() {

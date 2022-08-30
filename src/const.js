@@ -1,6 +1,12 @@
 export const FILMS_COUNT = 24;
 export const COMMENTS_COUNT = 100;
 
+export const ProfileRating = [
+  {ratingName: 'Novice', watchedFilmsMinCount: 1},
+  {ratingName: 'Fan', watchedFilmsMinCount: 11},
+  {ratingName: 'Movie Buff', watchedFilmsMinCount: 21},
+];
+
 export const SortType = {
   DEFAULT: 'default',
   DATE: 'date',
@@ -27,10 +33,7 @@ export const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export const MenuItem = {
-  ALL: 'ALL',
-  WATHLIST: 'WATHLIST',
-  HISTORY: 'HISTORY',
-  FAVORITES: 'FAVORITES',
+export const ModeNavigation = {
+  FILTER: 'FILTER',
   STATISTICS: 'STATISTICS',
 };

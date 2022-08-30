@@ -2,19 +2,20 @@ import AbstractView from './abstract.js';
 import { FilterType } from '../const.js';
 
 const classMainNavigationItemActive = 'main-navigation__item--active';
+const classMainNavigationAdditionalActive = 'main-navigation__additional--active';
 
 const createMainNavigationItemTemplate = (item, currentFilterType) => {
   const {type, name, count} = item;
 
   return (
     `<a href="#${type}" class="main-navigation__item ${type === currentFilterType ? classMainNavigationItemActive : ''}" data-type = ${type}>${name}
-      ${type !== FilterType.ALL? `<span class="main-navigation__item-count">${count}</span>` : ''}
+      ${type !== FilterType.ALL? `<span class="main-navigation__item-count" data-type = ${type}>${count}</span>` : ''}
     </a>`);
 };
 
 const createMainNavigationTemplate = (filters, currentFilterType) => {
   const mainNavigationItemsTemplate = filters
-    .map((filter) => createMainNavigationItemTemplate(filter, currentFilterType))
+    .map((item) => createMainNavigationItemTemplate(item, currentFilterType))
     .slice()
     .join('');
 
@@ -24,7 +25,7 @@ const createMainNavigationTemplate = (filters, currentFilterType) => {
         ${mainNavigationItemsTemplate}
       </div>
       
-      <a href="#stats" class="main-navigation__additional">Stats</a>
+      <a href="#stats" class="main-navigation__additional ${currentFilterType === null ? classMainNavigationAdditionalActive : ''}">Stats</a>
     </nav>`);
 };
 
@@ -34,26 +35,40 @@ export default class MainNavigation extends AbstractView {
     this._filters = filters;
     this._currentFilter = currentFilter;
 
-    this._onNavigationItemChange = this._onNavigationItemChange.bind(this);
+    this._onFilterItemClick = this._onFilterItemClick.bind(this);
+    this._onStatsClick = this._onStatsClick.bind(this);
   }
 
   getTemplate() {
     return createMainNavigationTemplate(this._filters, this._currentFilter);
   }
 
-  _onNavigationItemChange(evt) {
-    if (evt.target.tagName !== 'A') {
+  _onFilterItemClick(evt) {
+    if (!evt.target.classList.contains('main-navigation__item') && !evt.target.classList.contains('main-navigation__item-count')) {
       return;
     }
     evt.preventDefault();
 
-    this._callback.navigationItemChange(evt.target.dataset.type);
+    this._callback.filterItemClick(evt.target.dataset.type);
   }
 
-  setNavigationItemChangeListener(callback) {
-    this._callback.navigationItemChange = callback;
+  setFilterItemClickListener(callback) {
+    this._callback.filterItemClick = callback;
     this.getElement()
       .querySelector('.main-navigation__items')
-      .addEventListener('click', this._onNavigationItemChange);
+      .addEventListener('click', this._onFilterItemClick);
+  }
+
+  _onStatsClick(evt) {
+    evt.preventDefault();
+
+    this._callback.statsClick();
+  }
+
+  setStatsClickListener(callback) {
+    this._callback.statsClick = callback;
+    this.getElement()
+      .querySelector('.main-navigation__additional')
+      .addEventListener('click', this._onStatsClick);
   }
 }

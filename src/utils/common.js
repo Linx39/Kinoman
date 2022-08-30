@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 const HOUR = 60;
+
 export const DateFormats = {
   ONLY_YEAR: 'YYYY',
   FULL_DATE: 'DD MMMM YYYY',
@@ -16,6 +17,10 @@ export const convertDateToHumanFormat = (date) => {
   dayjs.extend(relativeTime);
   return dayjs(date).fromNow();
 };
+
+export const isDateInPeriod = (date, period) =>
+  dayjs(date).isBefore(dayjs().add(1, 'day'))
+  && dayjs(date).isAfter(dayjs().subtract(period, 'day'));
 
 export const convertTimeToHoursAndMinutes = (time) => {
   const hours = Math.floor(time / HOUR);
@@ -56,8 +61,8 @@ export const getRandomArrayFromArray = (array, arrayLengthMin = 0, arrayLengthMa
 
 export const getRandomDate = (dateA, dateB = Date(), isMinute = false) => {
   const unitOfTime = isMinute ? 'minute' : 'day';
-  const dateDiff = dayjs(dateB).diff(dayjs(dateA), unitOfTime) + 1;
-  const dateAdd = getRandomInteger(1, dateDiff);
+  const dateDiff = dayjs(dateB).diff(dayjs(dateA), unitOfTime);
+  const dateAdd = getRandomInteger(0, dateDiff);
 
   return dayjs(dateA).add(dateAdd, unitOfTime).toDate();
 };

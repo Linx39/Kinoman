@@ -107,24 +107,34 @@ const DESCRIPTIONS = [
 ];
 
 const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((comment) => comment.id), 0, 10);
+const getWatchingDate = (releaseDate, watched) => {
+  const watchingDate = watched? getRandomDate(releaseDate) : null;
+  return watchingDate;
+};
 
-export const generateFilm = (comments) => ({
-  id: nanoid(),
-  poster: `${path}${getRandomElementFromArray(POSTERS)}`,
-  title: getRandomElementFromArray(TITLES),
-  alternativeTitle: getRandomElementFromArray(TITLES),
-  rating: getRandomInteger(0, 100)/10,
-  director: getRandomElementFromArray(DIRECTORS),
-  writers: getRandomArrayFromArray(WRITERS, 1, 3),
-  actors: getRandomArrayFromArray(ACTORS, 1, 10),
-  releaseDate: getRandomDate('1900.01.01'),
-  runtime: getRandomInteger(1, 360),
-  country: getRandomElementFromArray(COUNTRES),
-  genres: getRandomArrayFromArray(GENRES, 1, 4),
-  description: generateRandomText(DESCRIPTIONS, 1, 5),
-  ageRating: getRandomInteger(0,99),
-  comments: getArrayIdComments(comments),
-  watchlist: Boolean(getRandomInteger(0, 1)),
-  watched: Boolean(getRandomInteger(0, 1)),
-  favorite: Boolean(getRandomInteger(0, 1)),
-});
+export const generateFilm = (comments) => {
+  const film = {
+    id: nanoid(),
+    poster: `${path}${getRandomElementFromArray(POSTERS)}`,
+    title: getRandomElementFromArray(TITLES),
+    alternativeTitle: getRandomElementFromArray(TITLES),
+    rating: getRandomInteger(0, 100)/10,
+    director: getRandomElementFromArray(DIRECTORS),
+    writers: getRandomArrayFromArray(WRITERS, 1, 3),
+    actors: getRandomArrayFromArray(ACTORS, 1, 10),
+    releaseDate: getRandomDate('1900.01.01'),
+    runtime: getRandomInteger(1, 360),
+    country: getRandomElementFromArray(COUNTRES),
+    genres: getRandomArrayFromArray(GENRES, 1, 4),
+    description: generateRandomText(DESCRIPTIONS, 1, 5),
+    ageRating: getRandomInteger(0,99),
+    comments: getArrayIdComments(comments),
+    watchlist: Boolean(getRandomInteger(0, 1)),
+    watched: Boolean(getRandomInteger(0, 1)),
+    favorite: Boolean(getRandomInteger(0, 1)),
+  };
+  // film.watchingDate = getWatchingDate(film.releaseDate, film.watched);
+  film.watchingDate = getWatchingDate('2022.07.01', film.watched);
+
+  return film;
+};
