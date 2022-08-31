@@ -19,7 +19,7 @@ filmsModel.setFilms(films);
 const commentsModel = new CommentsModel();
 commentsModel.setComments(filmsComments);
 const filterModel = new FilterModel();
-// console.log (filmsModel.getFilms());
+
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');

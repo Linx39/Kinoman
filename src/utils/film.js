@@ -53,6 +53,6 @@ export const getRatingName = (filmsCount) => {
   return ProfileRating
     .slice()
     .reverse()
-    .find((profile) => filmsCount >= profile.watchedFilmsMinCount)
-    .ratingName;
+    .find((profile) => filmsCount >= profile.count)
+    .name;
 };

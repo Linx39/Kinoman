@@ -2,9 +2,9 @@ export const FILMS_COUNT = 24;
 export const COMMENTS_COUNT = 100;
 
 export const ProfileRating = [
-  {ratingName: 'Novice', watchedFilmsMinCount: 1},
-  {ratingName: 'Fan', watchedFilmsMinCount: 11},
-  {ratingName: 'Movie Buff', watchedFilmsMinCount: 21},
+  {name: 'Novice', count: 1},
+  {name: 'Fan', count: 11},
+  {name: 'Movie Buff', count: 21},
 ];
 
 export const SortType = {

@@ -107,8 +107,8 @@ const DESCRIPTIONS = [
 ];
 
 const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((comment) => comment.id), 0, 10);
-const getWatchingDate = (releaseDate, watched) => {
-  const watchingDate = watched? getRandomDate(releaseDate) : null;
+const getWatchingDate = (startDate, watched) => {
+  const watchingDate = watched? getRandomDate(startDate) : null;
   return watchingDate;
 };
 
@@ -133,8 +133,7 @@ export const generateFilm = (comments) => {
     watched: Boolean(getRandomInteger(0, 1)),
     favorite: Boolean(getRandomInteger(0, 1)),
   };
-  // film.watchingDate = getWatchingDate(film.releaseDate, film.watched);
-  film.watchingDate = getWatchingDate('2022.07.01', film.watched);
+  film.watchingDate = getWatchingDate('2019.07.01', film.watched);
 
   return film;
 };

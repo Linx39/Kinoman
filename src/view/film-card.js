@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import {formatDate, DateFormats, convertTimeToHoursAndMinutes} from '../utils/common.js';
+import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
 
 const DESCRIPTON_LENGTH = 139;
 
@@ -20,14 +20,12 @@ const createFilmCardTemplate = (film) => {
     favorite,
   } = film;
 
-  const filmReleaseDate = formatDate(releaseDate, DateFormats.ONLY_YEAR);
-  const filmRuntime = convertTimeToHoursAndMinutes(runtime);
-  const genre = genres[0];
-  const descriptionText = description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH)}...`;
-  const commentsCount = comments.length;
-  const watchlistClassName = watchlist? CONTROL_ACTIVE_CLASS : '';
-  const watchedClassName = watched? CONTROL_ACTIVE_CLASS : '';
-  const favoriteClassName = favorite? CONTROL_ACTIVE_CLASS : '';
+  const getRuntimeTemplate = (time) => {
+    const hoursAndMinutes = convertTimeToHoursAndMinutes(time);
+    const hours = hoursAndMinutes.hours !== 0? `${hoursAndMinutes.hours}h` : '';
+    const minutes = hoursAndMinutes.minutes.lenght === 1? `0${hoursAndMinutes.minutes}m` : `${hoursAndMinutes.minutes}m`;
+    return `${hours} ${minutes}`;
+  };
 
   return (
     `<article class="film-card">
@@ -35,21 +33,21 @@ const createFilmCardTemplate = (film) => {
 
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${filmReleaseDate}</span>
-        <span class="film-card__duration">${filmRuntime}</span>
-        <span class="film-card__genre">${genre}</span>
+        <span class="film-card__year">${formatDate(releaseDate, DateFormats.ONLY_YEAR)}</span>
+        <span class="film-card__duration">${getRuntimeTemplate(runtime)}</span>
+        <span class="film-card__genre">${genres[0]}</span>
       </p>
 
       <img src="${poster}" alt="" class="film-card__poster">
 
-      <p class="film-card__description">${descriptionText}</p>
+      <p class="film-card__description">${description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH)}...`}</p>
       
-      <a class="film-card__comments">${commentsCount} comments</a>
+      <a class="film-card__comments">${comments.length} comments</a>
       
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlistClassName}" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${watchedClassName}" type="button">Mark as watched</button>
-        <button class="film-card__controls-item film-card__controls-item--favorite ${favoriteClassName}" type="button">Mark as favorite</button>
+        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlist? CONTROL_ACTIVE_CLASS : ''}" type="button">Add to watchlist</button>
+        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${watched? CONTROL_ACTIVE_CLASS : ''}" type="button">Mark as watched</button>
+        <button class="film-card__controls-item film-card__controls-item--favorite ${favorite? CONTROL_ACTIVE_CLASS : ''}" type="button">Mark as favorite</button>
       </div>
     </article>`);
 };

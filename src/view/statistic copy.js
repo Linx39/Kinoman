@@ -17,15 +17,7 @@ const StatisticFilterType = {
   YEAR: 'year',
 };
 
-const StatisticFilterName = [
-  {type: StatisticFilterType.ALLTIME, name: 'All time'},
-  {type: StatisticFilterType.TODAY, name: 'Today'},
-  {type: StatisticFilterType.WEEK, name: 'Week'},
-  {type: StatisticFilterType.MONTH, name: 'Month'},
-  {type: StatisticFilterType.YEAR, name: 'Year'},
-];
-
-const statisticFilter = {
+const filterStatistic = {
   [StatisticFilterType.ALLTIME]: (films) => films,
   [StatisticFilterType.TODAY]: (films) => films.filter((film) => isDateInPeriod(film.watchingDate, Period.DAY)),
   [StatisticFilterType.WEEK]: (films) => films.filter((film) => isDateInPeriod(film.watchingDate, Period.WEEK)),
@@ -56,22 +48,35 @@ const createStatisticFiltersTemplate = (item, currentFilter) => {
     <label for="statistic-${type}" class="statistic__filters-label">${name}</label>`);
 };
 
-const createStatisticTemplate = (films, currentFilter) => {
-  const statisticFiltersTemplate = StatisticFilterName
+const createStatisticTemplate = (films, filters, currentFilter) => {
+  const ratingName = getRatingName(films.length);
+
+  const filmsCount = filters
+    .find((item) => item.type === currentFilter)
+    .count;
+
+  const totalDuration = filters
+    .find((item) => item.type === currentFilter)
+    .duration;
+
+  const duration = convertTimeToHoursAndMinutes(totalDuration);
+
+  const topGenre = filters
+    .find((item) => item.type === currentFilter)
+    .genre;
+
+  const statisticFiltersTemplate = filters
     .map((item) => createStatisticFiltersTemplate(item, currentFilter))
     .slice()
     .join('');
 
-  const filterFilms = statisticFilter[currentFilter](films);
-
-  const totalDuration = convertTimeToHoursAndMinutes(getDuration(filterFilms));
 
   return (
     `<section class="statistic">
       <p class="statistic__rank">
         Your rank
         <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">${getRatingName(films.length)}</span>
+        <span class="statistic__rank-label">${ratingName}</span>
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
@@ -82,15 +87,15 @@ const createStatisticTemplate = (films, currentFilter) => {
       <ul class="statistic__text-list">
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">You watched</h4>
-          <p class="statistic__item-text">${filterFilms.length} <span class="statistic__item-description">movies</span></p>
+          <p class="statistic__item-text">${filmsCount} <span class="statistic__item-description">movies</span></p>
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Total duration</h4>
-          <p class="statistic__item-text">${totalDuration.hours} <span class="statistic__item-description">h</span> ${totalDuration.minutes} <span class="statistic__item-description">m</span></p>
+          <p class="statistic__item-text">${duration.hours} <span class="statistic__item-description">h</span> ${duration.minutes} <span class="statistic__item-description">m</span></p>
         </li>
         <li class="statistic__text-item">
           <h4 class="statistic__item-title">Top genre</h4>
-          <p class="statistic__item-text">${getTopGenre(filterFilms)}</p>
+          <p class="statistic__item-text">${topGenre}</p>
         </li>
       </ul>
 
@@ -106,7 +111,7 @@ export default class Statistic extends SmartView {
     super();
     this._films = films.filter((film) => film.watched);
 
-    this._filters = StatisticFilterName;
+    this._filters = this._getFilters();
     this._currentFilter = StatisticFilterType.ALLTIME;
 
     this._onStatisticFiltersClick = this._onStatisticFiltersClick.bind(this);
@@ -121,7 +126,7 @@ export default class Statistic extends SmartView {
   }
 
   getTemplate() {
-    return createStatisticTemplate(this._films, this._currentFilter);
+    return createStatisticTemplate(this._films, this._filters, this._currentFilter);
   }
 
   restoreListeners() {
@@ -147,5 +152,47 @@ export default class Statistic extends SmartView {
 
   _setCharts() {
     // Нужно отрисовать два графика
+  }
+
+  _getFilters() {
+    const films = this._films;
+
+    return [
+      {
+        type: StatisticFilterType.ALLTIME,
+        name: 'All time',
+        count: filterStatistic[StatisticFilterType.ALLTIME](films).length,
+        duration: getDuration(films),
+        genre: getTopGenre(films),
+      },
+      {
+        type: StatisticFilterType.TODAY,
+        name: 'Today',
+        count: filterStatistic[StatisticFilterType.TODAY](films).length,
+        duration: getDuration(filterStatistic[StatisticFilterType.TODAY](films)),
+        genre: getTopGenre(filterStatistic[StatisticFilterType.TODAY](films)),
+      },
+      {
+        type: StatisticFilterType.WEEK,
+        name: 'Week',
+        count: filterStatistic[StatisticFilterType.WEEK](films).length,
+        duration: getDuration(filterStatistic[StatisticFilterType.WEEK](films)),
+        genre: getTopGenre(filterStatistic[StatisticFilterType.WEEK](films)),
+      },
+      {
+        type: StatisticFilterType.MONTH,
+        name: 'Month',
+        count: filterStatistic[StatisticFilterType.MONTH](films).length,
+        duration: getDuration(filterStatistic[StatisticFilterType.MONTH](films)),
+        genre: getTopGenre(filterStatistic[StatisticFilterType.MONTH](films)),
+      },
+      {
+        type: StatisticFilterType.YEAR,
+        name: 'Year',
+        count: filterStatistic[StatisticFilterType.YEAR](films).length,
+        duration: getDuration(filterStatistic[StatisticFilterType.YEAR](films)),
+        genre: getTopGenre(filterStatistic[StatisticFilterType.YEAR](films)),
+      },
+    ];
   }
 }

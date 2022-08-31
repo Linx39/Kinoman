@@ -19,8 +19,8 @@ export default class HeaderProfile {
 
   init() {
     const films = this._filmsModel.getFilms();
-    const hystoryFilmsCount = filter[FilterType.HISTORY](films).length;
-    const ratingName = getRatingName(hystoryFilmsCount);
+    const filmsCount = filter[FilterType.HISTORY](films).length;
+    const ratingName = getRatingName(filmsCount);
 
     const headerProfileComponent = this._headerProfileComponent;
 

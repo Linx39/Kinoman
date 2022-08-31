@@ -24,17 +24,9 @@ export const isDateInPeriod = (date, period) =>
 
 export const convertTimeToHoursAndMinutes = (time) => {
   const hours = Math.floor(time / HOUR);
-  let minutes = time - hours * HOUR;
+  const minutes = time - hours * HOUR;
 
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
-  }
-
-  if (hours === 0) {
-    return `${minutes}m`;
-  }
-
-  return `${hours}h ${minutes}m`;
+  return {hours, minutes};
 };
 
 export const getRandomInteger = (a = 0, b = 1) => {
