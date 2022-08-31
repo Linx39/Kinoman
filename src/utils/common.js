@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import isBetween from 'dayjs/plugin/isBetween';
+
+dayjs.extend(relativeTime);
+dayjs.extend(isBetween);
 
 const HOUR = 60;
 
@@ -13,27 +17,20 @@ export const getDayDiff = (dateA, dateB) => dayjs(dateA).diff(dayjs(dateB));
 
 export const formatDate = (date, dateFormat) => dayjs(date).format(dateFormat);
 
-export const convertDateToHumanFormat = (date) => {
-  dayjs.extend(relativeTime);
-  return dayjs(date).fromNow();
-};
+export const convertDateToHumanFormat = (date) => dayjs(date).fromNow();
 
-export const isDateInPeriod = (date, period) =>
-  dayjs(date).isBefore(dayjs().add(1, 'day'))
-  && dayjs(date).isAfter(dayjs().subtract(period, 'day'));
+export const isDateInPeriod = (date, period) => dayjs(date).isBetween(dayjs().subtract(period, 'day'), dayjs().add(1, 'day'));
 
 export const convertTimeToHoursAndMinutes = (time) => {
   const hours = Math.floor(time / HOUR);
   const minutes = time - hours * HOUR;
-
   return {hours, minutes};
 };
 
 export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
+  const min = Math.ceil(Math.min(a, b));
+  const max = Math.floor(Math.max(a, b));
+  return Math.floor(min + Math.random() * (max - min + 1));
 };
 
 export const getRandomElementFromArray = (array) => array[getRandomInteger(0, array.length - 1)];

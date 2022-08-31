@@ -3,9 +3,9 @@ import FilmDetailsView from '../view/film-details.js';
 import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
-import {isEscEvent} from '../utils/common.js';
-import {render, remove, replace, close, open} from '../utils/render.js';
-import {UserAction, UpdateType} from '../const.js';
+import { isEscEvent} from '../utils/common.js';
+import { render, remove, replace, close, open } from '../utils/render.js';
+import { UserAction, UpdateType } from '../const.js';
 import { nanoid } from 'nanoid';
 
 export default class Movie {
@@ -27,7 +27,7 @@ export default class Movie {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
     this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
-    this._handleCommentDeleteClick = this._handleCommentDelete.bind(this);
+    this._handleCommentDelete = this._handleCommentDelete.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
 
@@ -132,7 +132,7 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      {...this._film, watched: !this._film.watched},
+      {...this._film, watched: !this._film.watched, watchingDate: this._film.watched? Date() : null },
     );
   }
 

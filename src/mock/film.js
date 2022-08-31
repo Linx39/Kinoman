@@ -133,7 +133,7 @@ export const generateFilm = (comments) => {
     watched: Boolean(getRandomInteger(0, 1)),
     favorite: Boolean(getRandomInteger(0, 1)),
   };
-  film.watchingDate = getWatchingDate('2019.07.01', film.watched);
+  film.watchingDate = getWatchingDate('2022.01.01', film.watched);
 
   return film;
 };

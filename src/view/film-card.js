@@ -1,9 +1,10 @@
 import AbstractView from './abstract.js';
-import { formatDate, DateFormats, convertTimeToHoursAndMinutes } from '../utils/common.js';
+import { formatDate, DateFormats } from '../utils/common.js';
+import { getRuntimeTemplate } from '../utils/film.js';
 
 const DESCRIPTON_LENGTH = 139;
 
-const CONTROL_ACTIVE_CLASS = 'film-card__controls-item--active';
+const ITEM_ACTIVE_CLASS = 'film-card__controls-item--active';
 
 const createFilmCardTemplate = (film) => {
   const {
@@ -19,13 +20,6 @@ const createFilmCardTemplate = (film) => {
     watched,
     favorite,
   } = film;
-
-  const getRuntimeTemplate = (time) => {
-    const hoursAndMinutes = convertTimeToHoursAndMinutes(time);
-    const hours = hoursAndMinutes.hours !== 0? `${hoursAndMinutes.hours}h` : '';
-    const minutes = hoursAndMinutes.minutes.lenght === 1? `0${hoursAndMinutes.minutes}m` : `${hoursAndMinutes.minutes}m`;
-    return `${hours} ${minutes}`;
-  };
 
   return (
     `<article class="film-card">
@@ -45,9 +39,9 @@ const createFilmCardTemplate = (film) => {
       <a class="film-card__comments">${comments.length} comments</a>
       
       <div class="film-card__controls">
-        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlist? CONTROL_ACTIVE_CLASS : ''}" type="button">Add to watchlist</button>
-        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${watched? CONTROL_ACTIVE_CLASS : ''}" type="button">Mark as watched</button>
-        <button class="film-card__controls-item film-card__controls-item--favorite ${favorite? CONTROL_ACTIVE_CLASS : ''}" type="button">Mark as favorite</button>
+        <button class="film-card__controls-item film-card__controls-item--add-to-watchlist ${watchlist? ITEM_ACTIVE_CLASS : ''}" type="button">Add to watchlist</button>
+        <button class="film-card__controls-item film-card__controls-item--mark-as-watched ${watched? ITEM_ACTIVE_CLASS : ''}" type="button">Mark as watched</button>
+        <button class="film-card__controls-item film-card__controls-item--favorite ${favorite? ITEM_ACTIVE_CLASS : ''}" type="button">Mark as favorite</button>
       </div>
     </article>`);
 };

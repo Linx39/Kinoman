@@ -1,5 +1,6 @@
-import { getDayDiff } from './common.js';
+import { getDayDiff, convertTimeToHoursAndMinutes } from './common.js';
 import { ProfileRating } from '../const.js';
+
 
 const getWeightForNullData = (dataA, dataB) => {
   if (dataA === null && dataB === null) {
@@ -55,4 +56,12 @@ export const getRatingName = (filmsCount) => {
     .reverse()
     .find((profile) => filmsCount >= profile.count)
     .name;
+};
+
+export const getRuntimeTemplate = (time) => {
+  const hoursAndMinutes = convertTimeToHoursAndMinutes(time);
+
+  const hoursTemplate = hoursAndMinutes.hours !== 0? `${hoursAndMinutes.hours}h` : '';
+  const minutesTemplate = hoursAndMinutes.minutes.lenght === 1? `0${hoursAndMinutes.minutes}m` : `${hoursAndMinutes.minutes}m`;
+  return `${hoursTemplate} ${minutesTemplate}`;
 };

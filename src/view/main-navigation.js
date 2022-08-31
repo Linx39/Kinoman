@@ -1,14 +1,14 @@
 import AbstractView from './abstract.js';
 import { FilterType } from '../const.js';
 
-const classMainNavigationItemActive = 'main-navigation__item--active';
-const classMainNavigationAdditionalActive = 'main-navigation__additional--active';
+const ITEM_ACTIVE_CLASS = 'main-navigation__item--active';
+const ADDITIONAL_ACTIVE_CLASS = 'main-navigation__additional--active';
 
 const createMainNavigationItemTemplate = (item, currentFilterType) => {
   const {type, name, count} = item;
 
   return (
-    `<a href="#${type}" class="main-navigation__item ${type === currentFilterType ? classMainNavigationItemActive : ''}" data-type = ${type}>${name}
+    `<a href="#${type}" class="main-navigation__item ${type === currentFilterType ? ITEM_ACTIVE_CLASS : ''}" data-type = ${type}>${name}
       ${type !== FilterType.ALL? `<span class="main-navigation__item-count" data-type = ${type}>${count}</span>` : ''}
     </a>`);
 };
@@ -25,7 +25,7 @@ const createMainNavigationTemplate = (filters, currentFilterType) => {
         ${mainNavigationItemsTemplate}
       </div>
       
-      <a href="#stats" class="main-navigation__additional ${currentFilterType === null ? classMainNavigationAdditionalActive : ''}">Stats</a>
+      <a href="#stats" class="main-navigation__additional ${currentFilterType === null ? ADDITIONAL_ACTIVE_CLASS : ''}">Stats</a>
     </nav>`);
 };
 

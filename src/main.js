@@ -6,7 +6,7 @@ import StatisticView from './view/statistic.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
-import {render } from './utils/render.js';
+import { render } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT, ModeNavigation } from './const.js';
 import { generateFilm } from './mock/film';
 import { generateComment } from './mock/comment.js';

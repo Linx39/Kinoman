@@ -7,10 +7,10 @@ import FilmsListMostCommentedView from '../view/films-list-most-commented';
 import FilmsListContainerView from '../view/films-list-container';
 import MoviePresenter from './movie';
 import NoMoviesPresenter from './no-movies.js';
-import {render, remove} from '../utils/render.js';
-import {sortFilmsDate, sortFilmsRating, sortFilmsComments} from '../utils/film.js';
-import {SortType, UpdateType, UserAction} from '../const.js';
-import {filter} from '../utils/filter.js';
+import { render, remove } from '../utils/render.js';
+import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
+import { SortType, UpdateType, UserAction } from '../const.js';
+import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
 const EXTRA_CARD_COUNT = 2;
@@ -287,6 +287,7 @@ export default class MoviesBlock {
     switch (actionType) {
       case UserAction.EDITFILM:
         this._filmsModel.editFilm(updateType, updateFilm);
+        console.log (this._filmsModel.getFilms());
         break;
       case UserAction.ADDCOMMENT:
         this._commentsModel.addComment(UpdateType.NOTHING, updateComment);

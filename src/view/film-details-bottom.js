@@ -1,14 +1,12 @@
 import he from 'he';
 import SmartView from './smart.js';
-import {convertDateToHumanFormat} from '../utils/common.js';
-import {isCtrlEnterEvent} from '../utils/common.js';
+import { convertDateToHumanFormat } from '../utils/common.js';
+import { isCtrlEnterEvent } from '../utils/common.js';
 
-const noComment = '(the author left no comment)';
+const NO_COMMENT = '(the author left no comment)';
 
 const createCommentTemplate = (filmComment) => {
   const {id, author, comment, date, emotion } = filmComment;
-  const dateTemplate = convertDateToHumanFormat(date);
-  const commentTemplate = (comment !== null && comment.trim() !== '')? comment : noComment;
 
   return (
     `<li class="film-details__comment">
@@ -16,19 +14,15 @@ const createCommentTemplate = (filmComment) => {
         <img src="${emotion}" width="55" height="55" alt="emoji-smile">
       </span>
       <div>
-        <p class="film-details__comment-text">${commentTemplate}</p>
+        <p class="film-details__comment-text">${(comment !== null && comment.trim() !== '')? comment : NO_COMMENT}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${dateTemplate}</span>
+          <span class="film-details__comment-day">${convertDateToHumanFormat(date)}</span>
           <button class="film-details__comment-delete" data-id = "${id}">Delete</button>
         </p>
       </div>
     </li>`);
 };
-
-const createCommentsTemplate = (filmComments) => Object.values(filmComments)
-  .map((filmComment) => createCommentTemplate(filmComment))
-  .join('');
 
 const createNewCommentTemplate = (newComment) => {
   const {comment, emotion, imgAlt} = newComment;
@@ -65,14 +59,16 @@ const createNewCommentTemplate = (newComment) => {
 };
 
 const createFilmDetailsTemplate = (filmComments, newComment) => {
-  const commentsTemplate = createCommentsTemplate(filmComments);
+  const commentsTemplate = Object.values(filmComments)
+    .map((filmComment) => createCommentTemplate(filmComment))
+    .join('');
+
   const newCommentsTemplate = createNewCommentTemplate(newComment);
-  const commentsCount = filmComments.length;
 
   return (
     `<div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${commentsCount}</span></h3>
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
         <ul class="film-details__comments-list">
           ${commentsTemplate}
         </ul>
@@ -141,7 +137,6 @@ export default class FilmDetailsBottom extends SmartView {
       return;
     }
     evt.preventDefault();
-
     this._callback.commentDeleteClick(evt.target.dataset.id);
   }
 
