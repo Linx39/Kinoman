@@ -6,7 +6,7 @@ import StatisticView from './view/statistic.js';
 import FilmsModel from './model/films.js';
 import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
-import { render } from './utils/render.js';
+import { render, remove } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT, ModeNavigation } from './const.js';
 import { generateFilm } from './mock/film';
 import { generateComment } from './mock/comment.js';
@@ -26,18 +26,20 @@ const footerElement = document.querySelector('.footer');
 
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel);
 const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, commentsModel, filterModel);
-const statisticViewComponent = new StatisticView(filmsModel.getFilms());
+
+let statisticComponent = null;
 
 const handleMainNavigationClick = (menuItem) => {
   switch (menuItem) {
-    case ModeNavigation.FILTER:// проверить в девтулзе порядок удаления/инита
+    case ModeNavigation.FILTER:
       moviesBlockPresenter.destroy();
-      statisticViewComponent.hideElement();
+      remove(statisticComponent);
       moviesBlockPresenter.init();
       break;
     case ModeNavigation.STATISTICS:
       moviesBlockPresenter.destroy();
-      statisticViewComponent.showElement();
+      statisticComponent = new StatisticView(filmsModel.getFilms());
+      render(mainElement, statisticComponent);
       break;
   }
 };
@@ -46,7 +48,5 @@ const mainNavigationPresenter = new MainNavigationPresenter(mainElement, filterM
 
 headerProfilePresenter.init();
 mainNavigationPresenter.init();
-// moviesBlockPresenter.init();
-render(mainElement, statisticViewComponent);
-// statisticViewComponent.hideElement();
+moviesBlockPresenter.init();
 render(footerElement, new FooterStatisticsView(films));

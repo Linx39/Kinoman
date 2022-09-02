@@ -287,7 +287,6 @@ export default class MoviesBlock {
     switch (actionType) {
       case UserAction.EDITFILM:
         this._filmsModel.editFilm(updateType, updateFilm);
-        console.log (this._filmsModel.getFilms());
         break;
       case UserAction.ADDCOMMENT:
         this._commentsModel.addComment(UpdateType.NOTHING, updateComment);

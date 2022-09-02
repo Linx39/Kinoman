@@ -1,7 +1,5 @@
 import NoMoviesView from '../view/no-movies.js';
-import {render, replace, remove} from '../utils/render.js';
-import {filter} from '../utils/filter.js';
-import {FilterType} from '../const.js';
+import { render, replace, remove } from '../utils/render.js';
 
 export default class NoMovies {
   constructor(noMoviesContainer, filterModel) {
@@ -31,10 +29,4 @@ export default class NoMovies {
   _handleModelEvent() {
     this.init();
   }
-
-  // _getRatingName() {
-  //   const films = this._filterModel.getFilms();
-  //   const filmsCount = filter[FilterType.HISTORY](films).length;
-  // }
-
 }

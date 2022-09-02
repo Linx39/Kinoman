@@ -19,7 +19,7 @@ export const formatDate = (date, dateFormat) => dayjs(date).format(dateFormat);
 
 export const convertDateToHumanFormat = (date) => dayjs(date).fromNow();
 
-export const isDateInPeriod = (date, period) => dayjs(date).isBetween(dayjs().subtract(period, 'day'), dayjs().add(1, 'day'));
+export const isDateInRange = (date, range) => dayjs(date).isBetween(dayjs().subtract(range, 'day'), dayjs().add(1, 'day'));
 
 export const convertTimeToHoursAndMinutes = (time) => {
   const hours = Math.floor(time / HOUR);

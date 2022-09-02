@@ -132,7 +132,7 @@ export default class Movie {
     this._changeData(
       UserAction.EDITFILM,
       UpdateType.MINOR,
-      {...this._film, watched: !this._film.watched, watchingDate: this._film.watched? Date() : null },
+      {...this._film, watched: !this._film.watched, watchingDate: !this._film.watched? Date() : null },
     );
   }
 
