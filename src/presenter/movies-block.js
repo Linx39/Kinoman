@@ -8,16 +8,12 @@ import FilmsListContainerView from '../view/films-list-container';
 import MoviePresenter from './movie';
 import NoMoviesPresenter from './no-movies.js';
 import { render, remove } from '../utils/render.js';
-import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/film.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
+import { sortFilmsDate, sortFilmsRating, sortFilmsComments } from '../utils/films.js';
+import { SortType, UpdateType, UserAction, ModeView } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
 const EXTRA_CARD_COUNT = 2;
-const Mode = {
-  CARDS: 'CARDS',
-  POPUP: 'POPUP',
-};
 
 const StorageType = {
   ALL: 'all',
@@ -44,7 +40,7 @@ export default class MoviesBlock {
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
     this._noMoviesPresenter = null;
-    this._mode = Mode.CARDS;
+    this._modeView = ModeView.CARDS;
 
     this._filmsComponent = new FilmsView();
     this._filmsListAllComponent = new FilmsListAllView();
@@ -224,7 +220,7 @@ export default class MoviesBlock {
       this._renderFilmsListMostCommented();
     }
 
-    if (this._mode === Mode.POPUP) {
+    if (this._modeView === ModeView.POPUP) {
       const popupFilmId = this._popupFilm.id;
       const popupFilm = this._filmsModel.getFilms().find((film) => film.id === popupFilmId);
       this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(popupFilm));
@@ -267,10 +263,10 @@ export default class MoviesBlock {
   }
 
   _handlePopupOpening(popupFilm) {
-    if (this._mode === Mode.POPUP) {
+    if (this._modeView === ModeView.POPUP) {
       this._popupMoviePresenter.closeFilmDetails();
     }
-    this._mode = Mode.POPUP;
+    this._modeView = ModeView.POPUP;
     this._popupFilm = popupFilm;
 
     this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupOpening, this._handlePopupClosing);
@@ -279,7 +275,7 @@ export default class MoviesBlock {
   }
 
   _handlePopupClosing() {
-    this._mode = Mode.CARDS;
+    this._modeView = ModeView.CARDS;
     this._popupMoviePresenter = null;
   }
 

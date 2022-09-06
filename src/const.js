@@ -37,3 +37,8 @@ export const ModeNavigation = {
   FILTER: 'FILTER',
   STATISTICS: 'STATISTICS',
 };
+
+export const ModeView = {
+  CARDS: 'CARDS',
+  POPUP: 'POPUP',
+};

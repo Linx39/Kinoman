@@ -97,11 +97,16 @@ export default class Movie {
     remove(this._filmCardComponent);
   }
 
+  destroyFilmDetails() {
+    remove(this._filmDetailsComponent);
+  }
+
   closeFilmDetails() {
     this._changeModeClosedPopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
-    remove(this._filmDetailsComponent);
+    this._filmDetailsBottomComponent.removeCtrlEnterDownListener();
+    this.destroyFilmDetails();
   }
 
   openFilmDetails() {
@@ -180,7 +185,6 @@ export default class Movie {
       this._film,
       newComment,
     );
-
   }
 
   _handleButtonCloseClick() {

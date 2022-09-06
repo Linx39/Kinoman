@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
 import { formatDate, DateFormats } from '../utils/common.js';
-import { getRuntimeTemplate } from '../utils/film.js';
+import { getRuntimeTemplate } from '../utils/films.js';
 
 const BUTTON_ACTIVE_CLASS = 'film-details__control-button--active';
 const GENRE = 'Genre';

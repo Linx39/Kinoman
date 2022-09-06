@@ -54,9 +54,7 @@ export default class MainNavigation extends AbstractView {
 
   setFilterItemClickListener(callback) {
     this._callback.filterItemClick = callback;
-    this.getElement()
-      .querySelector('.main-navigation__items')
-      .addEventListener('click', this._onFilterItemClick);
+    this.getElement().querySelector('.main-navigation__items').addEventListener('click', this._onFilterItemClick);
   }
 
   _onStatsClick(evt) {
@@ -67,8 +65,6 @@ export default class MainNavigation extends AbstractView {
 
   setStatsClickListener(callback) {
     this._callback.statsClick = callback;
-    this.getElement()
-      .querySelector('.main-navigation__additional')
-      .addEventListener('click', this._onStatsClick);
+    this.getElement().querySelector('.main-navigation__additional').addEventListener('click', this._onStatsClick);
   }
 }

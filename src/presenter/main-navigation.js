@@ -57,6 +57,10 @@ export default class MainNavigation {
   }
 
   _handleStatsClick() {
+    if (this._currentModeNavigation === ModeNavigation.STATISTICS) {
+      return;
+    }
+
     this._currentModeNavigation = ModeNavigation.STATISTICS;
     this.init();
     this._changeModeNavigation(this._currentModeNavigation);

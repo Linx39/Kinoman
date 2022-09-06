@@ -102,14 +102,18 @@ export default class FilmDetailsBottom extends SmartView {
     }
     evt.preventDefault();
 
-    this._newCommentState = {...this._newCommentState, emotion: evt.target.src, imgAlt: evt.target.parentElement.htmlFor};
+    this._newCommentState = {
+      ...this._newCommentState,
+      emotion: evt.target.src,
+      imgAlt: evt.target.parentElement.htmlFor,
+    };
     this.updateState(this._newCommentState);
 
     for (const input of evt.currentTarget.querySelectorAll('input')) {
       input.checked = false;
     }
 
-    evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;//или добавить это в if
+    evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;
   }
 
   _onCommentInput(evt) {
@@ -145,19 +149,21 @@ export default class FilmDetailsBottom extends SmartView {
     this.getElement().querySelector('.film-details__comments-list').addEventListener('click', this._onCommentDeleteClick);
   }
 
+  removeCtrlEnterDownListener() {
+    document.removeEventListener('keydown', this._onCtrlEnterDown);
+  }
+
   _onCtrlEnterDown(evt) {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
       this._callback.commentSubmit(FilmDetailsBottom.parseStateToComment(this._newCommentState));
-      document.removeEventListener('keydown', this._onCtrlEnterDown);// еще надо отписаться при закрытии
+      this.removeCtrlEnterDownListener();
     }
   }
 
   setCommentSubmitListener(callback) {
     this._callback.commentSubmit = callback;
-    // this.getElement().querySelector('.film-details__comment-input')
-    document
-      .addEventListener('keydown', this._onCtrlEnterDown);
+    document.addEventListener('keydown', this._onCtrlEnterDown);
   }
 
   static parseCommentToState(comment) {

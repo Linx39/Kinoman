@@ -1,6 +1,6 @@
 import AbstractView from './abstract.js';
 import { formatDate, DateFormats } from '../utils/common.js';
-import { getRuntimeTemplate } from '../utils/film.js';
+import { getRuntimeTemplate } from '../utils/films.js';
 
 const DESCRIPTON_LENGTH = 139;
 

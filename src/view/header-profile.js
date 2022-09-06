@@ -13,12 +13,12 @@ const createHeaderProfileTemplate = (ratingName) => {
 };
 
 export default class HeaderProfile extends AbstractView {
-  constructor(filmsCount) {
+  constructor(ratingName) {
     super();
-    this._filmsCount = filmsCount;
+    this._ratingName = ratingName;
   }
 
   getTemplate() {
-    return createHeaderProfileTemplate(this._filmsCount);
+    return createHeaderProfileTemplate(this._ratingName);
   }
 }

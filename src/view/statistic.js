@@ -1,7 +1,7 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
-import { getRatingName } from '../utils/film.js';
+import { getRatingName } from '../utils/films.js';
 import { isDateInRange, convertTimeToHoursAndMinutes } from '../utils/common.js';
 
 const BAR_HEIGHT = 50;
@@ -39,15 +39,16 @@ const statisticFilter = {
 
 const getDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
 
-const getGenresToCount = (films) => {
-  let genresList = new Array();
-  films.forEach((film) => genresList = [...genresList, ...film.genres]);
+const getUniqueGenresToCount = (films) => {
+  let allGenres = [];
+  films.forEach((film) => allGenres = [...allGenres, ...film.genres]);
+  const uniqueGenresToCount = Array.from(new Set(allGenres))
+    .map((genre) => ({genre, count: allGenres.filter((value) => value === genre).length}));
 
-  return Array.from(new Set(genresList))
-    .map((genre) => ({genre, count: genresList.filter((value) => value === genre).length}));
+  return uniqueGenresToCount;
 };
 
-const getGenresSortByCount = (films) => getGenresToCount(films).sort((elementA, elementB) => elementB.count - elementA.count);
+const getGenresSortByCount = (films) => getUniqueGenresToCount(films).sort((elementA, elementB) => elementB.count - elementA.count);
 
 const getTopGenre = (films) => {
   if (films.length === 0) {
@@ -172,20 +173,12 @@ export default class Statistic extends SmartView {
 
     this._currentFilter = StatisticFilterType.ALLTIME;
     this._filterFilms = this._films;
-    this._genresChart = null;
 
     this._onStatisticFiltersClick = this._onStatisticFiltersClick.bind(this);
 
     this._setStatisticFilters();
     this._setCharts();
 
-  }
-
-  removeElement() {
-    super.removeElement();
-    if (this._genresChart !== null) {
-      this._genresChart === null;
-    }
   }
 
   getTemplate() {
@@ -195,6 +188,11 @@ export default class Statistic extends SmartView {
   restoreListeners() {
     this._setCharts();
     this._setStatisticFilters();
+  }
+
+  removeElement() {
+    this._resetChart();
+    super.removeElement();
   }
 
   _onStatisticFiltersClick(evt) {
@@ -214,19 +212,22 @@ export default class Statistic extends SmartView {
       .addEventListener('click', this._onStatisticFiltersClick);
   }
 
-  _setCharts() {
+  _resetChart() {
     if (this._genresChart !== null) {
       this._genresChart === null;
     }
+  }
 
-    const statisticCtx = this.getElement().querySelector('.statistic__chart');
+  _setCharts() {
+    this._resetChart();
 
     const genresToCount = getGenresSortByCount(this._filterFilms);
     const genres = genresToCount.map((value) => value.genre);
     const counts = genresToCount.map((value) => value.count);
-    const barCount = genres.length;
-    statisticCtx.height = BAR_HEIGHT * barCount;
 
-    this._genresChart = renderGenresChart(statisticCtx, genres, counts);
+    const statisticCtxElement = this.getElement().querySelector('.statistic__chart');
+    statisticCtxElement.height = BAR_HEIGHT * genres.length;
+
+    this._genresChart = renderGenresChart(statisticCtxElement, genres, counts);
   }
 }

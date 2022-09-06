@@ -8,7 +8,7 @@ import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
 import { render, remove } from './utils/render.js';
 import { FILMS_COUNT, COMMENTS_COUNT, ModeNavigation } from './const.js';
-import { generateFilm } from './mock/film';
+import { generateFilm } from './mock/films.js';
 import { generateComment } from './mock/comment.js';
 
 const filmsComments = new Array(COMMENTS_COUNT).fill().map(generateComment);
