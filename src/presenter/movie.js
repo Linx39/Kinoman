@@ -1,6 +1,5 @@
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
-import FilmDetailsFormView from '../view/film-details-form.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent} from '../utils/common.js';
@@ -17,7 +16,7 @@ export default class Movie {
     this._film = null;
     this._filmComments = null;
     this._filmCardComponent = null;
-    this._filmDetailsComponent = null;
+    // this._filmDetailsComponent = null;
     this._filmDetailsTopComponent = null;
     this._filmDetailsBottomComponent = null;
 
@@ -80,10 +79,9 @@ export default class Movie {
 
     if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
       this._filmDetailsComponent = new FilmDetailsView();
-      this._filmDetailsFormComponent = new FilmDetailsFormView();
-      render(this._filmDetailsComponent, this._filmDetailsFormComponent);
-      render(this._filmDetailsFormComponent, this._filmDetailsTopComponent);
-      render(this._filmDetailsFormComponent, this._filmDetailsBottomComponent);
+      const filmDetailsContainer = this._filmDetailsComponent.getContainer();
+      render(filmDetailsContainer, this._filmDetailsTopComponent);
+      render(filmDetailsContainer, this._filmDetailsBottomComponent);
       return;
     }
 
@@ -149,8 +147,8 @@ export default class Movie {
     );
   }
 
-  _handleCommentDelete(commentId) {
-    const index = this._film.comments.findIndex((id) => id === commentId);
+  _handleCommentDelete(filmComment) {
+    const index = this._film.comments.findIndex((id) => id === filmComment.id);
     this._film.comments = [
       ...this._film.comments.slice(0, index),
       ...this._film.comments.slice(index + 1),
@@ -160,7 +158,7 @@ export default class Movie {
       UserAction.DELETECOMMENT,
       UpdateType.MINOR,
       this._film,
-      commentId,
+      filmComment,
     );
   }
 

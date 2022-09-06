@@ -96,6 +96,12 @@ export default class FilmDetailsBottom extends SmartView {
     return createFilmDetailsTemplate(this._filmComments, this._newCommentState);
   }
 
+  restoreListeners() {
+    this._setInnerListeners();
+    this.setCommentDeleteClickListener(this._callback.commentDeleteClick);
+    this.setCommentSubmitListener(this._callback.commentSubmit);
+  }
+
   _onEmojiListClick(evt) {
     if (evt.target.tagName !== 'IMG') {
       return;
@@ -125,12 +131,6 @@ export default class FilmDetailsBottom extends SmartView {
     this.updateState(this._newCommentState, true);
   }
 
-  restoreListeners() {
-    this._setInnerListeners();
-    this.setCommentDeleteClickListener(this._callback.commentDeleteClick);
-    this.setCommentSubmitListener(this._callback.commentSubmit);
-  }
-
   _setInnerListeners() {
     this.getElement().querySelector('.film-details__emoji-list').addEventListener('click', this._onEmojiListClick);
     this.getElement().querySelector('.film-details__comment-input').addEventListener('input', this._onCommentInput);
@@ -141,7 +141,9 @@ export default class FilmDetailsBottom extends SmartView {
       return;
     }
     evt.preventDefault();
-    this._callback.commentDeleteClick(evt.target.dataset.id);
+    const filmComment = this._filmComments.find((comment) => comment.id = evt.target.dataset.id);
+    this._callback.commentDeleteClick(filmComment);
+    // this._callback.commentDeleteClick(evt.target.dataset.id);
   }
 
   setCommentDeleteClickListener(callback) {

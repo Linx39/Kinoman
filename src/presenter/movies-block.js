@@ -4,7 +4,7 @@ import FilmsListAllView from '../view/films-list-all.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated.js';
 import FilmsListMostCommentedView from '../view/films-list-most-commented';
-import FilmsListContainerView from '../view/films-list-container';
+// import FilmsListContainerView from '../view/films-list-container';
 import MoviePresenter from './movie';
 import NoMoviesPresenter from './no-movies.js';
 import { render, remove } from '../utils/render.js';
@@ -46,9 +46,9 @@ export default class MoviesBlock {
     this._filmsListAllComponent = new FilmsListAllView();
     this._filmsListTopRatedComponent = new FilmsListTopRatedView();
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
-    this._filmListAllContainer = new FilmsListContainerView();
-    this._filmListTopRatedContainer = new FilmsListContainerView();
-    this._filmListMostCommentedContainer = new FilmsListContainerView();
+    this._filmListAllContainer = this._filmsListAllComponent.getContainer();
+    this._filmListTopRatedContainer = this._filmsListTopRatedComponent.getContainer();
+    this._filmListMostCommentedContainer = this._filmsListMostCommentedComponent.getContainer();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -72,7 +72,11 @@ export default class MoviesBlock {
     this._filterModel.removeObserver(this._handleModelEvent);
   }
 
-  _getFilms() {
+  _getFilms({allFilms = false} = {}) {
+    if (allFilms === true) {
+      return this._filmsModel.getFilms();
+    }
+
     const filterType = this._filterModel.getFilter();
     const films = this._filmsModel.getFilms().slice(); //в демо проекте здесь нет slice
     const filtredFilms = filter[filterType](films);
@@ -153,7 +157,7 @@ export default class MoviesBlock {
     render(this._filmsComponent, this._filmsListTopRatedComponent);
     render(this._filmsListTopRatedComponent, this._filmListTopRatedContainer);
 
-    const films = this._filmsModel.getFilms().slice().sort(sortFilmsRating).slice(0, EXTRA_CARD_COUNT);
+    const films = this._getFilms({allFilms: true}).slice().sort(sortFilmsRating).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListTopRatedContainer, films);
   }
 
@@ -161,7 +165,7 @@ export default class MoviesBlock {
     render(this._filmsComponent, this._filmsListMostCommentedComponent);
     render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainer);
 
-    const films = this._filmsModel.getFilms().slice().sort(sortFilmsComments).slice(0, EXTRA_CARD_COUNT);
+    const films = this._getFilms({allFilms: true}).slice().sort(sortFilmsComments).slice(0, EXTRA_CARD_COUNT);
     this._renderCards(this._filmListMostCommentedContainer, films);
   }
 
@@ -201,7 +205,7 @@ export default class MoviesBlock {
 
   _renderMoviesBlock() {
     const filmsCount = this._getFilms().length;
-    const totalFilmsCount = this._filmsModel.getFilms().length;
+    const totalFilmsCount = this._getFilms({allFilms: true}).length;
 
     if (filmsCount !== 0) {
       this._renderSort();
@@ -222,7 +226,7 @@ export default class MoviesBlock {
 
     if (this._modeView === ModeView.POPUP) {
       const popupFilmId = this._popupFilm.id;
-      const popupFilm = this._filmsModel.getFilms().find((film) => film.id === popupFilmId);
+      const popupFilm = this._getFilms({allFilms: true}).find((film) => film.id === popupFilmId);
       this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(popupFilm));
     }
   }

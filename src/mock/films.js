@@ -106,13 +106,12 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const getArrayIdComments = (comments) => getRandomArrayFromArray(comments.map((comment) => comment.id), 0, 10);
 const getWatchingDate = (startDate, watched) => {
   const watchingDate = watched? getRandomDate(startDate) : null;
   return watchingDate;
 };
 
-export const generateFilm = (comments) => {
+export const generateFilm = () => {
   const film = {
     id: nanoid(),
     poster: `${path}${getRandomElementFromArray(POSTERS)}`,
@@ -128,7 +127,7 @@ export const generateFilm = (comments) => {
     genres: getRandomArrayFromArray(GENRES, 1, 4),
     description: generateRandomText(DESCRIPTIONS, 1, 5),
     ageRating: getRandomInteger(0,99),
-    comments: getArrayIdComments(comments),
+    comments: [],
     watchlist: Boolean(getRandomInteger(0, 1)),
     watched: Boolean(getRandomInteger(0, 1)),
     favorite: Boolean(getRandomInteger(0, 1)),
