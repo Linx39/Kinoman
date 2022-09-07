@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { formatDate, DateFormats } from '../utils/common.js';
+import { formatDate, DateFormat } from '../utils/common.js';
 import { getRuntimeTemplate } from '../utils/films.js';
 
 const DESCRIPTON_LENGTH = 139;
@@ -27,7 +27,7 @@ const createFilmCardTemplate = (film) => {
 
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${formatDate(releaseDate, DateFormats.ONLY_YEAR)}</span>
+        <span class="film-card__year">${formatDate(releaseDate, DateFormat.ONLY_YEAR)}</span>
         <span class="film-card__duration">${getRuntimeTemplate(runtime)}</span>
         <span class="film-card__genre">${genres[0]}</span>
       </p>

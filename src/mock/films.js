@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { getRandomInteger, getRandomElementFromArray, getRandomArrayFromArray, getRandomDate, generateRandomText } from '../utils/common.js';
 
-const path = './images/posters/';
+const PATH = './images/posters/';
 
 const POSTERS = [
   'made-for-each-other.png',
@@ -114,7 +114,7 @@ const getWatchingDate = (startDate, watched) => {
 export const generateFilm = () => {
   const film = {
     id: nanoid(),
-    poster: `${path}${getRandomElementFromArray(POSTERS)}`,
+    poster: `${PATH}${getRandomElementFromArray(POSTERS)}`,
     title: getRandomElementFromArray(TITLES),
     alternativeTitle: getRandomElementFromArray(TITLES),
     rating: getRandomInteger(0, 100)/10,

@@ -4,13 +4,14 @@ import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, close, open } from '../utils/render.js';
-import { UserAction, UpdateType, PopupAction } from '../const.js';
+import { UserAction, UpdateType } from '../const.js';
 import { nanoid } from 'nanoid';
 
 export default class Movie {
-  constructor (changeData, changeModePopup) {
+  constructor (changeData, changeModeOpenedPopup, changeModeClosedPopup) {
     this._changeData = changeData;
-    this._changeModePopup = changeModePopup;
+    this._changeModeOpenedPopup = changeModeOpenedPopup;
+    this._changeModeClosedPopup = changeModeClosedPopup;
 
     this._film = null;
     this._filmComments = null;
@@ -99,15 +100,16 @@ export default class Movie {
   }
 
   closeFilmDetails() {
-    this._changeModePopup(PopupAction.CLOSE);
+    this._changeModeClosedPopup();
     close(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._filmDetailsBottomComponent.removeCtrlEnterDownListener();
     this.destroyFilmDetails();
   }
 
-  _handleButtonCloseClick() {
-    this.closeFilmDetails();
+  openFilmDetails() {
+    open(this._filmDetailsComponent);
+    document.addEventListener('keydown', this._handleEscKeyDown);
   }
 
   _handleEscKeyDown(evt) {
@@ -117,13 +119,8 @@ export default class Movie {
     }
   }
 
-  openFilmDetails() {
-    open(this._filmDetailsComponent);
-    document.addEventListener('keydown', this._handleEscKeyDown);
-  }
-
   _handleFilmCardClick () {
-    this._changeModePopup(PopupAction.OPEN, this._film);
+    this._changeModeOpenedPopup(this._film);
   }
 
   _handleWatchlistClick() {
@@ -186,5 +183,9 @@ export default class Movie {
       this._film,
       newComment,
     );
+  }
+
+  _handleButtonCloseClick() {
+    this.closeFilmDetails();
   }
 }

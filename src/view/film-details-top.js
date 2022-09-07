@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { formatDate, DateFormats } from '../utils/common.js';
+import { formatDate, DateFormat } from '../utils/common.js';
 import { getRuntimeTemplate } from '../utils/films.js';
 
 const BUTTON_ACTIVE_CLASS = 'film-details__control-button--active';
@@ -68,7 +68,7 @@ const createFilmDetailsTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${formatDate(releaseDate, DateFormats.FULL_DATE)}</td>
+              <td class="film-details__cell">${formatDate(releaseDate, DateFormat.FULL_DATE)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>

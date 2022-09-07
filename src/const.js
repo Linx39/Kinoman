@@ -1,5 +1,5 @@
-export const FILMS_COUNT = 24;
-export const COMMENTS_COUNT = 100;
+export const FILMS_COUNT = 5;
+export const COMMENTS_COUNT = 200;
 
 export const ProfileRating = [
   {name: 'Novice', count: 1},
@@ -21,7 +21,6 @@ export const UserAction = {
 
 export const UpdateType = {
   NOTHING: 'NOTHING',
-  PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
 };
@@ -38,7 +37,7 @@ export const ModeNavigation = {
   STATISTICS: 'STATISTICS',
 };
 
-export const ModeView = {
-  CARDS: 'CARDS',
-  POPUP: 'POPUP',
+export const PopupAction = {
+  OPEN: 'OPEN',
+  CLOSE: 'CLOSE',
 };

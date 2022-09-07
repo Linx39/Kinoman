@@ -81,7 +81,6 @@ export default class FilmDetailsBottom extends SmartView {
   constructor(filmComments, newComment) {
     super();
     this._filmComments = filmComments;
-
     this._newCommentState = FilmDetailsBottom.parseCommentToState(newComment);
 
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
@@ -141,9 +140,9 @@ export default class FilmDetailsBottom extends SmartView {
       return;
     }
     evt.preventDefault();
-    const filmComment = this._filmComments.find((comment) => comment.id = evt.target.dataset.id);
+
+    const filmComment = this._filmComments.find((comment) => comment.id === evt.target.dataset.id);
     this._callback.commentDeleteClick(filmComment);
-    // this._callback.commentDeleteClick(evt.target.dataset.id);
   }
 
   setCommentDeleteClickListener(callback) {

@@ -123,6 +123,11 @@ const createStatisticFiltersTemplate = (item, currentFilter) => {
 };
 
 const createStatisticTemplate = (filmsCount, currentFilter, filterFilms) => {
+  const statistiRankTemplate = filmsCount !== 0
+    ? `<img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
+      <span class="statistic__rank-label">${getRatingName(filmsCount)}</span>`
+    : '';
+
   const statisticFiltersTemplate = StatisticFilterName
     .map((item) => createStatisticFiltersTemplate(item, currentFilter))
     .slice()
@@ -134,8 +139,7 @@ const createStatisticTemplate = (filmsCount, currentFilter, filterFilms) => {
     `<section class="statistic">
       <p class="statistic__rank">
         Your rank
-        <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-        <span class="statistic__rank-label">${getRatingName(filmsCount)}</span>
+        ${statistiRankTemplate}
       </p>
 
       <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">

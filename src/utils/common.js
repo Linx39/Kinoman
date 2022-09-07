@@ -7,7 +7,7 @@ dayjs.extend(isBetween);
 
 const HOUR = 60;
 
-export const DateFormats = {
+export const DateFormat = {
   ONLY_YEAR: 'YYYY',
   FULL_DATE: 'DD MMMM YYYY',
   DATE_AND_TIME: 'YYYY/MM/DD hh:mm',
