@@ -4,6 +4,29 @@ import { convertDateToHumanFormat } from '../utils/common.js';
 import { isCtrlEnterEvent } from '../utils/common.js';
 
 const NO_COMMENT = '(the author left no comment)';
+{/* <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${imgAlt === `emoji-${Emoji.SMILE}`? 'checked' : ''}>
+          <label class="film-details__emoji-label" for="emoji-smile">
+            <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
+          </label>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${imgAlt === Emoji.SLEEPING? 'checked' : ''}>
+          <label class="film-details__emoji-label" for="emoji-sleeping">
+            <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
+          </label>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${imgAlt === Emoji.PUKE? 'checked' : ''}>
+          <label class="film-details__emoji-label" for="emoji-puke">
+            <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
+          </label>
+          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${imgAlt === Emoji.ANGRY? 'checked' : ''}>
+          <label class="film-details__emoji-label" for="emoji-angry">
+            <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
+          </label> */}
+
+const Emoji = {
+  SMILE: 'smile',
+  SLEEPING: 'sleeping',
+  PUKE: 'puke',
+  ANGRY: 'angry',
+};
 
 const createCommentTemplate = (filmComment) => {
   const {id, author, comment, date, emotion } = filmComment;
@@ -24,10 +47,20 @@ const createCommentTemplate = (filmComment) => {
     </li>`);
 };
 
+const createEmojiListTemplate = (emoji, imgAlt) => (
+  `<input class="film-details__emoji-item visually-hidden" name="${emoji}-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${imgAlt === `emoji-${emoji}`? 'checked' : ''}>
+  <label class="film-details__emoji-label" for="emoji-${emoji}">
+    <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
+  </label>`);
+
 const createNewCommentTemplate = (newComment) => {
   const {comment, emotion, imgAlt} = newComment;
   const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
   const commentTemplate = comment !== null? comment : '';
+
+  const emojiListTemplate = Object.values(Emoji)
+    .map((emoji) => createEmojiListTemplate(emoji, imgAlt))
+    .join('');
 
   return (
     `<div class="film-details__new-comment">
@@ -38,22 +71,7 @@ const createNewCommentTemplate = (newComment) => {
           <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(commentTemplate)}</textarea>
         </label>
         <div class="film-details__emoji-list">
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-          <label class="film-details__emoji-label" for="emoji-smile">
-            <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-          <label class="film-details__emoji-label" for="emoji-sleeping">
-            <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-          <label class="film-details__emoji-label" for="emoji-puke">
-            <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-          <label class="film-details__emoji-label" for="emoji-angry">
-            <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-          </label>
+          ${emojiListTemplate}
         </div>
       </div>`);
 };
@@ -112,13 +130,8 @@ export default class FilmDetailsBottom extends SmartView {
       emotion: evt.target.src,
       imgAlt: evt.target.parentElement.htmlFor,
     };
+
     this.updateState(this._newCommentState);
-
-    for (const input of evt.currentTarget.querySelectorAll('input')) {
-      input.checked = false;
-    }
-
-    evt.currentTarget.querySelector(`#${evt.target.parentElement.htmlFor}`).checked = true;
   }
 
   _onCommentInput(evt) {

@@ -15,10 +15,6 @@ import { getRandomInteger } from './utils/common.js';
 const films = new Array(FILMS_COUNT).fill().map(generateFilm);
 const filmsComments = new Array(COMMENTS_COUNT).fill().map(generateComment);
 if (films.length !== 0) {
-  // filmsComments.forEach((filmComments) => {
-  //   const index = getRandomInteger(films.length) - 1;
-  //   films[index].comments.push(filmComments.id);
-  // });
   for (const filmComments of filmsComments) {
     const index = getRandomInteger(0, films.length - 1);
     films[index].comments.push(filmComments.id);

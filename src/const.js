@@ -1,5 +1,5 @@
 export const FILMS_COUNT = 5;
-export const COMMENTS_COUNT = 200;
+export const COMMENTS_COUNT = 20;
 
 export const ProfileRating = [
   {name: 'Novice', count: 1},
@@ -40,4 +40,9 @@ export const ModeNavigation = {
 export const PopupAction = {
   OPEN: 'OPEN',
   CLOSE: 'CLOSE',
+};
+
+export const TopType = {
+  TOPRATED: 'TOPRATED',
+  MOSTCOMMENTED: 'MOSTCOMMENTED',
 };

@@ -1,5 +1,18 @@
 import { getDayDiff, convertTimeToHoursAndMinutes, getRandomElementFromArray } from './common.js';
-import { ProfileRating } from '../const.js';
+import { ProfileRating, TopType } from '../const.js';
+
+const topFilter = {
+  [TopType.TOPRATED]:
+    {
+      max: (films) => Math.max(...films.map((film) => film.rating)),
+      filter: (films) => films.filter((film) => film.rating === topFilter[TopType.TOPRATED].max(films)),
+    },
+  [TopType.MOSTCOMMENTED]:
+    {
+      max: (films) => Math.max(...films.map((film) => film.comments.length)),
+      filter: (films) => films.filter((film) => film.comments.length === topFilter[TopType.MOSTCOMMENTED].max(films)),
+    },
+};
 
 const getWeightForNullData = (dataA, dataB) => {
   if (dataA === null && dataB === null) {
@@ -36,24 +49,15 @@ export const sortFilmsRating = (filmA, filmB) => {
   return -(filmA.rating - filmB.rating);
 };
 
-export const sortFilmsComments = (filmA, filmB) => {
-  const weight = getWeightForNullData(filmA.comments.length, filmB.comments.length);
-  if (weight !== null) {
-    return -weight;
-  }
-
-  return -(filmA.comments.length - filmB.comments.length);
-};
-
-export const getRatingName = (filmsCount) => {
-  if (filmsCount === 0) {
+export const getRatingName = (count) => {
+  if (count === 0) {
     return null;
   }
 
   return ProfileRating
     .slice()
     .reverse()
-    .find((profile) => filmsCount >= profile.count)
+    .find((profile) => count >= profile.count)
     .name;
 };
 
@@ -65,20 +69,20 @@ export const getRuntimeTemplate = (time) => {
   return `${hoursTemplate} ${minutesTemplate}`;
 };
 
-const getFilmsCopyFilter = (filmsCopy) => {
-  const maxRating = Math.max(...filmsCopy.map((film) => film.rating));
-  return filmsCopy.filter((film) => film.rating === maxRating);
-};
+export const getTopFilms = (films, count, topType) => {
+  const topFilms = new Array();
+  const copyFilms = films.slice();
 
-export const getTopFilms = (films, count) => {
-  const topFilms = [];
-  const filmsCopy = films.slice();
   for (let i = 0; i < count; i++) {
-    const filmsCopyFilter = getFilmsCopyFilter(filmsCopy);
-    const topFilm = getRandomElementFromArray(filmsCopyFilter);
-    const index = filmsCopy.findIndex((film) => film.id === topFilm.id);
-    filmsCopy.splice(index, 1);
-    topFilms.push(topFilm);
+    const filteredCopyFilms = topFilter[topType].filter(copyFilms);
+
+    if (filteredCopyFilms.length !== 0) {
+      const topFilm = getRandomElementFromArray(filteredCopyFilms);
+      const index = copyFilms.findIndex((film) => film.id === topFilm.id);
+      copyFilms.splice(index, 1);
+      topFilms.push(topFilm);
+    }
   }
+
   return topFilms;
 };
