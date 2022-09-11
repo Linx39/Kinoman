@@ -3,23 +3,7 @@ import SmartView from './smart.js';
 import { convertDateToHumanFormat } from '../utils/common.js';
 import { isCtrlEnterEvent } from '../utils/common.js';
 
-const NO_COMMENT = '(the author left no comment)';
-{/* <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${imgAlt === `emoji-${Emoji.SMILE}`? 'checked' : ''}>
-          <label class="film-details__emoji-label" for="emoji-smile">
-            <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping" ${imgAlt === Emoji.SLEEPING? 'checked' : ''}>
-          <label class="film-details__emoji-label" for="emoji-sleeping">
-            <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke" ${imgAlt === Emoji.PUKE? 'checked' : ''}>
-          <label class="film-details__emoji-label" for="emoji-puke">
-            <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-          </label>
-          <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry" ${imgAlt === Emoji.ANGRY? 'checked' : ''}>
-          <label class="film-details__emoji-label" for="emoji-angry">
-            <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-          </label> */}
+const NO_COMMENT = '...the author left no comment...';
 
 const Emoji = {
   SMILE: 'smile',
@@ -47,19 +31,19 @@ const createCommentTemplate = (filmComment) => {
     </li>`);
 };
 
-const createEmojiListTemplate = (emoji, imgAlt) => (
-  `<input class="film-details__emoji-item visually-hidden" name="${emoji}-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${imgAlt === `emoji-${emoji}`? 'checked' : ''}>
-  <label class="film-details__emoji-label" for="emoji-${emoji}">
-    <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="emoji">
+const createEmojiListTemplate = (item, emoji) => (
+  `<input class="film-details__emoji-item visually-hidden" name="${item}-emoji" type="radio" id="emoji-${item}" value="${item}" ${emoji === `emoji-${item}`? 'checked' : ''}>
+  <label class="film-details__emoji-label" for="emoji-${item}">
+    <img src="./images/emoji/${item}.png" width="30" height="30" alt="emoji">
   </label>`);
 
 const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion, imgAlt} = newComment;
-  const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${imgAlt}"></img>` : '';
-  const commentTemplate = comment !== null? comment : '';
+  const {comment, emotion, emoji} = newComment;
+  const emotiomTemplate = emotion !== null? `<img src="${emotion}" width="55" height="55" alt="${emoji}"></img>` : '';
+  const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
-    .map((emoji) => createEmojiListTemplate(emoji, imgAlt))
+    .map((item) => createEmojiListTemplate(item, emoji))
     .join('');
 
   return (
@@ -68,7 +52,7 @@ const createNewCommentTemplate = (newComment) => {
           ${emotiomTemplate}
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(commentTemplate)}</textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentTemplate}</textarea>
         </label>
         <div class="film-details__emoji-list">
           ${emojiListTemplate}
@@ -128,7 +112,7 @@ export default class FilmDetailsBottom extends SmartView {
     this._newCommentState = {
       ...this._newCommentState,
       emotion: evt.target.src,
-      imgAlt: evt.target.parentElement.htmlFor,
+      emoji: evt.target.parentElement.htmlFor,
     };
 
     this.updateState(this._newCommentState);
@@ -181,12 +165,12 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   static parseCommentToState(comment) {
-    return {...comment, imgAlt: null};
+    return {...comment, emoji: null};
   }
 
   static parseStateToComment(state) {
     state = {...state};
-    delete state.imgAlt;
+    delete state.emoji;
     return state;
   }
 }
