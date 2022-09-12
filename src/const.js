@@ -1,4 +1,4 @@
-export const FILMS_COUNT = 5;
+// export const FILMS_COUNT = 5;
 export const COMMENTS_COUNT = 20;
 
 export const ProfileRating = [
@@ -16,13 +16,14 @@ export const SortType = {
 export const UserAction = {
   ADDCOMMENT: 'ADDCOMMENT',
   DELETECOMMENT: 'DELETECOMMENT',
-  EDITFILM: 'EDITFILM',
+  UPDATEFILM: 'UPDATEFILM',
 };
 
 export const UpdateType = {
   NOTHING: 'NOTHING',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 export const FilterType = {

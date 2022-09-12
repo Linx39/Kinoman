@@ -6,15 +6,16 @@ export default class Films extends Observer {
     this._films = [];
   }
 
-  setFilms(films) {
+  setFilms(updateType, films) {
     this._films = films.slice();
+    this._notify(updateType);
   }
 
   getFilms() {
     return this._films;
   }
 
-  editFilm(updateType, update) {
+  updateFilm(updateType, update) {
     const index = this._films.findIndex((film) => film.id === update.id);
 
     if (index === -1) {
@@ -61,23 +62,29 @@ export default class Films extends Observer {
 
   static adaptToServer(film) {
     const adaptedProperties = {
-      'film_info.age_rating': film.ageRating,
-      'film_info.alternative_title': film.alternativeTitle,
-      'film_info.genre': film.genres,
-      'film_info.release.date': film.releaseDate,
-      'film_info.release.release_country': film.country,
-      'film_info.total_rating': film.rating,
-      'film_info.actors': film.actors,
-      'film_info.description': film.description,
-      'film_info.director': film.director,
-      'film_info.poster': film.poster,
-      'film_info.runtime': film.runtime,
-      'film_info.title': film.title,
-      'film_info.writers': film.writers,
-      'user_details.watchlist': film.watchlist,
-      'user_details.already_watched': film.watched,
-      'user_details.watching_date': film.watchingDate,
-      'user_details.favorite': film.favorite,
+      'film_info': {
+        'age_rating': film.ageRating,
+        'alternative_title': film.alternativeTitle,
+        'genre': film.genres,
+        'release': {
+          'date': film.releaseDate,
+          'release_country': film.country,
+        },
+        'total_rating': film.rating,
+        'actors': film.actors,
+        'description': film.description,
+        'director': film.director,
+        'poster': film.poster,
+        'runtime': film.runtime,
+        'title': film.title,
+        'writers': film.writers,
+      },
+      'user_details': {
+        'watchlist': film.watchlist,
+        'already_watched': film.watched,
+        'watching_date': film.watchingDate,
+        'favorite': film.favorite,
+      },
     };
 
     const adaptedFilm = {...film, ...adaptedProperties};

@@ -1,10 +1,11 @@
-import SortView from '../view/sort';
+import SortView from '../view/sort.js';
 import FilmsView from '../view/films.js';
 import FilmsListAllView from '../view/films-list-all.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import FilmsListTopRatedView from '../view/films-list-top-rated.js';
-import FilmsListMostCommentedView from '../view/films-list-most-commented';
-import MoviePresenter from './movie';
+import FilmsListMostCommentedView from '../view/films-list-most-commented.js';
+import LoadingView from '../view/loading.js';
+import MoviePresenter from './movie.js';
 import NoMoviesPresenter from './no-movies.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
@@ -27,15 +28,18 @@ const MoviePresentersStorage = {
 };
 
 export default class MoviesBlock {
-  constructor(moviesBlockContainer, filmsModel, commentsModel, filterModel) {
+  constructor(moviesBlockContainer, filmsModel, commentsModel, filterModel, apiFilms) {
     this._moviesBlockContainer = moviesBlockContainer;
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
     this._filterModel = filterModel;
+    this._apiFilms = apiFilms;
 
     this._renderedCardsCount = CARD_COUNT_STEP;
     this._moviePresentersStorage = MoviePresentersStorage;
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
+
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
     this._noMoviesPresenter = null;
@@ -45,6 +49,8 @@ export default class MoviesBlock {
     this._filmsListAllComponent = new FilmsListAllView();
     this._filmsListTopRatedComponent = new FilmsListTopRatedView();
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
+    this._loadingComponent = new LoadingView();
+
     this._filmListAllContainer = this._filmsListAllComponent.getContainer();
     this._filmListTopRatedContainer = this._filmsListTopRatedComponent.getContainer();
     this._filmListMostCommentedContainer = this._filmsListMostCommentedComponent.getContainer();
@@ -97,6 +103,10 @@ export default class MoviesBlock {
     return this._commentsModel.getComments()
       .slice()
       .filter((comment) => film.comments.some((id) => id === comment.id));
+  }
+
+  _renderLoading() {
+    render(this._moviesBlockContainer, this._loadingComponent);
   }
 
   _renderNoMovies() {
@@ -202,6 +212,11 @@ export default class MoviesBlock {
   }
 
   _renderMoviesBlock() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const filmsCount = this._getFilms().length;
     const allFilms = this._getFilms({allFilms: true});
 
@@ -236,17 +251,19 @@ export default class MoviesBlock {
   _clearMoviesBlock({resetRenderedCardsCount = false, resetSortType = false} = {}) {
     const filmsCount = this._getFilms().length;
 
+    remove(this._loadingComponent);
     remove(this._sortComponent);
-    this._clearFilmsLists();
-    remove(this._showMoreButtonComponent);
     remove(this._filmsComponent);
+    remove(this._showMoreButtonComponent);
+    this._clearFilmsLists();
 
     if (resetRenderedCardsCount) {//упростить?
       this._renderedCardsCount = CARD_COUNT_STEP;
     } else {
       if (filmsCount < this._renderedCardsCount) {
         this._renderedCardsCount = filmsCount;
-      } else {
+      }
+      if (filmsCount > this._renderedCardsCount) {
         this._renderedCardsCount = this._renderedCardsCount%CARD_COUNT_STEP === 0
           ? this._renderedCardsCount
           : this._renderedCardsCount + 1;
@@ -293,16 +310,18 @@ export default class MoviesBlock {
 
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
-      case UserAction.EDITFILM:
-        this._filmsModel.editFilm(updateType, updateFilm);
+      case UserAction.UPDATEFILM:
+        this._apiFilms.updateFilm(updateFilm).then((response) => {
+          this._filmsModel.updateFilm(updateType, updateFilm, response);
+        });
         break;
       case UserAction.ADDCOMMENT:
         this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
-        this._filmsModel.editFilm(updateType, updateFilm);
+        this._filmsModel.updateFilm(updateType, updateFilm);
         break;
       case UserAction.DELETECOMMENT:
         this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
-        this._filmsModel.editFilm(updateType, updateFilm);
+        this._filmsModel.updateFilm(updateType, updateFilm);
         break;
     }
   }
@@ -317,6 +336,11 @@ export default class MoviesBlock {
         break;
       case UpdateType.MAJOR:
         this._clearMoviesBlock({resetRenderedCardsCount: true, resetSortType: true});
+        this._renderMoviesBlock();
+        break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
         this._renderMoviesBlock();
         break;
     }

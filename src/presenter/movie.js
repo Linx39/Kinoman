@@ -128,7 +128,7 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeData(
-      UserAction.EDITFILM,
+      UserAction.UPDATEFILM,
       UpdateType.MINOR,
       {...this._film, watchlist: !this._film.watchlist},
     );
@@ -136,7 +136,7 @@ export default class Movie {
 
   _handleWatchedClick() {
     this._changeData(
-      UserAction.EDITFILM,
+      UserAction.UPDATEFILM,
       UpdateType.MINOR,
       {...this._film, watched: !this._film.watched, watchingDate: !this._film.watched? Date() : null },
     );
@@ -144,7 +144,7 @@ export default class Movie {
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.EDITFILM,
+      UserAction.UPDATEFILM,
       UpdateType.MINOR,
       {...this._film, favorite: !this._film.favorite},
     );
