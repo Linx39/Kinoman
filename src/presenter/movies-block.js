@@ -7,9 +7,11 @@ import FilmsListMostCommentedView from '../view/films-list-most-commented.js';
 import LoadingView from '../view/loading.js';
 import MoviePresenter from './movie.js';
 import NoMoviesPresenter from './no-movies.js';
+import CommentsModel from '../model/comments.js';
+import ApiComments from '../apiComments.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, TopType } from '../const.js';
+import { SortType, UpdateType, UserAction, PopupAction, TopType, AUTHORIZATION, END_POINT  } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
@@ -28,12 +30,14 @@ const MoviePresentersStorage = {
 };
 
 export default class MoviesBlock {
-  constructor(moviesBlockContainer, filmsModel, commentsModel, filterModel, apiFilms) {
+  constructor(moviesBlockContainer, filmsModel, filterModel, apiFilms) {
     this._moviesBlockContainer = moviesBlockContainer;
     this._filmsModel = filmsModel;
-    this._commentsModel = commentsModel;
     this._filterModel = filterModel;
     this._apiFilms = apiFilms;
+
+    this._commentsModel = new CommentsModel();
+    this._apiComments = new ApiComments(END_POINT, AUTHORIZATION);
 
     this._renderedCardsCount = CARD_COUNT_STEP;
     this._moviePresentersStorage = MoviePresentersStorage;
@@ -95,15 +99,15 @@ export default class MoviesBlock {
     return filtredFilms;
   }
 
-  _getComments(film = null) {
-    if (film === null) {
-      return this._commentsModel.getComments();
-    }
+  // _getComments(film = null) {
+  //   if (film === null) {
+  //     return this._commentsModel.getComments();
+  //   }
 
-    return this._commentsModel.getComments()
-      .slice()
-      .filter((comment) => film.comments.some((id) => id === comment.id));
-  }
+  //   return this._commentsModel.getComments()
+  //     .slice()
+  //     .filter((comment) => film.comments.some((id) => id === comment.id));
+  // }
 
   _renderLoading() {
     render(this._moviesBlockContainer, this._loadingComponent);
@@ -126,10 +130,10 @@ export default class MoviesBlock {
   }
 
   _renderCard(container, film) {
-    const filmComments = this._getComments(film);
+    // const filmComments = this._commentsModel.getComments();
     const moviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupMode);
 
-    moviePresenter.initFilmCard(container, film, filmComments);
+    moviePresenter.initFilmCard(container, film, this._filmComments);
 
     switch (container) {
       case this._filmListAllContainer:
@@ -295,12 +299,23 @@ export default class MoviesBlock {
           this._popupMoviePresenter.closeFilmDetails();
         }
         this._popupFilm = popupFilm;
+console.log (this._apiComments.getComments(popupFilm));
+        this._apiComments.getComments(popupFilm)
+          .then((comments) => {
+            this._commentsModel.setComments(comments);
+            this._filmComments = this._commentsModel.getComments();
+          })
+          .catch(() => {
+            this._commentsModel.setComments([]);
+            this._filmComments = [];
+          })
+          .then(() => {
+            this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupMode);
+            this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._filmComments);
+            this._popupMoviePresenter.openFilmDetails();
+          });
 
-        this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupMode);
-        this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(this._popupFilm));
-        this._popupMoviePresenter.openFilmDetails();
         break;
-
       case PopupAction.CLOSE:
         this._popupFilm = null;
         this._popupMoviePresenter = null;
@@ -316,11 +331,11 @@ export default class MoviesBlock {
         });
         break;
       case UserAction.ADDCOMMENT:
-        this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
+        // this._commentsModel.addComment(UpdateType.NOTHING, updateComment);
         this._filmsModel.updateFilm(updateType, updateFilm);
         break;
       case UserAction.DELETECOMMENT:
-        this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
+        // this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
         this._filmsModel.updateFilm(updateType, updateFilm);
         break;
     }

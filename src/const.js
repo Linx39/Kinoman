@@ -1,5 +1,5 @@
-// export const FILMS_COUNT = 5;
-export const COMMENTS_COUNT = 20;
+export const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
+export const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
 
 export const ProfileRating = [
   {name: 'Novice', count: 1},
