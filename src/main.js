@@ -4,16 +4,14 @@ import MainNavigationPresenter from './presenter/main-navigation.js';
 import HeaderProfilePresenter from './presenter/header-profile.js';
 import StatisticView from './view/statistic.js';
 import FilmsModel from './model/films.js';
-// import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
-import ApiFilms from './apiFilms.js';
+import Api from './api.js';
 import { render, remove } from './utils/render.js';
-import { ModeNavigation, UpdateType, AUTHORIZATION, END_POINT } from './const.js';
+import { ModeNavigation, UpdateType, AUTHORIZATION, API_URL, Url } from './const.js';
 
-const apiFilms = new ApiFilms(END_POINT, AUTHORIZATION);
+const apiFilms = new Api(API_URL, AUTHORIZATION, Url.MOVIES, FilmsModel);
 
 const filmsModel = new FilmsModel();
-// const commentsModel = new CommentsModel();
 const filterModel = new FilterModel();
 
 const headerElement = document.querySelector('.header');
@@ -46,12 +44,15 @@ headerProfilePresenter.init();
 moviesBlockPresenter.init();
 render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
-apiFilms.getFilms()
+apiFilms.getData()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
-    mainNavigationPresenter.init();
+    // mainNavigationPresenter.init();
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
+    // mainNavigationPresenter.init();
+  })
+  .then (() => {
     mainNavigationPresenter.init();
   });

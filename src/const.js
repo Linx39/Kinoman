@@ -1,5 +1,10 @@
 export const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
-export const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+export const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
+
+export const Url = {
+  MOVIES: 'movies',
+  COMMENTS: 'comments',
+};
 
 export const ProfileRating = [
   {name: 'Novice', count: 1},
@@ -14,9 +19,9 @@ export const SortType = {
 };
 
 export const UserAction = {
-  ADDCOMMENT: 'ADDCOMMENT',
-  DELETECOMMENT: 'DELETECOMMENT',
-  UPDATEFILM: 'UPDATEFILM',
+  ADD_COMMENT: 'ADD_COMMENT',
+  DELETE_COMMENT: 'DELETE_COMMENT',
+  EDIT_FILM: 'EDIT_FILM',
 };
 
 export const UpdateType = {

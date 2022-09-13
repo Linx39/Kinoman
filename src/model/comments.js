@@ -37,4 +37,14 @@ export default class Comments extends Observer {
 
     this._notify(updateType);
   }
+
+  static adaptToClient(comment) {
+    const adaptedComment = {...comment};
+    return adaptedComment;
+  }
+
+  static adaptToServer(comment) {
+    const adaptedComment = {...comment};
+    return adaptedComment;
+  }
 }

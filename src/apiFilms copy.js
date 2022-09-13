@@ -10,27 +10,30 @@ const SuccessHTTPStatusRange = {
   MAX: 299,
 };
 
+const Model = FilmsModel;
+const URL = 'movies';
+
 export default class Api {
-  constructor(endPoint, authorization) {
-    this._endPoint = endPoint;
+  constructor(apiUrl, authorization) {
+    this._apiUrl = apiUrl;
     this._authorization = authorization;
   }
 
-  getFilms() {
-    return this._load({url: 'movies'})
+  getData() {
+    return this._load({url: URL})
       .then(Api.toJSON)
-      .then((films) => films.map(FilmsModel.adaptToClient));
+      .then((data) => data.map(Model.adaptToClient));
   }
 
-  updateFilm(film) {
+  updateData(data) {
     return this._load({
-      url: `movies/${film.id}`,
+      url: `${URL}/${data.id}`,
       method: Method.PUT,
-      body: JSON.stringify(FilmsModel.adaptToServer(film)),
+      body: JSON.stringify(Model.adaptToServer(data)),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then(FilmsModel.adaptToClient);
+      .then(Model.adaptToClient);
   }
 
   _load({
@@ -41,7 +44,7 @@ export default class Api {
   }) {
     headers.append('Authorization', this._authorization);
     return fetch(
-      `${this._endPoint}/${url}`,
+      `${this._apiUrl}/${url}`,
       {method, body, headers},
     )
       .then(Api.checkStatus)

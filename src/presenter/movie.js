@@ -3,7 +3,7 @@ import FilmDetailsView from '../view/film-details.js';
 import FilmDetailsTopView from '../view/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent} from '../utils/common.js';
-import { render, remove, replace, close, open } from '../utils/render.js';
+import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
 import { UserAction, UpdateType, PopupAction } from '../const.js';
 import { nanoid } from 'nanoid';
 
@@ -29,10 +29,9 @@ export default class Movie {
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
 
-  initFilmCard(filmCardContainer, film, filmComments) {
+  initFilmCard(filmCardContainer, film) {
     this._filmCardContainer = filmCardContainer;
     this._film = film;
-    this._filmComments = filmComments;
 
     const filmCardComponent = this._filmCardComponent;
 
@@ -100,7 +99,7 @@ export default class Movie {
 
   closeFilmDetails() {
     this._changeModePopup(PopupAction.CLOSE);
-    close(this._filmDetailsComponent);
+    removePopup(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._filmDetailsBottomComponent.removeCtrlEnterDownListener();
     this.destroyFilmDetails();
@@ -118,7 +117,7 @@ export default class Movie {
   }
 
   openFilmDetails() {
-    open(this._filmDetailsComponent);
+    renderPopup(this._filmDetailsComponent);
     document.addEventListener('keydown', this._handleEscKeyDown);
   }
 
@@ -128,7 +127,7 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeData(
-      UserAction.UPDATEFILM,
+      UserAction.EDIT_FILM,
       UpdateType.MINOR,
       {...this._film, watchlist: !this._film.watchlist},
     );
@@ -136,7 +135,7 @@ export default class Movie {
 
   _handleWatchedClick() {
     this._changeData(
-      UserAction.UPDATEFILM,
+      UserAction.EDIT_FILM,
       UpdateType.MINOR,
       {...this._film, watched: !this._film.watched, watchingDate: !this._film.watched? Date() : null },
     );
@@ -144,7 +143,7 @@ export default class Movie {
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.UPDATEFILM,
+      UserAction.EDIT_FILM,
       UpdateType.MINOR,
       {...this._film, favorite: !this._film.favorite},
     );
@@ -158,7 +157,7 @@ export default class Movie {
     ];
 
     this._changeData(
-      UserAction.DELETECOMMENT,
+      UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
       this._film,
       filmComment,
@@ -181,7 +180,7 @@ export default class Movie {
     ];
 
     this._changeData(
-      UserAction.ADDCOMMENT,
+      UserAction.ADD_COMMENT,
       UpdateType.MINOR,
       this._film,
       newComment,

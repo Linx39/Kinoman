@@ -1,7 +1,7 @@
 import Abstract from '../view/abstract.js';
 
 const bodyElement = document.querySelector('body');
-const classHideOverflow = 'hide-overflow';
+const HIDE_OVERFLOW_CLASS = 'hide-overflow';
 
 export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
@@ -14,21 +14,21 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const render = (container, element, place = RenderPosition.BEFOREEND) => {
+export const render = (container, component, place = RenderPosition.BEFOREEND) => {
   if (container instanceof Abstract) {
     container = container.getElement();
   }
 
-  if (element instanceof Abstract) {
-    element = element.getElement();
+  if (component instanceof Abstract) {
+    component = component.getElement();
   }
 
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(component);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(component);
       break;
   }
 };
@@ -46,22 +46,22 @@ export const remove = (component) => {
   component.removeElement();
 };
 
-export const open = (component) => {
+export const renderPopup = (component) => {
   if (component instanceof Abstract) {
     component = component.getElement();
   }
 
   bodyElement.appendChild(component);
-  bodyElement.classList.add(classHideOverflow);
+  bodyElement.classList.add(HIDE_OVERFLOW_CLASS);
 };
 
-export const close = (component) => {
+export const removePopup = (component) => {
   if (component instanceof Abstract) {
     component = component.getElement();
   }
 
   bodyElement.removeChild(component);
-  bodyElement.classList.remove(classHideOverflow);
+  bodyElement.classList.remove(HIDE_OVERFLOW_CLASS);
 };
 
 export const replace = (newChild, oldChild) => {

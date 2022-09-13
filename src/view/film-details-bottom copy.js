@@ -31,19 +31,19 @@ const createCommentTemplate = (filmComment) => {
     </li>`);
 };
 
-const createEmojiListTemplate = (item, emotion) => (
-  `<input class="film-details__emoji-item visually-hidden" name="${item}-emoji" type="radio" id="emoji-${item}" value="${item}" ${emotion === `${item}`? 'checked' : ''}>
+const createEmojiListTemplate = (item, emoji) => (
+  `<input class="film-details__emoji-item visually-hidden" name="${item}-emoji" type="radio" id="emoji-${item}" value="${item}" ${emoji === `emoji-${item}`? 'checked' : ''}>
   <label class="film-details__emoji-label" for="emoji-${item}">
     <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
   </label>`);
 
 const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion} = newComment;
-  const emotiomTemplate = emotion !== null? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
+  const {comment, emotion, emoji} = newComment;
+  const emotiomTemplate = emotion !== null? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="${emoji}"></img>` : '';
   const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
-    .map((item) => createEmojiListTemplate(item, emotion))
+    .map((item) => createEmojiListTemplate(item, emoji))
     .join('');
 
   return (
@@ -112,6 +112,7 @@ export default class FilmDetailsBottom extends SmartView {
     this._newCommentState = {
       ...this._newCommentState,
       emotion: evt.target.dataset.emotion,
+      emoji: evt.target.parentElement.htmlFor,
     };
 
     this.updateState(this._newCommentState);
@@ -164,10 +165,12 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   static parseCommentToState(comment) {
-    return {...comment};
+    return {...comment, emoji: null};
   }
 
   static parseStateToComment(state) {
-    return {...state};
+    state = {...state};
+    delete state.emoji;
+    return state;
   }
 }

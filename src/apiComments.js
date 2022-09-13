@@ -11,8 +11,8 @@ const SuccessHTTPStatusRange = {
 };
 
 export default class Api {
-  constructor(endPoint, authorization) {
-    this._endPoint = endPoint;
+  constructor(apiUrl, authorization) {
+    this._apiUrl = apiUrl;
     this._authorization = authorization;
   }
 
@@ -41,7 +41,7 @@ export default class Api {
   }) {
     headers.append('Authorization', this._authorization);
     return fetch(
-      `${this._endPoint}/${url}`,
+      `${this._apiUrl}/${url}`,
       {method, body, headers},
     )
       .then(Api.checkStatus)
