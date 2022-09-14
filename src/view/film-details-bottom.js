@@ -81,9 +81,9 @@ const createFilmDetailsTemplate = (filmComments, newComment) => {
 export default class FilmDetailsBottom extends SmartView {
   constructor(filmComments, newComment) {
     super();
-    this._filmComments = filmComments;
-    this._newCommentState = FilmDetailsBottom.parseCommentToState(newComment);
-
+    this._filmCommentsState = FilmDetailsBottom.parseCommentsToState(filmComments);
+    this._newCommentState = FilmDetailsBottom.parseNewCommentToState(newComment);
+console.log (this._filmCommentsState);
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
     this._onCommentInput = this._onCommentInput.bind(this);
     this._onCommentDeleteClick = this._onCommentDeleteClick.bind(this);
@@ -93,7 +93,7 @@ export default class FilmDetailsBottom extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsTemplate(this._filmComments, this._newCommentState);
+    return createFilmDetailsTemplate(this._filmCommentsState, this._newCommentState);
   }
 
   restoreListeners() {
@@ -136,7 +136,7 @@ export default class FilmDetailsBottom extends SmartView {
     }
     evt.preventDefault();
 
-    const filmComment = this._filmComments.find((comment) => comment.id === evt.target.dataset.id);
+    const filmComment = FilmDetailsBottom.parseStateToComments(this._filmCommentsState).find((comment) => comment.id === evt.target.dataset.id);
     this._callback.commentDeleteClick(filmComment);
   }
 
@@ -152,7 +152,7 @@ export default class FilmDetailsBottom extends SmartView {
   _onCtrlEnterDown(evt) {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
-      this._callback.commentSubmit(FilmDetailsBottom.parseStateToComment(this._newCommentState));
+      this._callback.commentSubmit(FilmDetailsBottom.parseStateToNewComment(this._newCommentState));
       this.removeCtrlEnterDownListener();
     }
   }
@@ -162,11 +162,32 @@ export default class FilmDetailsBottom extends SmartView {
     document.addEventListener('keydown', this._onCtrlEnterDown);
   }
 
-  static parseCommentToState(comment) {
-    return {...comment};
+  static parseNewCommentToState(comment) {
+    return {...comment, isSubmit: false};
   }
 
-  static parseStateToComment(state) {
-    return {...state};
+  static parseStateToNewComment(state) {
+    state = {...state};
+    delete state.isSubmit;
+    return state;
+  }
+
+  static parseCommentsToState(comments) {
+    return comments.map((comment) => ({...comment, isDisabled: false, isDeleting: false}));
+  }
+
+  static parseStateToComments(state) {
+    state = {...state};
+    state.forEach((comment) => {
+      delete comment.isDisabled;
+      delete comment.isDeleting;
+    });
+    return state;
   }
 }
+
+// ...{
+//   isDisabled: false,
+//   
+//   isDeleting: false,
+// }

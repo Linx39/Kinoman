@@ -322,7 +322,8 @@ export default class MoviesBlock {
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
       case UserAction.EDIT_FILM:
-        this._api.updateFilm(updateFilm)
+        this._api
+          .updateFilm(updateFilm)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
           });
@@ -337,10 +338,12 @@ export default class MoviesBlock {
           });
         break;
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(updateComment).then(() => {
-          this._commentsModel.deleteComment(updateComment);
-          this._filmsModel.updateFilm(updateType, updateFilm);
-        });
+        this._api
+          .deleteComment(updateComment)
+          .then(() => {
+            this._commentsModel.deleteComment(updateComment);
+            this._filmsModel.updateFilm(updateType, updateFilm);
+          });
         break;
     }
   }
