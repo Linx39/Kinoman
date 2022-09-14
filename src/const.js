@@ -1,11 +1,3 @@
-export const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
-export const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
-
-export const Url = {
-  MOVIES: 'movies',
-  COMMENTS: 'comments',
-};
-
 export const ProfileRating = [
   {name: 'Novice', count: 1},
   {name: 'Fan', count: 11},
@@ -26,6 +18,7 @@ export const UserAction = {
 
 export const UpdateType = {
   NOTHING: 'NOTHING',
+  PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',

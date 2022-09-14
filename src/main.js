@@ -7,9 +7,12 @@ import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
 import Api from './api.js';
 import { render, remove } from './utils/render.js';
-import { ModeNavigation, UpdateType, AUTHORIZATION, API_URL, Url } from './const.js';
+import { ModeNavigation, UpdateType } from './const.js';
 
-const apiFilms = new Api(API_URL, AUTHORIZATION, Url.MOVIES, FilmsModel);
+const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
+const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
+
+const api = new Api(API_URL, AUTHORIZATION);
 
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
@@ -19,7 +22,7 @@ const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel);
-const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, filterModel, apiFilms);
+const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, filterModel, api);
 
 let statisticComponent = null;
 
@@ -44,14 +47,12 @@ headerProfilePresenter.init();
 moviesBlockPresenter.init();
 render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
-apiFilms.getData()
+api.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
-    // mainNavigationPresenter.init();
   })
   .catch(() => {
     filmsModel.setFilms(UpdateType.INIT, []);
-    // mainNavigationPresenter.init();
   })
   .then (() => {
     mainNavigationPresenter.init();

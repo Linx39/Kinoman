@@ -5,7 +5,6 @@ import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
 import { UserAction, UpdateType, PopupAction } from '../const.js';
-import { nanoid } from 'nanoid';
 
 export default class Movie {
   constructor (changeData, changeModePopup) {
@@ -53,12 +52,8 @@ export default class Movie {
   initFilmDetails(film, filmComments) {
     this._film = film;
     this._filmComments = filmComments;
-
     this._newComment = {
-      id: null,
-      author: null,
       comment: null,
-      date: null,
       emotion: null,
     };
 
@@ -158,26 +153,16 @@ export default class Movie {
 
     this._changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this._film,
       filmComment,
     );
   }
 
   _handleCommentSubmit(newComment) {
-    if (newComment.emotion === null) {
+    if (newComment.emotion === null || newComment.comment === null) {
       return;
     }
-    newComment = {
-      ...newComment,
-      id: nanoid(),
-      date: Date(),
-      author: 'I am author'};
-
-    this._film.comments = [
-      newComment.id,
-      ...this._film.comments,
-    ];
 
     this._changeData(
       UserAction.ADD_COMMENT,

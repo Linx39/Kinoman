@@ -1,4 +1,5 @@
-// import FilmsModel from './model/films.js';
+import FilmsModel from './model/films.js';
+import CommentsModel from './model/comments';
 
 const Method = {
   GET: 'GET',
@@ -12,54 +13,58 @@ const SuccessHTTPStatusRange = {
   MAX: 299,
 };
 
-// const Model = FilmsModel;
-// const Url = {
-//   MOVIES: 'movies',
-//   COMMENTS: 'comments',
-// };
+const Url = {
+  MOVIES: 'movies',
+  COMMENTS: 'comments',
+};
 
 export default class Api {
-  constructor(apiUrl, authorization, url, model) {
+  constructor(apiUrl, authorization) {
     this._apiUrl = apiUrl;
     this._authorization = authorization;
-    this._url = url;
-    this._model = model;
   }
 
-  getData() {
+  getFilms() {
     return this._load({
-      url: this._url,
+      url: Url.MOVIES,
     })
       .then(Api.toJSON)
-      .then((data) => data.map(this._model.adaptToClient));
+      .then((films) => films.map(FilmsModel.adaptToClient));
   }
 
-  updateData(data) {
+  getComments(film) {
     return this._load({
-      url: `${this._url}/${data.id}`,
+      url: `${Url.COMMENTS}/${film.id}`,
+    })
+      .then(Api.toJSON)
+      .then((comments) => comments.map(CommentsModel.adaptToClient));
+  }
+
+  updateFilm(film) {
+    return this._load({
+      url: `${Url.MOVIES}/${film.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this._model.adaptToServer(data)),
+      body: JSON.stringify(FilmsModel.adaptToServer(film)),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then(this._model.adaptToClient);
+      .then(FilmsModel.adaptToClient);
   }
 
-  addData(data) {
+  addComment(film, comment) {
     return this._load({
-      url: this._url,
+      url: `${Url.COMMENTS}/${film.id}`,
       method: Method.POST,
-      body: JSON.stringify(this._model.adaptToServer(data)),
+      body: JSON.stringify(CommentsModel.adaptToServer(comment)),
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then(this._model.adaptToClient);
+      .then(({movie, comments}) => ({film: FilmsModel.adaptToClient(movie), filmComments: comments.map(CommentsModel.adaptToClient)}));
   }
 
-  deleteData(data) {
-    console.log (`${this._url}/${data.id}`);
+  deleteComment(comment) {
     return this._load({
-      url: `${this._url}/${data.id}`,
+      url: `${Url.COMMENTS}/${comment.id}`,
       method: Method.DELETE,
     });
   }

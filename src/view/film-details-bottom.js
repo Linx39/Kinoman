@@ -3,7 +3,6 @@ import SmartView from './smart.js';
 import { convertDateToHumanFormat, isCtrlEnterEvent } from '../utils/common.js';
 
 const EMOJI_PATH = '../images/emoji/';
-const NO_COMMENT = '...the author left no comment...';
 
 const Emoji = {
   SMILE: 'smile',
@@ -21,7 +20,7 @@ const createCommentTemplate = (filmComment) => {
         <img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-smile">
       </span>
       <div>
-        <p class="film-details__comment-text">${(comment !== null && comment.trim() !== '')? comment : NO_COMMENT}</p>
+        <p class="film-details__comment-text">${comment}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${convertDateToHumanFormat(date)}</span>
