@@ -22,6 +22,12 @@ const StorageType = {
   MOSTCOMMENTED: 'mostCommented',
 };
 
+const Storage = [
+  {type: 'ALL', name: 'all', container: 'this._filmListAllContainerElement'},
+  {type: 'TOPRATED', name: 'topRated', container: 'this._filmListTopRatedContainerElement'},
+  {type: 'MOSTCOMMENTED', name: 'mostCommented', container: 'this._filmsListMostCommentedComponent'},
+];
+
 const MoviePresentersStorage = {
   [StorageType.ALL]: {},
   [StorageType.TOPRATED]: {},
@@ -332,25 +338,26 @@ export default class MoviesBlock {
         break;
       case UserAction.DELETE_COMMENT:
         this._api.deleteComment(updateComment).then(() => {
-          this._commentsModel.deleteComment(UpdateType.NOTHING, updateComment);
+          this._commentsModel.deleteComment(updateComment);
           this._filmsModel.updateFilm(updateType, updateFilm);
         });
         break;
     }
   }
 
-  _handleModelEvent(updateType) {
+  _handleModelEvent(updateType, film) {
     switch (updateType) {
-      case UpdateType.NOTHING:
-        break;
+    //   case UpdateType.NOTHING:
+    //     break;
       case UpdateType.PATCH:
         Object
-          .keys(this._moviePresentersStorage)
+          .keys(MoviePresentersStorage)
           .forEach((key) => {
-            const storage = this._moviePresentersStorage[key];
-            if (storage[film.id]) {
-              storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
-            }
+            const storage = MoviePresentersStorage[key];
+            console.log (storage);
+            // if (storage[film.id]) {
+            //   storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
+            // }
           });
         this._popupMoviePresenter.initFilmDetails(film, this._getComments(film));
         break;

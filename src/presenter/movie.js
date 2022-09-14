@@ -153,7 +153,7 @@ export default class Movie {
 
     this._changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       this._film,
       filmComment,
     );
