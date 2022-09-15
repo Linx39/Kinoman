@@ -13,7 +13,7 @@ const Emoji = {
   ANGRY: 'angry',
 };
 
-const createFilmDetailsTopTemplate = (film) => {
+const createFilmDetailsTopTemplate = (film, isSubmit) => {
   const {
     poster,
     title,
@@ -40,7 +40,7 @@ const createFilmDetailsTopTemplate = (film) => {
   return (
     `<div class="film-details__top-container">
       <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
+        <button class="film-details__close-btn" type="button" ${isSubmit ? 'disabled' : ''}>close</button>
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
@@ -97,15 +97,15 @@ const createFilmDetailsTopTemplate = (film) => {
         </div>
       </div>
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist" ${isSubmit ? 'disabled' : ''}>Add to watchlist</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched" ${isSubmit ? 'disabled' : ''}>Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite" ${isSubmit ? 'disabled' : ''}>Add to favorites</button>
       </section>
     </div>`);
 };
 
-const createCommentTemplate = (filmComment) => {
-  const {id, author, comment, date, emotion } = filmComment;
+const createCommentTemplate = (filmComment, isSubmit) => {
+  const {id, author, comment, date, emotion, isDisabled, isDeleting } = filmComment;
 
   return (
     `<li class="film-details__comment">
@@ -117,25 +117,28 @@ const createCommentTemplate = (filmComment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${convertDateToHumanFormat(date)}</span>
-          <button class="film-details__comment-delete" data-id = "${id}">Delete</button>
+          <button class="film-details__comment-delete" data-id = "${id}" ${isDisabled || isSubmit ? 'disabled' : ''}>
+            ${isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
         </p>
       </div>
     </li>`);
 };
 
-const createEmojiListTemplate = (item, emotion) => (
+// ${isSubmit ? 'disabled' : ''} заблокировать эмоции
+const createEmojiListTemplate = (item, emotion, isSubmit) => (
   `<input class="film-details__emoji-item visually-hidden" name="${item}-emoji" type="radio" id="emoji-${item}" value="${item}" ${emotion === `${item}`? 'checked' : ''}>
   <label class="film-details__emoji-label" for="emoji-${item}">
     <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
   </label>`);
 
 const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion} = newComment;
+  const {comment, emotion, isSubmit} = newComment;
   const emotiomTemplate = emotion !== null? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
   const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
-    .map((item) => createEmojiListTemplate(item, emotion))
+    .map((item) => createEmojiListTemplate(item, emotion, isSubmit))
     .join('');
 
   return (
@@ -144,7 +147,7 @@ const createNewCommentTemplate = (newComment) => {
           ${emotiomTemplate}
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentTemplate}</textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isSubmit ? 'disabled' : ''}>${commentTemplate}</textarea>
         </label>
         <div class="film-details__emoji-list">
           ${emojiListTemplate}
@@ -172,7 +175,8 @@ const createFilmDetailsBottomTemplate = (filmComments, newComment) => {
 };
 
 const createFilmDetailsTemplate = (film, filmComments, newComment) => {
-  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film);
+  const {isSubmit} = newComment;
+  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film, isSubmit);
   const filmDetailsBottomTemplate = createFilmDetailsBottomTemplate(filmComments, newComment);
 
   return (
@@ -323,8 +327,14 @@ export default class FilmDetails extends SmartView {
     document.removeEventListener('keydown', this._onCtrlEnterDown);
   }
 
-  static parseNewCommentToState(comment) {
-    return {...comment, isSubmit: false};
+  updateStateComments(update, comments) {
+    const state = comments.map((comment) => ({...comment, isDisabled: true}));
+    update = {...update, isDeleting: true};
+    return state;
+  }
+
+  static parseNewCommentToState(newComment) {
+    return {...newComment, isSubmit: false};
   }
 
   static parseStateToNewComment(state) {

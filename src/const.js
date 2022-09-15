@@ -45,3 +45,8 @@ export const TopType = {
   TOPRATED: 'TOPRATED',
   MOSTCOMMENTED: 'MOSTCOMMENTED',
 };
+
+export const FilmDetailsViewState = {
+  SUBMIT: 'SUBMIT',
+  DELETING: 'DELETING',
+};

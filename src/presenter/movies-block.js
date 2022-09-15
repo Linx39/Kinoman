@@ -10,7 +10,7 @@ import NoMoviesPresenter from './no-movies.js';
 import CommentsModel from '../model/comments.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, TopType } from '../const.js';
+import { SortType, UpdateType, UserAction, PopupAction, TopType, FilmDetailsViewState } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
@@ -22,11 +22,11 @@ const StorageType = {
   MOSTCOMMENTED: 'mostCommented',
 };
 
-const Storage = [
-  {type: 'ALL', name: 'all', container: 'this._filmListAllContainerElement'},
-  {type: 'TOPRATED', name: 'topRated', container: 'this._filmListTopRatedContainerElement'},
-  {type: 'MOSTCOMMENTED', name: 'mostCommented', container: 'this._filmsListMostCommentedComponent'},
-];
+// const Storage = [
+//   {type: 'ALL', name: 'all', container: 'this._filmListAllContainerElement'},
+//   {type: 'TOPRATED', name: 'topRated', container: 'this._filmListTopRatedContainerElement'},
+//   {type: 'MOSTCOMMENTED', name: 'mostCommented', container: 'this._filmsListMostCommentedComponent'},
+// ];
 
 const MoviePresentersStorage = {
   [StorageType.ALL]: {},
@@ -332,7 +332,6 @@ export default class MoviesBlock {
         this._api
           .addComment(updateFilm, updateComment)
           .then(({film, filmComments}) => {
-            // this._commentsModel.addComment(UpdateType.NOTHING, filmComments);
             this._commentsModel.setComments(filmComments);
             this._filmsModel.updateFilm(updateType, film);
           });
@@ -350,18 +349,16 @@ export default class MoviesBlock {
 
   _handleModelEvent(updateType, film) {
     switch (updateType) {
-    //   case UpdateType.NOTHING:
-    //     break;
       case UpdateType.PATCH:
-        Object
-          .keys(MoviePresentersStorage)
-          .forEach((key) => {
-            const storage = MoviePresentersStorage[key];
-            console.log (storage);
-            // if (storage[film.id]) {
-            //   storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
-            // }
-          });
+        // Object
+        //   .keys(MoviePresentersStorage)
+        //   .forEach((key) => {
+        //     const storage = MoviePresentersStorage[key];
+        // console.log (storage);
+        // if (storage[film.id]) {
+        //   storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
+        // }
+        // });
         this._popupMoviePresenter.initFilmDetails(film, this._getComments(film));
         break;
       case UpdateType.MINOR:

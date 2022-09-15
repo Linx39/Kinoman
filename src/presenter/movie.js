@@ -2,7 +2,7 @@ import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
-import { UserAction, UpdateType, PopupAction } from '../const.js';
+import { UserAction, UpdateType, PopupAction, FilmDetailsViewState } from '../const.js';
 
 export default class Movie {
   constructor (changeData, changeModePopup) {
@@ -64,6 +64,24 @@ export default class Movie {
     if (filmDetailsComponent !== null) {
       replace(this._filmDetailsComponent, filmDetailsComponent);
       remove(filmDetailsComponent);
+    }
+  }
+
+  setViewState(state) {
+    switch (state) {
+      case FilmDetailsViewState.SUBMIT:
+        this._filmDetailsComponent.updateState({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case FilmDetailsViewState.DELETING:
+        this._filmDetailsComponent.updateState({
+          ...this._filmComments,
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
     }
   }
 
