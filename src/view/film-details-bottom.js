@@ -83,7 +83,7 @@ export default class FilmDetailsBottom extends SmartView {
     super();
     this._filmCommentsState = FilmDetailsBottom.parseCommentsToState(filmComments);
     this._newCommentState = FilmDetailsBottom.parseNewCommentToState(newComment);
-console.log (this._filmCommentsState);
+
     this._onEmojiListClick = this._onEmojiListClick.bind(this);
     this._onCommentInput = this._onCommentInput.bind(this);
     this._onCommentDeleteClick = this._onCommentDeleteClick.bind(this);
@@ -136,8 +136,8 @@ console.log (this._filmCommentsState);
     }
     evt.preventDefault();
 
-    const filmComment = FilmDetailsBottom.parseStateToComments(this._filmCommentsState).find((comment) => comment.id === evt.target.dataset.id);
-    this._callback.commentDeleteClick(filmComment);
+    const filmComment = this._filmCommentsState.find((comment) => comment.id === evt.target.dataset.id);
+    this._callback.commentDeleteClick(FilmDetailsBottom.parseStateToComment(filmComment));
   }
 
   setCommentDeleteClickListener(callback) {
@@ -176,18 +176,11 @@ console.log (this._filmCommentsState);
     return comments.map((comment) => ({...comment, isDisabled: false, isDeleting: false}));
   }
 
-  static parseStateToComments(state) {
+  static parseStateToComment(state) {
     state = {...state};
-    state.forEach((comment) => {
-      delete comment.isDisabled;
-      delete comment.isDeleting;
-    });
+    delete state.isDisabled;
+    delete state.isDeleting;
+    
     return state;
   }
 }
-
-// ...{
-//   isDisabled: false,
-//   
-//   isDeleting: false,
-// }

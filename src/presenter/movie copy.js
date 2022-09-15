@@ -1,5 +1,7 @@
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
+import FilmDetailsTopView from '../view/film-details-top.js';
+import FilmDetailsBottomView from '../view/film-details-bottom.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
 import { UserAction, UpdateType, PopupAction } from '../const.js';
@@ -9,10 +11,12 @@ export default class Movie {
     this._changeData = changeData;
     this._changeModePopup = changeModePopup;
 
-    this._film = null;//зачем это и следующая строчка?
+    this._film = null;
     this._filmComments = null;
     this._filmCardComponent = null;
-    this._filmDetailsComponent = null;
+    // this._filmDetailsComponent = null;
+    this._filmDetailsTopComponent = null;
+    this._filmDetailsBottomComponent = null;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -48,23 +52,36 @@ export default class Movie {
   initFilmDetails(film, filmComments) {
     this._film = film;
     this._filmComments = filmComments;
+    this._newComment = {
+      comment: null,
+      emotion: null,
+    };
 
-    const filmDetailsComponent = this._filmDetailsComponent;
+    const filmDetailsTopComponent = this._filmDetailsTopComponent;
+    const filmDetailsBottomComponent = this._filmDetailsBottomComponent;
 
-    this._filmDetailsComponent = new FilmDetailsView(this._film, this._filmComments);
+    this._filmDetailsTopComponent = new FilmDetailsTopView(this._film);
+    this._filmDetailsTopComponent.setButtonCloseClickListener(this._handleButtonCloseClick);
+    this._filmDetailsTopComponent.setWatchlistClickListener(this._handleWatchlistClick);
+    this._filmDetailsTopComponent.setWatchedClickListener(this._handleWatchedClick);
+    this._filmDetailsTopComponent.setFavoriteClickListener(this._handleFavoriteClick);
 
-    this._filmDetailsComponent.setButtonCloseClickListener(this._handleButtonCloseClick);
-    this._filmDetailsComponent.setWatchlistClickListener(this._handleWatchlistClick);
-    this._filmDetailsComponent.setWatchedClickListener(this._handleWatchedClick);
-    this._filmDetailsComponent.setFavoriteClickListener(this._handleFavoriteClick);
+    this._filmDetailsBottomComponent = new FilmDetailsBottomView(this._filmComments, this._newComment);
+    this._filmDetailsBottomComponent.setCommentDeleteClickListener(this._handleCommentDelete);
+    this._filmDetailsBottomComponent.setCommentSubmitListener(this._handleCommentSubmit);
 
-    this._filmDetailsComponent.setCommentDeleteClickListener(this._handleCommentDelete);
-    this._filmDetailsComponent.setCommentSubmitListener(this._handleCommentSubmit);
-
-    if (filmDetailsComponent !== null) {
-      replace(this._filmDetailsComponent, filmDetailsComponent);
-      remove(filmDetailsComponent);
+    if (filmDetailsTopComponent === null || filmDetailsBottomComponent === null) {
+      this._filmDetailsComponent = new FilmDetailsView();
+      const filmDetailsContainer = this._filmDetailsComponent.getContainer();
+      render(filmDetailsContainer, this._filmDetailsTopComponent);
+      render(filmDetailsContainer, this._filmDetailsBottomComponent);
+      return;
     }
+
+    replace(this._filmDetailsTopComponent, filmDetailsTopComponent);
+    replace(this._filmDetailsBottomComponent, filmDetailsBottomComponent);
+    remove(filmDetailsTopComponent);
+    remove(filmDetailsBottomComponent);
   }
 
   destroyFilmCard() {
@@ -79,7 +96,7 @@ export default class Movie {
     this._changeModePopup(PopupAction.CLOSE);
     removePopup(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
-    this._filmDetailsComponent.removeCtrlEnterDownListener();
+    this._filmDetailsBottomComponent.removeCtrlEnterDownListener();
     this.destroyFilmDetails();
   }
 
