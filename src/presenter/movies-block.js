@@ -10,7 +10,7 @@ import NoMoviesPresenter from './no-movies.js';
 import CommentsModel from '../model/comments.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, TopType, FilmDetailsViewState } from '../const.js';
+import { SortType, UpdateType, UserAction, PopupAction, TopType, PopupViewState } from '../const.js';
 import { filter } from '../utils/filter.js';
 
 const CARD_COUNT_STEP = 5;
@@ -322,26 +322,38 @@ export default class MoviesBlock {
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     switch (actionType) {
       case UserAction.EDIT_FILM:
+        this._popupMoviePresenter.setViewState(PopupViewState.EDITING);
         this._api
           .updateFilm(updateFilm)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
+          })
+          .catch(() => {
+            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
           });
         break;
       case UserAction.ADD_COMMENT:
+        this._popupMoviePresenter.setViewState(PopupViewState.ADDING);
         this._api
           .addComment(updateFilm, updateComment)
           .then(({film, filmComments}) => {
             this._commentsModel.setComments(filmComments);
             this._filmsModel.updateFilm(updateType, film);
+          })
+          .catch(() => {
+            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
           });
         break;
       case UserAction.DELETE_COMMENT:
+        this._popupMoviePresenter.setViewState(PopupViewState.DELETING);
         this._api
           .deleteComment(updateComment)
           .then(() => {
             this._commentsModel.deleteComment(updateComment);
             this._filmsModel.updateFilm(updateType, updateFilm);
+          })
+          .catch(() => {
+            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_DELETE);
           });
         break;
     }

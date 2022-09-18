@@ -2,7 +2,7 @@ import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
-import { UserAction, UpdateType, PopupAction, FilmDetailsViewState } from '../const.js';
+import { UserAction, UpdateType, PopupAction, PopupViewState } from '../const.js';
 
 export default class Movie {
   constructor (changeData, changeModePopup) {
@@ -28,6 +28,8 @@ export default class Movie {
     this._filmCardContainer = filmCardContainer;
     this._film = film;
 
+    this._isWaiting = false;
+
     const filmCardComponent = this._filmCardComponent;
 
     this._filmCardComponent = new FilmCardView(this._film);
@@ -49,6 +51,8 @@ export default class Movie {
     this._film = film;
     this._filmComments = filmComments;
 
+    this._isWaiting = false;
+
     const filmDetailsComponent = this._filmDetailsComponent;
 
     this._filmDetailsComponent = new FilmDetailsView(this._film, this._filmComments);
@@ -69,18 +73,28 @@ export default class Movie {
 
   setViewState(state) {
     switch (state) {
-      case FilmDetailsViewState.SUBMIT:
-        this._filmDetailsComponent.updateState({
-          isDisabled: true,
-          isSaving: true,
-        });
+      case PopupViewState.EDITING:
+        this._isWaiting = true;
         break;
-      case FilmDetailsViewState.DELETING:
-        this._filmDetailsComponent.updateState({
-          ...this._filmComments,
-          isDisabled: true,
-          isDeleting: true,
-        });
+      case PopupViewState.ADDING:
+        this._isWaiting = true;
+        this._filmDetailsComponent.updateStateNewComment();
+        break;
+      case PopupViewState.DELETING:
+        this._isWaiting = true;
+        this._filmDetailsComponent.updateStateComment();
+        break;
+      case PopupViewState.ABORTING_EDIT:
+        this._isWaiting = false;
+        this._filmDetailsComponent.abbortingStateForm();
+        break;
+      case PopupViewState.ABORTING_ADD:
+        this._isWaiting = false;
+        this._filmDetailsComponent.abbortingStateNewComment();
+        break;
+      case PopupViewState.ABORTING_DELETE:
+        this._isWaiting = false;
+        this._filmDetailsComponent.abbortingStateComment();
         break;
     }
   }
@@ -102,10 +116,18 @@ export default class Movie {
   }
 
   _handleButtonCloseClick() {
+    if (this._isWaiting) {
+      return;
+    }
+
     this.closeFilmDetails();
   }
 
   _handleEscKeyDown(evt) {
+    if (this._isWaiting) {
+      return;
+    }
+
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this.closeFilmDetails();
@@ -118,10 +140,18 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
+    if (this._isWaiting) {
+      return;
+    }
+
     this._changeModePopup(PopupAction.OPEN, this._film);
   }
 
   _handleWatchlistClick() {
+    if (this._isWaiting) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -130,6 +160,10 @@ export default class Movie {
   }
 
   _handleWatchedClick() {
+    if (this._isWaiting) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -138,6 +172,10 @@ export default class Movie {
   }
 
   _handleFavoriteClick() {
+    if (this._isWaiting) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,

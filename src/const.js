@@ -46,7 +46,11 @@ export const TopType = {
   MOSTCOMMENTED: 'MOSTCOMMENTED',
 };
 
-export const FilmDetailsViewState = {
-  SUBMIT: 'SUBMIT',
+export const PopupViewState = {
+  EDITING: 'EDITING',
+  ADDING: 'ADDING',
   DELETING: 'DELETING',
+  ABORTING_ADD: 'ABORTING_ADD',
+  ABORTING_DELETE: 'ABORTING_DELETE',
+  ABORTING_EDIT: 'ABORTING_EDIT',
 };

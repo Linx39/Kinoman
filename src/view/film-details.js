@@ -13,7 +13,7 @@ const Emoji = {
   ANGRY: 'angry',
 };
 
-const createFilmDetailsTopTemplate = (film, isSubmit) => {
+const createFilmDetailsTopTemplate = (film) => {
   const {
     poster,
     title,
@@ -40,7 +40,7 @@ const createFilmDetailsTopTemplate = (film, isSubmit) => {
   return (
     `<div class="film-details__top-container">
       <div class="film-details__close">
-        <button class="film-details__close-btn" type="button" ${isSubmit ? 'disabled' : ''}>close</button>
+        <button class="film-details__close-btn" type="button">close</button>
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
@@ -97,18 +97,18 @@ const createFilmDetailsTopTemplate = (film, isSubmit) => {
         </div>
       </div>
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist" ${isSubmit ? 'disabled' : ''}>Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched" ${isSubmit ? 'disabled' : ''}>Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite" ${isSubmit ? 'disabled' : ''}>Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched">Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite">Add to favorites</button>
       </section>
     </div>`);
 };
 
 const createCommentTemplate = (filmComment, isSubmit) => {
-  const {id, author, comment, date, emotion, isDisabled, isDeleting } = filmComment;
+  const {id, author, comment, date, emotion, isDeleting } = filmComment;
 
   return (
-    `<li class="film-details__comment">
+    `<li class="film-details__comment" data-id = "${id}">
       <span class="film-details__comment-emoji">
         <img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-smile">
       </span>
@@ -117,17 +117,16 @@ const createCommentTemplate = (filmComment, isSubmit) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${convertDateToHumanFormat(date)}</span>
-          <button class="film-details__comment-delete" data-id = "${id}" ${isDisabled || isSubmit ? 'disabled' : ''}>
-            ${isDeleting ? 'Deleting...' : 'Delete'}
+          <button class="film-details__comment-delete" data-id = "${id}" ${isDeleting || isSubmit? 'disabled' : ''}>
+            ${isDeleting && !isSubmit ? 'Deleting...' : 'Delete'}
           </button>
         </p>
       </div>
     </li>`);
 };
 
-// ${isSubmit ? 'disabled' : ''} заблокировать эмоции
-const createEmojiListTemplate = (item, emotion, isSubmit) => (
-  `<input class="film-details__emoji-item visually-hidden" name="${item}-emoji" type="radio" id="emoji-${item}" value="${item}" ${emotion === `${item}`? 'checked' : ''}>
+const createEmojiListTemplate = (item, emotion) => (
+  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${item}" value="${item}" ${emotion === `${item}` ? 'checked' : ''}>
   <label class="film-details__emoji-label" for="emoji-${item}">
     <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
   </label>`);
@@ -138,7 +137,7 @@ const createNewCommentTemplate = (newComment) => {
   const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
-    .map((item) => createEmojiListTemplate(item, emotion, isSubmit))
+    .map((item) => createEmojiListTemplate(item, emotion))
     .join('');
 
   return (
@@ -156,8 +155,10 @@ const createNewCommentTemplate = (newComment) => {
 };
 
 const createFilmDetailsBottomTemplate = (filmComments, newComment) => {
+  const {isSubmit} = newComment;
+
   const commentsTemplate = Object.values(filmComments)
-    .map((filmComment) => createCommentTemplate(filmComment))
+    .map((filmComment) => createCommentTemplate(filmComment, isSubmit))
     .join('');
 
   const newCommentsTemplate = createNewCommentTemplate(newComment);
@@ -175,8 +176,7 @@ const createFilmDetailsBottomTemplate = (filmComments, newComment) => {
 };
 
 const createFilmDetailsTemplate = (film, filmComments, newComment) => {
-  const {isSubmit} = newComment;
-  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film, isSubmit);
+  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film);
   const filmDetailsBottomTemplate = createFilmDetailsBottomTemplate(filmComments, newComment);
 
   return (
@@ -271,6 +271,9 @@ export default class FilmDetails extends SmartView {
     if (evt.target.tagName !== 'IMG') {
       return;
     }
+    if (this._newCommentState.isSubmit) {
+      return;
+    }
     evt.preventDefault();
 
     this._newCommentState = {
@@ -300,9 +303,9 @@ export default class FilmDetails extends SmartView {
       return;
     }
     evt.preventDefault();
-
-    const filmComment = this._filmCommentsState.find((comment) => comment.id === evt.target.dataset.id);
-    this._callback.commentDeleteClick(FilmDetails.parseStateToComment(filmComment));
+    // this._deletetingCommentId = evt.target.dataset.id;
+    this._deletetingFilmComment = this._filmCommentsState.find((comment) => comment.id === evt.target.dataset.id);
+    this._callback.commentDeleteClick(FilmDetails.parseStateToComment(this._deletetingFilmComment));
   }
 
   setCommentDeleteClickListener(callback) {
@@ -327,10 +330,49 @@ export default class FilmDetails extends SmartView {
     document.removeEventListener('keydown', this._onCtrlEnterDown);
   }
 
-  updateStateComments(update, comments) {
-    const state = comments.map((comment) => ({...comment, isDisabled: true}));
-    update = {...update, isDeleting: true};
-    return state;
+  updateStateNewComment() {
+    this._newCommentState = {
+      ...this._newCommentState,
+      isSubmit: true,
+    };
+    this.updateState(this._newCommentState);
+  }
+
+  updateStateComment() {
+    this._deletetingFilmComment.isDeleting = true;
+    this.updateState(this._filmCommentsState);
+  }
+
+  abbortingStateForm() {
+    const element = this.getElement();
+
+    this.shake(element, () => {
+      this._film = {
+        ...this._film,
+      };
+      this.updateState(this._film);
+    });
+  }
+
+  abbortingStateNewComment() {
+    const element = this.getElement().querySelector('.film-details__new-comment');
+
+    this.shake(element, () => {
+      this._newCommentState = {
+        ...this._newCommentState,
+        isSubmit: false,
+      };
+      this.updateState(this._newCommentState);
+    });
+  }
+
+  abbortingStateComment() {
+    const element = this.getElement().querySelector(`.film-details__comment[data-id="${this._deletetingFilmComment.id}"]`);
+
+    this.shake(element, () => {
+      this._deletetingFilmComment.isDeleting = false;
+      this.updateState(this._filmCommentsState);
+    });
   }
 
   static parseNewCommentToState(newComment) {
@@ -344,12 +386,11 @@ export default class FilmDetails extends SmartView {
   }
 
   static parseCommentsToState(comments) {
-    return comments.map((comment) => ({...comment, isDisabled: false, isDeleting: false}));
+    return comments.map((comment) => ({...comment, isDeleting: false}));
   }
 
   static parseStateToComment(state) {
     state = {...state};
-    delete state.isDisabled;
     delete state.isDeleting;
 
     return state;
