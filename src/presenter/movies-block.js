@@ -332,18 +332,6 @@ export default class MoviesBlock {
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
           });
         break;
-      case UserAction.ADD_COMMENT:
-        this._popupMoviePresenter.setViewState(PopupViewState.ADDING);
-        this._api
-          .addComment(updateFilm, updateComment)
-          .then(({film, filmComments}) => {
-            this._commentsModel.setComments(filmComments);
-            this._filmsModel.updateFilm(updateType, film);
-          })
-          .catch(() => {
-            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
-          });
-        break;
       case UserAction.DELETE_COMMENT:
         this._popupMoviePresenter.setViewState(PopupViewState.DELETING);
         this._api
@@ -354,6 +342,18 @@ export default class MoviesBlock {
           })
           .catch(() => {
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_DELETE);
+          });
+        break;
+      case UserAction.ADD_COMMENT:
+        this._popupMoviePresenter.setViewState(PopupViewState.ADDING);
+        this._api
+          .addComment(updateFilm, updateComment)
+          .then(({film, filmComments}) => {
+            this._commentsModel.setComments(filmComments);
+            this._filmsModel.updateFilm(updateType, film);
+          })
+          .catch(() => {
+            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
           });
         break;
     }

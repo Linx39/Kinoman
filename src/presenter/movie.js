@@ -28,9 +28,7 @@ export default class Movie {
     this._filmCardContainer = filmCardContainer;
     this._film = film;
 
-    this._isWaiting = false;
-
-    const filmCardComponent = this._filmCardComponent;
+    const prevFilmCardComponent = this._filmCardComponent;
 
     this._filmCardComponent = new FilmCardView(this._film);
     this._filmCardComponent.setFilmCardClickListener(this._handleFilmCardClick);
@@ -38,63 +36,55 @@ export default class Movie {
     this._filmCardComponent.setWatchedClickListener(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickListener(this._handleFavoriteClick);
 
-    if (filmCardComponent === null) {
+    if (prevFilmCardComponent === null) {
       render(this._filmCardContainer, this._filmCardComponent);
       return;
     }
 
-    replace(this._filmCardComponent, filmCardComponent);
-    remove(filmCardComponent);
+    replace(this._filmCardComponent, prevFilmCardComponent);
+    remove(prevFilmCardComponent);
   }
 
   initFilmDetails(film, filmComments) {
     this._film = film;
     this._filmComments = filmComments;
 
-    this._isWaiting = false;
-
-    const filmDetailsComponent = this._filmDetailsComponent;
+    const prevFilmDetailsComponent = this._filmDetailsComponent;
 
     this._filmDetailsComponent = new FilmDetailsView(this._film, this._filmComments);
-
     this._filmDetailsComponent.setButtonCloseClickListener(this._handleButtonCloseClick);
     this._filmDetailsComponent.setWatchlistClickListener(this._handleWatchlistClick);
     this._filmDetailsComponent.setWatchedClickListener(this._handleWatchedClick);
     this._filmDetailsComponent.setFavoriteClickListener(this._handleFavoriteClick);
-
     this._filmDetailsComponent.setCommentDeleteClickListener(this._handleCommentDelete);
     this._filmDetailsComponent.setCommentSubmitListener(this._handleCommentSubmit);
+    // this._filmDetailsComponent.setOutFormClickListener();
 
-    if (filmDetailsComponent !== null) {
-      replace(this._filmDetailsComponent, filmDetailsComponent);
-      remove(filmDetailsComponent);
+    if (prevFilmDetailsComponent !== null) {
+      replace(this._filmDetailsComponent, prevFilmDetailsComponent);
+      remove(prevFilmDetailsComponent);
     }
   }
 
   setViewState(state) {
     switch (state) {
       case PopupViewState.EDITING:
-        this._isWaiting = true;
-        break;
-      case PopupViewState.ADDING:
-        this._isWaiting = true;
-        this._filmDetailsComponent.updateStateNewComment();
+        this._filmDetailsComponent.updateFilmState();
         break;
       case PopupViewState.DELETING:
-        this._isWaiting = true;
-        this._filmDetailsComponent.updateStateComment();
+        this._filmDetailsComponent.updateFilmCommentsState();
+        break;
+      case PopupViewState.ADDING:
+        this._filmDetailsComponent.updateNewCommentState();
         break;
       case PopupViewState.ABORTING_EDIT:
-        this._isWaiting = false;
-        this._filmDetailsComponent.abbortingStateForm();
-        break;
-      case PopupViewState.ABORTING_ADD:
-        this._isWaiting = false;
-        this._filmDetailsComponent.abbortingStateNewComment();
+        this._filmDetailsComponent.abbortingFilmState();
         break;
       case PopupViewState.ABORTING_DELETE:
-        this._isWaiting = false;
-        this._filmDetailsComponent.abbortingStateComment();
+        this._filmDetailsComponent.abbortingFilmCommentsState();
+        break;
+      case PopupViewState.ABORTING_ADD:
+        this._filmDetailsComponent.abbortingNewCommentState();
         break;
     }
   }
@@ -116,18 +106,10 @@ export default class Movie {
   }
 
   _handleButtonCloseClick() {
-    if (this._isWaiting) {
-      return;
-    }
-
     this.closeFilmDetails();
   }
 
   _handleEscKeyDown(evt) {
-    if (this._isWaiting) {
-      return;
-    }
-
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this.closeFilmDetails();
@@ -140,18 +122,10 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
-    if (this._isWaiting) {
-      return;
-    }
-
     this._changeModePopup(PopupAction.OPEN, this._film);
   }
 
   _handleWatchlistClick() {
-    if (this._isWaiting) {
-      return;
-    }
-
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -160,10 +134,6 @@ export default class Movie {
   }
 
   _handleWatchedClick() {
-    if (this._isWaiting) {
-      return;
-    }
-
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -172,10 +142,6 @@ export default class Movie {
   }
 
   _handleFavoriteClick() {
-    if (this._isWaiting) {
-      return;
-    }
-
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
