@@ -245,7 +245,7 @@ export default class MoviesBlock {
 
     if (this._popupMoviePresenter !== null) {
       const popupFilm = allFilms.find((film) => film.id === this._popupFilm.id);
-      this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments());
+      this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(), this._isCommentLoading);
     }
   }
 
@@ -302,13 +302,15 @@ export default class MoviesBlock {
         this._api.getComments(this._popupFilm)
           .then((comments) => {
             this._commentsModel.setComments(comments);
+            this._isCommentLoading = true;
           })
           .catch(() => {
             this._commentsModel.setComments([]);
+            this._isCommentLoading = false;
           })
           .then(() => {
             this._popupMoviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupMode);
-            this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments());
+            this._popupMoviePresenter.initFilmDetails(this._popupFilm, this._getComments(), this._isCommentLoading);
             this._popupMoviePresenter.openFilmDetails();
           });
         break;
@@ -330,6 +332,9 @@ export default class MoviesBlock {
           })
           .catch(() => {
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
+          })
+          .then(() => {
+            this._popupMoviePresenter.setEndingUpdate();
           });
         break;
       case UserAction.DELETE_COMMENT:
@@ -342,6 +347,9 @@ export default class MoviesBlock {
           })
           .catch(() => {
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_DELETE);
+          })
+          .then(() => {
+            this._popupMoviePresenter.setEndingUpdate();
           });
         break;
       case UserAction.ADD_COMMENT:
@@ -354,6 +362,9 @@ export default class MoviesBlock {
           })
           .catch(() => {
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
+          })
+          .then(() => {
+            this._popupMoviePresenter.setEndingUpdate();
           });
         break;
     }
@@ -371,7 +382,7 @@ export default class MoviesBlock {
         //   storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
         // }
         // });
-        this._popupMoviePresenter.initFilmDetails(film, this._getComments(film));
+        this._popupMoviePresenter.initFilmDetails(film, this._getComments(film), this._isCommentLoading);
         break;
       case UpdateType.MINOR:
         this._clearMoviesBlock();

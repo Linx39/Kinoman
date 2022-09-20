@@ -44,8 +44,6 @@ const handleMainNavigationClick = (menuItem) => {
 const mainNavigationPresenter = new MainNavigationPresenter(mainElement, filterModel, filmsModel, handleMainNavigationClick);
 
 headerProfilePresenter.init();
-moviesBlockPresenter.init();
-render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
 api.getFilms()
   .then((films) => {
@@ -57,3 +55,6 @@ api.getFilms()
   .then (() => {
     mainNavigationPresenter.init();
   });
+
+moviesBlockPresenter.init();
+render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));

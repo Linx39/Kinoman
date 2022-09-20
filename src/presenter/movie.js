@@ -9,10 +9,12 @@ export default class Movie {
     this._changeData = changeData;
     this._changeModePopup = changeModePopup;
 
-    this._film = null;//зачем это и следующая строчка?
-    this._filmComments = null;
+    // this._film = null;//зачем это и следующая строчка?
+    // this._filmComments = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
+
+    this._updating = false;
 
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -45,28 +47,35 @@ export default class Movie {
     remove(prevFilmCardComponent);
   }
 
-  initFilmDetails(film, filmComments) {
+  initFilmDetails(film, filmComments, isCommentLoading) {
     this._film = film;
     this._filmComments = filmComments;
 
     const prevFilmDetailsComponent = this._filmDetailsComponent;
 
-    this._filmDetailsComponent = new FilmDetailsView(this._film, this._filmComments);
+    this._filmDetailsComponent = new FilmDetailsView(this._film, this._filmComments, isCommentLoading);
     this._filmDetailsComponent.setButtonCloseClickListener(this._handleButtonCloseClick);
     this._filmDetailsComponent.setWatchlistClickListener(this._handleWatchlistClick);
     this._filmDetailsComponent.setWatchedClickListener(this._handleWatchedClick);
     this._filmDetailsComponent.setFavoriteClickListener(this._handleFavoriteClick);
-    this._filmDetailsComponent.setCommentDeleteClickListener(this._handleCommentDelete);
-    this._filmDetailsComponent.setCommentSubmitListener(this._handleCommentSubmit);
-    // this._filmDetailsComponent.setOutFormClickListener();
+
+    if (isCommentLoading) {
+      this._filmDetailsComponent.setCommentDeleteClickListener(this._handleCommentDelete);
+      this._filmDetailsComponent.setCommentSubmitListener(this._handleCommentSubmit);
+    }
 
     if (prevFilmDetailsComponent !== null) {
+      const scrollPositionTop = prevFilmDetailsComponent.getElement().scrollTop;
+
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
       remove(prevFilmDetailsComponent);
+
+      this._filmDetailsComponent.getElement().scrollTo(0, scrollPositionTop);
     }
   }
 
   setViewState(state) {
+    this._updating = true;
     switch (state) {
       case PopupViewState.EDITING:
         this._filmDetailsComponent.updateFilmState();
@@ -87,6 +96,10 @@ export default class Movie {
         this._filmDetailsComponent.abbortingNewCommentState();
         break;
     }
+  }
+
+  setEndingUpdate() {
+    this._updating = false;
   }
 
   destroyFilmCard() {
@@ -110,6 +123,10 @@ export default class Movie {
   }
 
   _handleEscKeyDown(evt) {
+    if (this._updating) {
+      return;
+    }
+
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this.closeFilmDetails();
