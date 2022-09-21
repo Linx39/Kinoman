@@ -14,8 +14,6 @@ export default class Movie {
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
 
-    this._updating = false;
-
     this._handleFilmCardClick = this._handleFilmCardClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -74,8 +72,15 @@ export default class Movie {
     }
   }
 
+  destroyFilmCard() {
+    remove(this._filmCardComponent);
+  }
+
+  destroyFilmDetails() {
+    remove(this._filmDetailsComponent);
+  }
+
   setViewState(state) {
-    this._updating = true;
     switch (state) {
       case PopupViewState.EDITING:
         this._filmDetailsComponent.updateFilmState();
@@ -98,16 +103,12 @@ export default class Movie {
     }
   }
 
-  setEndingUpdate() {
+  setModeUpdateStart() {
+    this._updating = true;
+  }
+
+  setModeUpdateEnd() {
     this._updating = false;
-  }
-
-  destroyFilmCard() {
-    remove(this._filmCardComponent);
-  }
-
-  destroyFilmDetails() {
-    remove(this._filmDetailsComponent);
   }
 
   closeFilmDetails() {
@@ -139,10 +140,18 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
+    if (this._updating) {
+      return;
+    }
+
     this._changeModePopup(PopupAction.OPEN, this._film);
   }
 
   _handleWatchlistClick() {
+    if (this._updating) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -151,6 +160,10 @@ export default class Movie {
   }
 
   _handleWatchedClick() {
+    if (this._updating) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,
@@ -159,6 +172,10 @@ export default class Movie {
   }
 
   _handleFavoriteClick() {
+    if (this._updating) {
+      return;
+    }
+
     this._changeData(
       UserAction.EDIT_FILM,
       UpdateType.MINOR,

@@ -16,10 +16,22 @@ import { filter } from '../utils/filter.js';
 const CARD_COUNT_STEP = 5;
 const EXTRA_CARD_COUNT = 2;
 
-const ListType = {
+const StorageType = {
   ALL: 'all',
   TOPRATED: 'topRated',
   MOSTCOMMENTED: 'mostCommented',
+};
+
+// const Storage = [
+//   {type: 'ALL', name: 'all', container: 'this._filmListAllContainerElement'},
+//   {type: 'TOPRATED', name: 'topRated', container: 'this._filmListTopRatedContainerElement'},
+//   {type: 'MOSTCOMMENTED', name: 'mostCommented', container: 'this._filmsListMostCommentedComponent'},
+// ];
+
+const MoviePresentersStorage = {
+  [StorageType.ALL]: {},
+  [StorageType.TOPRATED]: {},
+  [StorageType.MOSTCOMMENTED]: {},
 };
 
 export default class MoviesBlock {
@@ -32,19 +44,9 @@ export default class MoviesBlock {
     this._commentsModel = new CommentsModel();
 
     this._renderedCardsCount = CARD_COUNT_STEP;
+    this._moviePresentersStorage = MoviePresentersStorage;
     this._currentSortType = SortType.DEFAULT;
     this._isLoading = true;
-
-    this._moviePresentersStorage = {
-      [ListType.ALL]: {},
-      [ListType.TOPRATED]: {},
-      [ListType.MOSTCOMMENTED]: {},
-    };
-    this._filmsListContainer = {
-      [ListType.ALL]: '',
-      [ListType.TOPRATED]: '',
-      [ListType.MOSTCOMMENTED]: '',
-    };
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -57,10 +59,9 @@ export default class MoviesBlock {
     this._filmsListMostCommentedComponent = new FilmsListMostCommentedView();
     this._loadingComponent = new LoadingView();
 
-    this._filmsListContainer[ListType.ALL] = this._filmsListAllComponent.getContainer();
-    this._filmsListContainer[ListType.TOPRATED] = this._filmsListTopRatedComponent.getContainer();
-    this._filmsListContainer[ListType.MOSTCOMMENTED] = this._filmsListMostCommentedComponent.getContainer();
-
+    this._filmListAllContainerElement = this._filmsListAllComponent.getContainer();
+    this._filmListTopRatedContainerElement = this._filmsListTopRatedComponent.getContainer();
+    this._filmListMostCommentedContainerElement = this._filmsListMostCommentedComponent.getContainer();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -128,14 +129,14 @@ export default class MoviesBlock {
     moviePresenter.initFilmCard(container, film);
 
     switch (container) {
-      case this._filmsListContainer[ListType.ALL]:
-        this._moviePresentersStorage[ListType.ALL][film.id] = moviePresenter;
+      case this._filmListAllContainerElement:
+        this._moviePresentersStorage[StorageType.ALL][film.id] = moviePresenter;
         break;
-      case this._filmsListContainer[ListType.TOPRATED]:
-        this._moviePresentersStorage[ListType.TOPRATED][film.id] = moviePresenter;
+      case this._filmListTopRatedContainerElement:
+        this._moviePresentersStorage[StorageType.TOPRATED][film.id] = moviePresenter;
         break;
-      case this._filmsListContainer[ListType.MOSTCOMMENTED]:
-        this._moviePresentersStorage[ListType.MOSTCOMMENTED][film.id] = moviePresenter;
+      case this._filmListMostCommentedContainerElement:
+        this._moviePresentersStorage[StorageType.MOSTCOMMENTED][film.id] = moviePresenter;
         break;
     }
   }
@@ -146,11 +147,11 @@ export default class MoviesBlock {
 
   _renderFilmsListAll() {
     render(this._filmsComponent, this._filmsListAllComponent);
-    render(this._filmsListAllComponent, this._filmsListContainer[ListType.ALL]);
+    render(this._filmsListAllComponent, this._filmListAllContainerElement);
 
     const films = this._getFilms();
     const filmsCount = films.length;
-    this._renderCards(this._filmsListContainer[ListType.ALL], films.slice(0, Math.min(filmsCount, this._renderedCardsCount)));
+    this._renderCards(this._filmListAllContainerElement, films.slice(0, Math.min(filmsCount, this._renderedCardsCount)));
 
     if (filmsCount > this._renderedCardsCount) {
       this._renderShowMoreButton();
@@ -160,16 +161,16 @@ export default class MoviesBlock {
   _renderFilmsListTopRated(films) {
     render(this._filmsComponent, this._filmsListTopRatedComponent);
     if (films.length !== 0) {
-      render(this._filmsListTopRatedComponent, this._filmsListContainer[ListType.TOPRATED]);
-      this._renderCards(this._filmsListContainer[ListType.TOPRATED], films);
+      render(this._filmsListTopRatedComponent, this._filmListTopRatedContainerElement);
+      this._renderCards(this._filmListTopRatedContainerElement, films);
     }
   }
 
   _renderFilmsListMostCommented(films) {
     render(this._filmsComponent, this._filmsListMostCommentedComponent);
     if (films.length !== 0) {
-      render(this._filmsListMostCommentedComponent, this._filmsListContainer[ListType.MOSTCOMMENTED]);
-      this._renderCards(this._filmsListContainer[ListType.MOSTCOMMENTED], films);
+      render(this._filmsListMostCommentedComponent, this._filmListMostCommentedContainerElement);
+      this._renderCards(this._filmListMostCommentedContainerElement, films);
     }
   }
 
@@ -189,7 +190,7 @@ export default class MoviesBlock {
     const newRenderedCardsCount = Math.min(filmsCount, this._renderedCardsCount + CARD_COUNT_STEP);
     const films = this._getFilms().slice(this._renderedCardsCount, newRenderedCardsCount);
 
-    this._renderCards(this._filmsListContainer[ListType.ALL], films);
+    this._renderCards(this._filmListAllContainerElement, films);
 
     this._renderedCardsCount = newRenderedCardsCount;
     if (this._renderedCardsCount >= filmsCount) {
@@ -200,13 +201,11 @@ export default class MoviesBlock {
   _clearFilmsLists() {
     Object
       .keys(this._moviePresentersStorage)
-      .forEach((key) => {
-        Object
-          .values(this._moviePresentersStorage[key])
-          .forEach((presenter) => presenter.destroyFilmCard());
+      .forEach((key) => Object
+        .values(this._moviePresentersStorage[key])
+        .forEach((presenter) => presenter.destroyFilmCard()));
 
-        this._moviePresentersStorage[key] = {};
-      });
+    this._moviePresentersStorage = MoviePresentersStorage;
   }
 
   _renderMoviesBlock() {
@@ -244,7 +243,6 @@ export default class MoviesBlock {
       const popupFilm = allFilms.find((film) => film.id === this._popupFilm.id);
       this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(), this._isCommentLoading);
     }
-    // console.log(this._moviePresentersStorage);
   }
 
   _clearMoviesBlock({resetRenderedCardsCount = false, resetSortType = false} = {}) {
@@ -326,9 +324,7 @@ export default class MoviesBlock {
         .values(this._moviePresentersStorage[key])
         .forEach((presenter) => presenter.setModeUpdateStart()));
 
-    if (this._popupMoviePresenter !== null) {
-      this._popupMoviePresenter.setModeUpdateStart();
-    }
+    this._popupMoviePresenter.setModeUpdateStart();
   }
 
   _handleUpdateEnd() {
@@ -338,9 +334,7 @@ export default class MoviesBlock {
         .values(this._moviePresentersStorage[key])
         .forEach((presenter) => presenter.setModeUpdateEnd()));
 
-    if (this._popupMoviePresenter !== null) {
-      this._popupMoviePresenter.setModeUpdateEnd();
-    }
+    this._popupMoviePresenter.setModeUpdateEnd();
   }
 
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
@@ -348,10 +342,7 @@ export default class MoviesBlock {
 
     switch (actionType) {
       case UserAction.EDIT_FILM:
-        if (this._popupMoviePresenter !== null) {
-          this._popupMoviePresenter.setViewState(PopupViewState.EDITING);
-        }
-
+        this._popupMoviePresenter.setViewState(PopupViewState.EDITING);
         this._api
           .updateFilm(updateFilm)
           .then((response) => {
@@ -367,7 +358,6 @@ export default class MoviesBlock {
 
       case UserAction.DELETE_COMMENT:
         this._popupMoviePresenter.setViewState(PopupViewState.DELETING);
-
         this._api
           .deleteComment(updateComment)
           .then(() => {
@@ -384,7 +374,6 @@ export default class MoviesBlock {
 
       case UserAction.ADD_COMMENT:
         this._popupMoviePresenter.setViewState(PopupViewState.ADDING);
-
         this._api
           .addComment(updateFilm, updateComment)
           .then(({film, filmComments}) => {
@@ -403,29 +392,24 @@ export default class MoviesBlock {
 
   _handleModelEvent(updateType, film) {
     switch (updateType) {
-      case UpdateType.PATCH://не используется
-        console.log(this._moviePresentersStorage);
-        Object
-          .keys(this._moviePresentersStorage)
-          .forEach((key) => {
-            if (this._moviePresentersStorage[key][film.id]) {
-              this._moviePresentersStorage[key][film.id].initFilmCard(this._filmsListContainer[key], film, this._getComments(film));
-            }
-          });
-
-        if (this._popupMoviePresenter !== null) {
-          this._popupMoviePresenter.initFilmDetails(film, this._getComments(film), this._isCommentLoading);
-        }
+      case UpdateType.PATCH:
+        // Object
+        //   .keys(MoviePresentersStorage)
+        //   .forEach((key) => {
+        //     const storage = MoviePresentersStorage[key];
+        // console.log (storage);
+        // if (storage[film.id]) {
+        //   storage[film.id].initFilmCard(film, this._getComments(film));//тут неправильные параметры, первый - контейнер
+        // }
+        // });
+        this._popupMoviePresenter.initFilmDetails(film, this._getComments(film), this._isCommentLoading);
         break;
-
       case UpdateType.MINOR:
         this._clearMoviesBlock();
         break;
-
       case UpdateType.MAJOR:
         this._clearMoviesBlock({resetRenderedCardsCount: true, resetSortType: true});
         break;
-
       case UpdateType.INIT:
         this._isLoading = false;
         remove(this._loadingComponent);
