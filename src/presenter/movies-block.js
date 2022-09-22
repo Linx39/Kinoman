@@ -358,7 +358,9 @@ export default class MoviesBlock {
             this._filmsModel.updateFilm(updateType, response);
           })
           .catch(() => {
-            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
+            if (this._popupMoviePresenter !== null) {
+              this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
+            }
           })
           .then(() => {
             this._handleUpdateEnd();
