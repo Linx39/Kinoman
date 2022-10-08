@@ -1,6 +1,6 @@
 import FilmsModel from '../model/films.js';
 import CommentsModel from '../model/comments.js';
-import {isOnline} from '../utils/common.js';
+import { isOnline } from '../utils/common.js';
 
 const getSyncedFilms = (items) => items
   .filter(({success}) => success)
@@ -33,7 +33,11 @@ export default class Provider {
   }
 
   getComments(film) {
-    return this._api.getComments(film);
+    if (isOnline()) {
+      return this._api.getComments(film);
+    }
+
+    return Promise.reject(new Error('Get comment failed'));
   }
 
   // getComments(film) {
@@ -69,18 +73,17 @@ export default class Provider {
 
   addComment(film, comment) {
     if (isOnline()) {
-      return this._api.addComment(film, comment)
-        .then((newComment) => {
-          this._store.setItem(newComment.id, CommentsModel.adaptToServer(newComment));
-          return newComment;
-        });
+      return this._api.addComment(film, comment);
+        // .then((newComment) => {
+        //   this._store.setItem(newComment.id, CommentsModel.adaptToServer(newComment));
+        //   return newComment;
+        // });
     }
 
     return Promise.reject(new Error('Add comment failed'));
   }
 
   deleteComment(comment) {
-    console.log(isOnline());
     if (isOnline()) {
       return this._api.deleteComment(comment);
         // .then(() => this._store.removeItem(comment.id));

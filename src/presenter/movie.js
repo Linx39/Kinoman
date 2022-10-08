@@ -186,10 +186,10 @@ export default class Movie {
   }
 
   _handleCommentDelete(filmComment) {
-    if (!isOnline()) {
-      toast('You can\'t delete comment offline');
-      return;
-    }
+    // if (!isOnline()) {
+    //   toast('You can\'t delete comment offline');
+    //   return;
+    // }
 
     const index = this._film.comments.findIndex((id) => id === filmComment.id);
     this._film.comments = [
@@ -206,10 +206,10 @@ export default class Movie {
   }
 
   _handleCommentSubmit(newComment) {
-    if (!isOnline()) {
-      toast('You can\'t submit comment offline');
-      return;
-    }
+    // if (!isOnline()) {
+    //   toast('You can\'t submit comment offline');
+    //   return;
+    // }
 
     if (newComment.emotion === null || newComment.comment === null) {
       return;
