@@ -406,7 +406,7 @@ export default class MoviesBlock {
   _handleModelEvent(updateType, film) {
     switch (updateType) {
       case UpdateType.PATCH://не используется
-        console.log(this._moviePresentersStorage);
+        // console.log(this._moviePresentersStorage);
         Object
           .keys(this._moviePresentersStorage)
           .forEach((key) => {

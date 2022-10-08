@@ -5,14 +5,21 @@ import HeaderProfilePresenter from './presenter/header-profile.js';
 import StatisticView from './view/statistic.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
-import Api from './api.js';
+import Api from './api/api.js';
+import Store from './api/store.js';
+import Provider from './api/provider.js';
 import { render, remove } from './utils/render.js';
 import { ModeNavigation, UpdateType } from './const.js';
 
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
 const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
+const STORE_PREFIX = 'kinoman-localstorage';
+const STORE_VER = 'v14';
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const api = new Api(API_URL, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
@@ -22,7 +29,7 @@ const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
 
 const headerProfilePresenter = new HeaderProfilePresenter(headerElement, filmsModel);
-const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, filterModel, api);
+const moviesBlockPresenter = new MoviesBlockPresenter(mainElement, filmsModel, filterModel, apiWithProvider);
 
 let statisticComponent = null;
 
@@ -45,7 +52,7 @@ const mainNavigationPresenter = new MainNavigationPresenter(mainElement, filterM
 
 headerProfilePresenter.init();
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     filmsModel.setFilms(UpdateType.INIT, films);
   })
@@ -58,3 +65,16 @@ api.getFilms()
 
 moviesBlockPresenter.init();
 render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
+window.addEventListener('online', () => {
+  document.title = document.title.replace(' [offline]', '');
+  apiWithProvider.sync();
+});
+
+window.addEventListener('offline', () => {
+  document.title += ' [offline]';
+});
