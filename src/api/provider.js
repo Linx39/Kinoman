@@ -98,8 +98,11 @@ export default class Provider {
 
       return this._api.sync(storeFilms)
         .then((response) => {
+
+          //посмотреть что тут в респонзе и работу getSyncedFilms
+
           // Забираем из ответа синхронизированные задачи
-          const createdFilms = getSyncedFilms(response.created);
+          const createdFilms = getSyncedFilms(response.created);//похоже, это не нужно
           const updatedFilms = getSyncedFilms(response.updated);
 
           // Добавляем синхронизированные задачи в хранилище.

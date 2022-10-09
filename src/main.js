@@ -10,6 +10,7 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { render, remove } from './utils/render.js';
 import { ModeNavigation, UpdateType } from './const.js';
+import { isOnline } from './utils/common.js';
 
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
 const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
@@ -68,6 +69,9 @@ render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
+  if (!isOnline) {
+    document.title += ' [offline]';//нужно???
+  }
 });
 
 window.addEventListener('online', () => {
