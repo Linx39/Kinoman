@@ -15,12 +15,17 @@ import { isOnline } from './utils/common.js';
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
 const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
 const STORE_PREFIX = 'kinoman-localstorage';
+const STORE_FILMS = 'films';
+const STORE_COMMENTS = 'coments';
 const STORE_VER = 'v14';
-const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+const STORE_FILMS_NAME = `${STORE_PREFIX}-${STORE_FILMS}-${STORE_VER}`;
+const STORE_COMMENTS_NAME = `${STORE_PREFIX}-${STORE_COMMENTS}-${STORE_VER}`;
 
 const api = new Api(API_URL, AUTHORIZATION);
-const store = new Store(STORE_NAME, window.localStorage);
-const apiWithProvider = new Provider(api, store);
+const storeFilms = new Store(STORE_FILMS_NAME, window.localStorage);
+const storeComments = new Store(STORE_COMMENTS_NAME, window.localStorage);
+
+const apiWithProvider = new Provider(api, storeFilms, storeComments);
 
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
@@ -69,7 +74,7 @@ render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
-  if (!isOnline) {
+  if (!isOnline()) {
     document.title += ' [offline]';//нужно???
   }
 });

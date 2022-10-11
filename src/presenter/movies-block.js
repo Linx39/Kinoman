@@ -371,7 +371,7 @@ export default class MoviesBlock {
         this._popupMoviePresenter.setViewState(PopupViewState.DELETING);
 
         this._api
-          .deleteComment(updateComment)
+          .deleteComment(updateFilm, updateComment)
           .then(() => {
             this._commentsModel.deleteComment(updateComment);
             this._filmsModel.updateFilm(updateType, updateFilm);

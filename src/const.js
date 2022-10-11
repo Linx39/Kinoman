@@ -17,7 +17,7 @@ export const UserAction = {
 };
 
 export const UpdateType = {
-  NOTHING: 'NOTHING',
+  NOTHING: 'NOTHING',//вроде я его удалила
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',

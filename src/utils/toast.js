@@ -1,13 +1,13 @@
 const SHOW_TIME = 5000;
 
 const toastContainer = document.createElement('div');
-// toastContainer.classList.add('toast-container');
+toastContainer.classList.add('toast-container');
 document.body.append(toastContainer);
 
 export const toast = (message) => {
   const toastItem = document.createElement('div');
   toastItem.textContent = message;
-  // toastItem.classList.add('toast-item');
+  toastItem.classList.add('toast-item');
 
   toastContainer.append(toastItem);
 
@@ -15,5 +15,3 @@ export const toast = (message) => {
     toastItem.remove();
   }, SHOW_TIME);
 };
-
-// export {toast};

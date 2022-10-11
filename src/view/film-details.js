@@ -375,7 +375,6 @@ export default class FilmDetails extends SmartView {
   }
 
   abbortingFilmCommentsState() {
-    console.log(111);
     const element = this.getElement().querySelector(`.film-details__comment[data-id="${this._deletetingFilmComment.id}"]`);
 
     this.shake(element, () => {
