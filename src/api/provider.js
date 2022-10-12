@@ -2,10 +2,6 @@ import FilmsModel from '../model/films.js';
 import CommentsModel from '../model/comments.js';
 import { isOnline } from '../utils/common.js';
 
-const getSyncedFilms = (items) => items
-  .filter(({success}) => success)
-  .map(({payload}) => payload.film);
-
 const createStoreStructure = (items) => items
   .reduce((acc, current) => Object.assign({}, acc, {
     [current.id]: current,
@@ -18,6 +14,8 @@ export default class Provider {
     this._api = api;
     this._storeFilms = storeFilms;
     this._storeComments = storeComments;
+
+    this._isSync = false;
   }
 
   getFilms() {
@@ -46,10 +44,10 @@ export default class Provider {
         });
     }
 
-    const store = Object.values(this._storeComments.getItems());
+    const store = Object.values(this._storeComments.getItem(film.id));
 
-    if ([film.id] in store) {
-      return Promise.resolve(store[film.id].map(CommentsModel.adaptToClient));
+    if (Object.keys(store).length !== 0) {
+      return Promise.resolve(store.map(CommentsModel.adaptToClient));
     }
 
     return Promise.reject(new Error('Get comment failed'));
@@ -65,6 +63,7 @@ export default class Provider {
     }
 
     this._storeFilms.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
+    this._isSync = true;
     return Promise.resolve(film);
   }
 
@@ -84,9 +83,9 @@ export default class Provider {
     if (isOnline()) {
       return this._api.deleteComment(comment)
         .then(() => {
-          const mykey = `[${film.id}][${comment.id}]`;
-          console.log (film.id, comment.id, mykey);
-          this._storeComments.removeItem(mykey);
+          const comments = this._storeComments.getItem(film.id);
+          delete comments[comment.id];
+          this._storeComments.setItem(film.id, CommentsModel.adaptToServer(comments));
         });
     }
 
@@ -99,21 +98,16 @@ export default class Provider {
 
       return this._api.sync(storeFilms)
         .then((response) => {
-
-          //посмотреть что тут в респонзе и работу getSyncedFilms
-
-          // Забираем из ответа синхронизированные задачи
-          const createdFilms = getSyncedFilms(response.created);//похоже, это не нужно
-          const updatedFilms = getSyncedFilms(response.updated);
-
-          // Добавляем синхронизированные задачи в хранилище.
-          // Хранилище должно быть актуальным в любой момент.
-          const items = createStoreStructure([...createdFilms, ...updatedFilms]);
+          const items = createStoreStructure(response.updated);
 
           this._storeFilms.setItems(items);
         });
     }
 
     return Promise.reject(new Error('Sync data failed'));
+  }
+
+  getIsSinc() {
+    return this._isSync;
   }
 }

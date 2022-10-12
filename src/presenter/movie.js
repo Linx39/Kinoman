@@ -2,9 +2,7 @@ import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
 import { isEscEvent} from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
-import { UserAction, UpdateType, PopupAction, PopupViewState } from '../const.js';
-import { isOnline } from '../utils/common.js';
-import { toast } from '../utils/toast.js';
+import { UserAction, UpdateType, PopupAction, PopupViewState, UpdateStage } from '../const.js';
 
 export default class Movie {
   constructor (changeData, changeModePopup) {
@@ -105,12 +103,23 @@ export default class Movie {
     }
   }
 
-  setModeUpdateStart() {
-    this._updating = true;
-  }
+  // setModeUpdateStart() {
+  //   this._updating = true;
+  // }
 
-  setModeUpdateEnd() {
-    this._updating = false;
+  // setModeUpdateEnd() {
+  //   this._updating = false;
+  // }
+
+  setUpdateStage(stage) {
+    switch (stage) {
+      case UpdateStage.START:
+        this._updating = true;
+        break;
+      case UpdateStage.END:
+        this._updating = false;
+        break;
+    }
   }
 
   closeFilmDetails() {
@@ -186,11 +195,6 @@ export default class Movie {
   }
 
   _handleCommentDelete(filmComment) {
-    // if (!isOnline()) {
-    //   toast('You can\'t delete comment offline');
-    //   return;
-    // }
-
     const index = this._film.comments.findIndex((id) => id === filmComment.id);
     this._film.comments = [
       ...this._film.comments.slice(0, index),
@@ -206,11 +210,6 @@ export default class Movie {
   }
 
   _handleCommentSubmit(newComment) {
-    // if (!isOnline()) {
-    //   toast('You can\'t submit comment offline');
-    //   return;
-    // }
-
     if (newComment.emotion === null || newComment.comment === null) {
       return;
     }

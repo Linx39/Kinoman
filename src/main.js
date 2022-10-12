@@ -11,6 +11,7 @@ import Provider from './api/provider.js';
 import { render, remove } from './utils/render.js';
 import { ModeNavigation, UpdateType } from './const.js';
 import { isOnline } from './utils/common.js';
+import { toast } from './utils/toast.js';
 
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
 const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
@@ -80,10 +81,15 @@ window.addEventListener('load', () => {
 });
 
 window.addEventListener('online', () => {
+  toast('All OK! You are online!');
   document.title = document.title.replace(' [offline]', '');
-  apiWithProvider.sync();
+
+  if (apiWithProvider.getIsSinc()) {
+    apiWithProvider.sync();
+  }
 });
 
 window.addEventListener('offline', () => {
+  toast('Attention! Offline mode!');
   document.title += ' [offline]';
 });

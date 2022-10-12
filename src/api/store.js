@@ -12,6 +12,10 @@ export default class Store {
     }
   }
 
+  getItem(key) {
+    return this.getItems()[key] || {};
+  }
+
   setItems(items) {
     this._storage.setItem(
       this._storeKey,
@@ -34,7 +38,7 @@ export default class Store {
 
   removeItem(key) {
     const store = this.getItems();
-console.log (key);
+
     delete store[key];
 
     this._storage.setItem(

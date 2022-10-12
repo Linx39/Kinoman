@@ -10,8 +10,10 @@ import NoMoviesPresenter from './no-movies.js';
 import CommentsModel from '../model/comments.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, TopType, PopupViewState } from '../const.js';
+import { SortType, UpdateType, UserAction, PopupAction, TopType, PopupViewState, UpdateStage } from '../const.js';
 import { filter } from '../utils/filter.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
 const CARD_COUNT_STEP = 5;
 const EXTRA_CARD_COUNT = 2;
@@ -299,10 +301,18 @@ export default class MoviesBlock {
 
         this._api.getComments(this._popupFilm)
           .then((comments) => {
+            if (!isOnline()) {
+              toast('Attention! Offline mode! Outdated list of comments!');
+            }
+
             this._commentsModel.setComments(comments);
             this._isCommentLoading = true;
           })
           .catch(() => {
+            if (!isOnline()) {
+              toast('Attention! Offline mode! Comments have not been loaded!');
+            }
+
             this._commentsModel.setComments([]);
             this._isCommentLoading = false;
           })
@@ -319,32 +329,44 @@ export default class MoviesBlock {
     }
   }
 
-  _handleUpdateStart() {
+  // _handleUpdateStart() {
+  //   Object
+  //     .keys(this._moviePresentersStorage)
+  //     .forEach((key) => Object
+  //       .values(this._moviePresentersStorage[key])
+  //       .forEach((presenter) => presenter.setUpdateStage(UpdateStage.START)));
+
+  //   if (this._popupMoviePresenter !== null) {
+  //     this._popupMoviePresenter.setUpdateStage(UpdateStage.START);
+  //   }
+  // }
+
+  // _handleUpdateEnd() {
+  //   Object
+  //     .keys(this._moviePresentersStorage)
+  //     .forEach((key) => Object
+  //       .values(this._moviePresentersStorage[key])
+  //       .forEach((presenter) => presenter.setUpdateStage(UpdateStage.END)));
+
+  //   if (this._popupMoviePresenter !== null) {
+  //     this._popupMoviePresenter.setUpdateStage(UpdateStage.END);
+  //   }
+  // }
+
+  _handleUpdateStage(stage) {
     Object
       .keys(this._moviePresentersStorage)
       .forEach((key) => Object
         .values(this._moviePresentersStorage[key])
-        .forEach((presenter) => presenter.setModeUpdateStart()));
+        .forEach((presenter) => presenter.setUpdateStage(stage)));
 
     if (this._popupMoviePresenter !== null) {
-      this._popupMoviePresenter.setModeUpdateStart();
-    }
-  }
-
-  _handleUpdateEnd() {
-    Object
-      .keys(this._moviePresentersStorage)
-      .forEach((key) => Object
-        .values(this._moviePresentersStorage[key])
-        .forEach((presenter) => presenter.setModeUpdateEnd()));
-
-    if (this._popupMoviePresenter !== null) {
-      this._popupMoviePresenter.setModeUpdateEnd();
+      this._popupMoviePresenter.setUpdateStage(stage);
     }
   }
 
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
-    this._handleUpdateStart();
+    this._handleUpdateStage(UpdateStage.START);
 
     switch (actionType) {
       case UserAction.EDIT_FILM:
@@ -363,7 +385,7 @@ export default class MoviesBlock {
             }
           })
           .then(() => {
-            this._handleUpdateEnd();
+            this._handleUpdateStage(UpdateStage.END);
           });
         break;
 
@@ -377,10 +399,14 @@ export default class MoviesBlock {
             this._filmsModel.updateFilm(updateType, updateFilm);
           })
           .catch(() => {
+            if (!isOnline()) {
+              toast('You can\'t delete comment offline');
+            }
+
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_DELETE);
           })
           .then(() => {
-            this._handleUpdateEnd();
+            this._handleUpdateStage(UpdateStage.END);
           });
         break;
 
@@ -394,10 +420,14 @@ export default class MoviesBlock {
             this._filmsModel.updateFilm(updateType, film);
           })
           .catch(() => {
+            if (!isOnline()) {
+              toast('You can\'t submit comment offline');
+            }
+
             this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
           })
           .then(() => {
-            this._handleUpdateEnd();
+            this._handleUpdateStage(UpdateStage.END);
           });
         break;
     }

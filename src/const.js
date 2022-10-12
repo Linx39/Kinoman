@@ -54,3 +54,8 @@ export const PopupViewState = {
   ABORTING_DELETE: 'ABORTING_DELETE',
   ABORTING_EDIT: 'ABORTING_EDIT',
 };
+
+export const UpdateStage = {
+  START: 'START',
+  END: 'END',
+};
