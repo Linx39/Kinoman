@@ -47,12 +47,10 @@ export const TopType = {
 };
 
 export const PopupViewState = {
-  EDITING: 'EDITING',
   ADDING: 'ADDING',
   DELETING: 'DELETING',
   ABORTING_ADD: 'ABORTING_ADD',
   ABORTING_DELETE: 'ABORTING_DELETE',
-  ABORTING_EDIT: 'ABORTING_EDIT',
 };
 
 export const UpdateStage = {

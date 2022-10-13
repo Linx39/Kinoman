@@ -82,11 +82,17 @@ export default class Movie {
 
   setViewState(state) {
     switch (state) {
+      case PopupViewState.EDITING:
+        this._filmDetailsComponent.updateFilmState();
+        break;
       case PopupViewState.DELETING:
         this._filmDetailsComponent.updateFilmCommentsState();
         break;
       case PopupViewState.ADDING:
         this._filmDetailsComponent.updateNewCommentState();
+        break;
+      case PopupViewState.ABORTING_EDIT:
+        this._filmDetailsComponent.abbortingFilmState();
         break;
       case PopupViewState.ABORTING_DELETE:
         this._filmDetailsComponent.abbortingFilmCommentsState();

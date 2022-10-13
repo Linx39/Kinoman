@@ -15,12 +15,19 @@ import { toast } from './utils/toast.js';
 
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
 const API_URL = 'https://14.ecmascript.pages.academy/cinemaddict';
+
 const STORE_PREFIX = 'kinoman-localstorage';
 const STORE_FILMS = 'films';
-const STORE_COMMENTS = 'coments';
+const STORE_COMMENTS = 'comments';
 const STORE_VER = 'v14';
 const STORE_FILMS_NAME = `${STORE_PREFIX}-${STORE_FILMS}-${STORE_VER}`;
 const STORE_COMMENTS_NAME = `${STORE_PREFIX}-${STORE_COMMENTS}-${STORE_VER}`;
+
+const Warning = {
+  ONLINE: 'All OK! You are online!',
+  OFFLINE: 'Warning! Offline mode!',
+};
+const TITLE_OFFLINE = ' [offline]';
 
 const api = new Api(API_URL, AUTHORIZATION);
 const storeFilms = new Store(STORE_FILMS_NAME, window.localStorage);
@@ -57,7 +64,7 @@ const handleMainNavigationClick = (menuItem) => {
 
 const mainNavigationPresenter = new MainNavigationPresenter(mainElement, filterModel, filmsModel, handleMainNavigationClick);
 
-headerProfilePresenter.init();
+// headerProfilePresenter.init();
 
 apiWithProvider.getFilms()
   .then((films) => {
@@ -67,22 +74,26 @@ apiWithProvider.getFilms()
     filmsModel.setFilms(UpdateType.INIT, []);
   })
   .then (() => {
+    headerProfilePresenter.init();
     mainNavigationPresenter.init();
+    // moviesBlockPresenter.init();
+    render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
   });
 
 moviesBlockPresenter.init();
-render(footerElement, new FooterStatisticsView(filmsModel.getFilms()));
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
+
   if (!isOnline()) {
-    document.title += ' [offline]';//нужно???
+    toast(Warning.OFFLINE);
+    document.title += TITLE_OFFLINE;
   }
 });
 
 window.addEventListener('online', () => {
-  toast('All OK! You are online!');
-  document.title = document.title.replace(' [offline]', '');
+  toast(Warning.ONLINE);
+  document.title = document.title.replace(TITLE_OFFLINE, '');
 
   if (apiWithProvider.getIsSinc()) {
     apiWithProvider.sync();
@@ -90,6 +101,6 @@ window.addEventListener('online', () => {
 });
 
 window.addEventListener('offline', () => {
-  toast('Attention! Offline mode!');
-  document.title += ' [offline]';
+  toast(Warning.OFFLINE);
+  document.title += TITLE_OFFLINE;
 });

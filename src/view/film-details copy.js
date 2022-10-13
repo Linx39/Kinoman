@@ -13,7 +13,7 @@ const Emoji = {
   ANGRY: 'angry',
 };
 
-const createFilmDetailsTopTemplate = (film) => {
+const createFilmDetailsTopTemplate = (film, isDisabled) => {
   const {
     poster,
     title,
@@ -40,7 +40,7 @@ const createFilmDetailsTopTemplate = (film) => {
   return (
     `<div class="film-details__top-container">
       <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
+        <button class="film-details__close-btn" type="button" ${isDisabled? 'disabled' : ''}>close</button>
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
@@ -97,14 +97,14 @@ const createFilmDetailsTopTemplate = (film) => {
         </div>
       </div>
       <section class="film-details__controls">
-        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist">Add to watchlist</button>
-        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched">Already watched</button>
-        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite">Add to favorites</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlist? BUTTON_ACTIVE_CLASS : ''}" id="watchlist" name="watchlist" ${isDisabled? 'disabled' : ''}>Add to watchlist</button>
+        <button type="button" class="film-details__control-button film-details__control-button--watched ${watched? BUTTON_ACTIVE_CLASS : ''}" id="watched" name="watched" ${isDisabled? 'disabled' : ''}>Already watched</button>
+        <button type="button" class="film-details__control-button film-details__control-button--favorite ${favorite? BUTTON_ACTIVE_CLASS : ''}" id="favorite" name="favorite" ${isDisabled? 'disabled' : ''}>Add to favorites</button>
       </section>
     </div>`);
 };
 
-const createCommentTemplate = (filmComment) => {
+const createCommentTemplate = (filmComment, isDisabled) => {
   const {id, author, comment, date, emotion, isDeleting } = filmComment;
 
   return (
@@ -117,7 +117,7 @@ const createCommentTemplate = (filmComment) => {
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${convertDateToHumanFormat(date)}</span>
-          <button class="film-details__comment-delete" data-id = "${id}">
+          <button class="film-details__comment-delete" data-id = "${id}" ${isDisabled? 'disabled' : ''}>
             ${isDeleting ? 'Deleting...' : 'Delete'}
           </button>
         </p>
@@ -131,8 +131,8 @@ const createEmojiListTemplate = (item, emotion) => (
     <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
   </label>`);
 
-const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion, isSubmiting} = newComment;
+const createNewCommentTemplate = (newComment, isDisable) => {
+  const {comment, emotion} = newComment;
   const emotiomTemplate = emotion !== null? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
   const commentTemplate = he.encode(comment !== null? comment : '');
 
@@ -146,7 +146,7 @@ const createNewCommentTemplate = (newComment) => {
           ${emotiomTemplate}
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isSubmiting ? 'disabled' : ''}>${commentTemplate}</textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisable ? 'disabled' : ''}>${commentTemplate}</textarea>
         </label>
         <div class="film-details__emoji-list">
           ${emojiListTemplate}
@@ -154,41 +154,38 @@ const createNewCommentTemplate = (newComment) => {
       </div>`);
 };
 
-const createFilmDetailsBottomTemplate = (filmComments, newComment, isCommentLoading) => {
-  let commentListTemplate = '';
+const createFilmDetailsBottomTemplate = (filmComments, newComment, isDisabled) => {
+  const commentsTemplate = Object.values(filmComments)
+    .map((filmComment) => createCommentTemplate(filmComment, isDisabled))
+    .join('');
 
-  if (isCommentLoading) {
-    // const isDisabled = filmComments.reduce(((accumulator, comment) => accumulator || comment.isDeleting), false)
-  //   || newComment.isSubmiting
-
-    const commentsTemplate = Object.values(filmComments)
-      .map((filmComment) => createCommentTemplate(filmComment))
-      .join('');
-
-    const newCommentsTemplate = createNewCommentTemplate(newComment);
-
-    commentListTemplate =
-      `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
-        <ul class="film-details__comments-list">
-          ${commentsTemplate}
-        </ul>
-        ${newCommentsTemplate}`;
-  } else {
-    commentListTemplate =
-      '<h3 class="film-details__comments-title">Oops... The comments weren\'t loaded. Please refresh the page.</h3>';
-  }
+  const newCommentsTemplate = createNewCommentTemplate(newComment, isDisabled);
 
   return (
     `<div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
-        ${commentListTemplate}   
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
+        <ul class="film-details__comments-list">
+          ${commentsTemplate}
+        </ul>
+        ${newCommentsTemplate}
       </section>
     </div>`);
 };
 
 const createFilmDetailsTemplate = (film, filmComments, newComment, isCommentLoading) => {
-  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film);
-  const filmDetailsBottomTemplate = createFilmDetailsBottomTemplate(filmComments, newComment, isCommentLoading);
+  const isDisabled = filmComments.reduce(((accumulator, comment) => accumulator || comment.isDeleting), false)
+    || newComment.isSubmiting
+    || film.isEditing;
+
+  const filmDetailsTopTemplate = createFilmDetailsTopTemplate(film, isDisabled);
+  const filmDetailsBottomTemplate = isCommentLoading
+    ? createFilmDetailsBottomTemplate(filmComments, newComment, isDisabled)
+    : `<div class="film-details__bottom-container">
+        <section class="film-details__comments-wrap">
+          <h3 class="film-details__comments-title">Oops... The comments weren't loaded. Please refresh the page.</h3>
+        </section>
+      </div>`;
 
   return (
     `<section class="film-details">
@@ -232,16 +229,15 @@ export default class FilmDetails extends SmartView {
   }
 
   restoreListeners() {
-    this.setButtonCloseClickListener(this._callback.closeClick);
-    this.setWatchlistClickListener(this._callback.watchlistClick) ;
-    this.setWatchedClickListener(this._callback.watchedClick);
-    this.setFavoriteClickListener(this._callback.favoriteClick);
-
     if (this._isCommentLoading) {
       this._setInnerListeners();
       this.setCommentDeleteClickListener(this._callback.commentDeleteClick);
       this.setCommentSubmitListener(this._callback.commentSubmit);
     }
+    this.setButtonCloseClickListener(this._callback.closeClick);
+    this.setWatchlistClickListener(this._callback.watchlistClick) ;
+    this.setWatchedClickListener(this._callback.watchedClick);
+    this.setFavoriteClickListener(this._callback.favoriteClick);
   }
 
   _onButtonCloseClick(evt) {
@@ -285,14 +281,12 @@ export default class FilmDetails extends SmartView {
   }
 
   _onEmojiListClick(evt) {
-    if (this._newCommentState.isSubmiting || this._filmCommentsState.isDeleting) {//??????это надо (после или)
-      return;
-    }
-
     if (evt.target.tagName !== 'IMG') {
       return;
     }
-
+    if (this._newCommentState.isSubmiting) {
+      return;
+    }
     evt.preventDefault();
 
     this._newCommentState = {
@@ -305,12 +299,10 @@ export default class FilmDetails extends SmartView {
 
   _onCommentInput(evt) {
     evt.preventDefault();
-
     this._newCommentState = {
       ...this._newCommentState,
       comment: evt.target.value,
     };
-
     this.updateState(this._newCommentState, true);
   }
 
@@ -323,9 +315,8 @@ export default class FilmDetails extends SmartView {
     if (evt.target.tagName !== 'BUTTON') {
       return;
     }
-
     evt.preventDefault();
-
+    // this._deletetingCommentId = evt.target.dataset.id;
     this._deletetingFilmComment = this._filmCommentsState.find((comment) => comment.id === evt.target.dataset.id);
     this._callback.commentDeleteClick(FilmDetails.parseStateToComment(this._deletetingFilmComment));
   }
@@ -338,7 +329,6 @@ export default class FilmDetails extends SmartView {
   _onCtrlEnterDown(evt) {
     if (isCtrlEnterEvent(evt)) {
       evt.preventDefault();
-
       this._callback.commentSubmit(FilmDetails.parseStateToNewComment(this._newCommentState));
       this.removeCtrlEnterDownListener();
     }
@@ -353,9 +343,16 @@ export default class FilmDetails extends SmartView {
     document.removeEventListener('keydown', this._onCtrlEnterDown);
   }
 
+  updateFilmState() {
+    this._filmState = {
+      ...this._filmState,
+      isEditing: true,
+    };
+    this.updateState(this._filmState);
+  }
+
   updateFilmCommentsState() {
     this._deletetingFilmComment.isDeleting = true;
-
     this.updateState(this._filmCommentsState);
   }
 
@@ -364,8 +361,19 @@ export default class FilmDetails extends SmartView {
       ...this._newCommentState,
       isSubmiting: true,
     };
-
     this.updateState(this._newCommentState);
+  }
+
+  abbortingFilmState() {
+    const element = this.getElement();
+
+    this.shake(element, () => {
+      this._filmState = {
+        ...this._filmState,
+        isEditing: false,
+      };
+      this.updateState(this._filmState);
+    });
   }
 
   abbortingFilmCommentsState() {
@@ -390,11 +398,13 @@ export default class FilmDetails extends SmartView {
   }
 
   static parseFilmToState(film) {
-    return {...film};
+    return {...film, isEditing: false};
   }
 
   static parseStateToFilm(state) {
-    return {...state};
+    state = {...state};
+    delete state.isEditing;
+    return state;
   }
 
   static parseCommentsToState(comments) {
@@ -415,7 +425,6 @@ export default class FilmDetails extends SmartView {
   static parseStateToNewComment(state) {
     state = {...state};
     delete state.isSubmiting;
-
     return state;
   }
 }

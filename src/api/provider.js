@@ -64,6 +64,7 @@ export default class Provider {
 
     this._storeFilms.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
     this._isSync = true;
+
     return Promise.resolve(film);
   }
 

@@ -353,10 +353,22 @@ export default class MoviesBlock {
 
     switch (actionType) {
       case UserAction.EDIT_FILM:
+        // if (this._popupMoviePresenter !== null) {
+        //   this._popupMoviePresenter.setViewState(PopupViewState.EDITING);
+        // }
+
         this._api
           .updateFilm(updateFilm)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
+            // this._handleUpdateStage(UpdateStage.END);
+          })
+          // .catch(() => {
+          //   if (this._popupMoviePresenter !== null) {
+          //     this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_EDIT);
+          //   }
+          // })
+          .then(() => {
             this._handleUpdateStage(UpdateStage.END);
           });
         break;
