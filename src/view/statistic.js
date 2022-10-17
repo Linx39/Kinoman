@@ -178,9 +178,9 @@ export default class Statistic extends SmartView {
     this._currentFilter = StatisticFilterType.ALLTIME;
     this._filterFilms = this._films;
 
-    this._onStatisticFiltersClick = this._onStatisticFiltersClick.bind(this);
+    this._onFiltersClick = this._onFiltersClick.bind(this);
 
-    this._setStatisticFilters();
+    this._setFiltersClickListener();
     this._setCharts();
 
   }
@@ -191,7 +191,7 @@ export default class Statistic extends SmartView {
 
   restoreListeners() {
     this._setCharts();
-    this._setStatisticFilters();
+    this._setFiltersClickListener();
   }
 
   removeElement() {
@@ -199,7 +199,7 @@ export default class Statistic extends SmartView {
     super.removeElement();
   }
 
-  _onStatisticFiltersClick(evt) {
+  _onFiltersClick(evt) {
     if (!evt.target.classList.contains('statistic__filters-input')) {
       return;
     }
@@ -210,10 +210,8 @@ export default class Statistic extends SmartView {
     this.updateState(this._filterFilms);
   }
 
-  _setStatisticFilters() {
-    this.getElement()
-      .querySelector('.statistic__filters')
-      .addEventListener('click', this._onStatisticFiltersClick);
+  _setFiltersClickListener() {
+    this.getElement().querySelector('.statistic__filters').addEventListener('click', this._onFiltersClick);
   }
 
   _resetChart() {

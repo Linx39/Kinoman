@@ -14,11 +14,12 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  // addComment(updateType, update) {
-  //   this._comments = [...update];
-
-  //   this._notify(updateType, update);
-  // }
+  addComment(update) {
+    this._comments = [
+      update,
+      ...this._comments,
+    ];
+  }
 
   deleteComment(update) {
     const index = this._comments.findIndex((comment) => comment.id === update.id);
@@ -31,17 +32,13 @@ export default class Comments extends Observer {
       ...this._comments.slice(0, index),
       ...this._comments.slice(index + 1),
     ];
-
-    // this._notify(updateType);
   }
 
   static adaptToClient(comment) {
-    const adaptedComment = {...comment};
-    return adaptedComment;
+    return {...comment};
   }
 
   static adaptToServer(comment) {
-    const adaptedComment = {...comment};
-    return adaptedComment;
+    return {...comment};
   }
 }

@@ -13,6 +13,10 @@ const Emoji = {
   ANGRY: 'angry',
 };
 
+const getIsDisabled = (filmComments, newComment) => filmComments
+  .reduce(((accumulator, comment) => accumulator || comment.isDeleting), false)
+  || newComment.isSubmiting;
+
 const createFilmDetailsTopTemplate = (film) => {
   const {
     poster,
@@ -131,9 +135,9 @@ const createEmojiListTemplate = (item, emotion) => (
     <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
   </label>`);
 
-const createNewCommentTemplate = (newComment) => {
-  const {comment, emotion, isSubmiting} = newComment;
-  const emotiomTemplate = emotion !== null? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
+const createNewCommentTemplate = (newComment, isDisabled) => {
+  const {comment, emotion} = newComment;
+  const emotiomTemplate = emotion !== null ? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
   const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
@@ -146,7 +150,7 @@ const createNewCommentTemplate = (newComment) => {
           ${emotiomTemplate}
         </div>
         <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isSubmiting ? 'disabled' : ''}>${commentTemplate}</textarea>
+          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''}>${commentTemplate}</textarea>
         </label>
         <div class="film-details__emoji-list">
           ${emojiListTemplate}
@@ -158,14 +162,13 @@ const createFilmDetailsBottomTemplate = (filmComments, newComment, isCommentLoad
   let commentListTemplate = '';
 
   if (isCommentLoading) {
-    // const isDisabled = filmComments.reduce(((accumulator, comment) => accumulator || comment.isDeleting), false)
-  //   || newComment.isSubmiting
+    const isDisabled = getIsDisabled(filmComments, newComment);
 
     const commentsTemplate = Object.values(filmComments)
       .map((filmComment) => createCommentTemplate(filmComment))
       .join('');
 
-    const newCommentsTemplate = createNewCommentTemplate(newComment);
+    const newCommentsTemplate = createNewCommentTemplate(newComment, isDisabled);
 
     commentListTemplate =
       `<h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filmComments.length}</span></h3>
@@ -285,7 +288,7 @@ export default class FilmDetails extends SmartView {
   }
 
   _onEmojiListClick(evt) {
-    if (this._newCommentState.isSubmiting || this._filmCommentsState.isDeleting) {//??????это надо (после или)
+    if (getIsDisabled(this._filmCommentsState, this._newCommentState)) {
       return;
     }
 

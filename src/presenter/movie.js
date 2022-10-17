@@ -9,8 +9,6 @@ export default class Movie {
     this._changeData = changeData;
     this._changeModePopup = changeModePopup;
 
-    // this._film = null;//зачем это и следующая строчка?
-    // this._filmComments = null;
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
 
@@ -63,12 +61,12 @@ export default class Movie {
     }
 
     if (prevFilmDetailsComponent !== null) {
-      const scrollPositionTop = prevFilmDetailsComponent.getElement().scrollTop;
+      const scrollPosition = prevFilmDetailsComponent.getElement().scrollTop;
 
       replace(this._filmDetailsComponent, prevFilmDetailsComponent);
       remove(prevFilmDetailsComponent);
 
-      this._filmDetailsComponent.getElement().scrollTo(0, scrollPositionTop);
+      this._filmDetailsComponent.getElement().scrollTo(0, scrollPosition);
     }
   }
 
@@ -100,10 +98,10 @@ export default class Movie {
   setUpdateStage(stage) {
     switch (stage) {
       case UpdateStage.START:
-        this._updating = true;
+        this._isUpdating = true;
         break;
       case UpdateStage.END:
-        this._updating = false;
+        this._isUpdating = false;
         break;
     }
   }
@@ -117,7 +115,7 @@ export default class Movie {
   }
 
   _handleButtonCloseClick() {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -125,7 +123,7 @@ export default class Movie {
   }
 
   _handleEscKeyDown(evt) {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -141,7 +139,7 @@ export default class Movie {
   }
 
   _handleFilmCardClick () {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -149,7 +147,7 @@ export default class Movie {
   }
 
   _handleWatchlistClick() {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -161,7 +159,7 @@ export default class Movie {
   }
 
   _handleWatchedClick() {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -173,7 +171,7 @@ export default class Movie {
   }
 
   _handleFavoriteClick() {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -185,7 +183,7 @@ export default class Movie {
   }
 
   _handleCommentDelete(filmComment) {
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 
@@ -197,7 +195,7 @@ export default class Movie {
 
     this._changeData(
       UserAction.DELETE_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this._film,
       filmComment,
     );
@@ -208,7 +206,7 @@ export default class Movie {
       return;
     }
 
-    if (this._updating) {
+    if (this._isUpdating) {
       return;
     }
 

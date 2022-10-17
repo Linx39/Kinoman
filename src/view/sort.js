@@ -1,13 +1,13 @@
 import AbstractView from './abstract.js';
 import { SortType } from '../const.js';
 
-const classSortButtonActive = 'sort__button--active';
+const SORT_BUTTON_ACTIVE_CLASS = 'sort__button--active';
 
 const createSortTemplate = (currentSortType) => (
   `<ul class="sort">
-    <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? classSortButtonActive : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-    <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? classSortButtonActive : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
-    <li><a href="#" class="sort__button ${currentSortType === SortType.RAITING ? classSortButtonActive : ''}" data-sort-type="${SortType.RAITING}">Sort by rating</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? SORT_BUTTON_ACTIVE_CLASS : ''}" data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DATE ? SORT_BUTTON_ACTIVE_CLASS : ''}" data-sort-type="${SortType.DATE}">Sort by date</a></li>
+    <li><a href="#" class="sort__button ${currentSortType === SortType.RAITING ? SORT_BUTTON_ACTIVE_CLASS : ''}" data-sort-type="${SortType.RAITING}">Sort by rating</a></li>
   </ul>`);
 
 export default class Sort extends AbstractView {

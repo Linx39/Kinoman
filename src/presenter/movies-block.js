@@ -133,7 +133,6 @@ export default class MoviesBlock {
 
   _renderCard(container, film) {
     const moviePresenter = new MoviePresenter(this._handleViewAction, this._handlePopupMode);
-
     moviePresenter.initFilmCard(container, film);
 
     switch (container) {
@@ -253,7 +252,6 @@ export default class MoviesBlock {
       const popupFilm = allFilms.find((film) => film.id === this._popupFilm.id);
       this._popupMoviePresenter.initFilmDetails(popupFilm, this._getComments(), this._isCommentLoading);
     }
-    // console.log(this._moviePresentersStorage);
   }
 
   _clearMoviesBlock({resetRenderedCardsCount = false, resetSortType = false} = {}) {
@@ -408,17 +406,16 @@ export default class MoviesBlock {
   _handleModelEvent(updateType, film) {
     switch (updateType) {
       case UpdateType.PATCH://не используется
-        // console.log(this._moviePresentersStorage);
         Object
           .keys(this._moviePresentersStorage)
           .forEach((key) => {
             if (this._moviePresentersStorage[key][film.id]) {
-              this._moviePresentersStorage[key][film.id].initFilmCard(this._filmsListContainer[key], film, this._getComments(film));
+              this._moviePresentersStorage[key][film.id].initFilmCard(this._filmsListContainer[key], film);
             }
           });
 
         if (this._popupMoviePresenter !== null) {
-          this._popupMoviePresenter.initFilmDetails(film, this._getComments(film), this._isCommentLoading);
+          this._popupMoviePresenter.initFilmDetails(film, this._getComments(), this._isCommentLoading);
         }
         break;
 
@@ -436,7 +433,9 @@ export default class MoviesBlock {
         break;
     }
 
-    this._renderMoviesBlock();
+    if (updateType !== UpdateType.PATCH) {
+      this._renderMoviesBlock();
+    }
   }
 }
 
