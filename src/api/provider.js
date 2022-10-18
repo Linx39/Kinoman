@@ -73,6 +73,7 @@ export default class Provider {
       return this._api.addComment(film, comment)
         .then((response) => {
           this._storeComments.setItem(response.film.id, CommentsModel.adaptToServer(response.filmComments));
+          this._storeFilms.setItem(response.film.id, FilmsModel.adaptToServer(response.film));
           return response;
         });
     }
@@ -84,9 +85,14 @@ export default class Provider {
     if (isOnline()) {
       return this._api.deleteComment(comment)
         .then(() => {
-          const comments = this._storeComments.getItem(film.id);
-          delete comments[comment.id];
-          this._storeComments.setItem(film.id, CommentsModel.adaptToServer(comments));
+          const updatedComments = this._storeComments.getItem(film.id);
+          delete updatedComments[comment.id];
+
+          const updatedFilm = this._storeFilms.getItem(film.id);
+          delete updatedFilm.comments[comment.id];
+
+          this._storeComments.setItem(film.id, CommentsModel.adaptToServer(updatedComments));
+          this._storeFilms.setItem(updatedFilm.id, FilmsModel.adaptToServer(updatedFilm));
         });
     }
 

@@ -86,3 +86,24 @@ export const getTopFilms = (films, count, topType) => {
 
   return topFilms;
 };
+
+export const getDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
+
+export const getUniqueGenresToCount = (films) => {
+  let allGenres = [];
+  films.forEach((film) => allGenres = [...allGenres, ...film.genres]);
+  const uniqueGenresToCount = Array.from(new Set(allGenres))
+    .map((genre) => ({genre, count: allGenres.filter((value) => value === genre).length}));
+
+  return uniqueGenresToCount;
+};
+
+export const getGenresSortByCount = (films) => getUniqueGenresToCount(films).sort((elementA, elementB) => elementB.count - elementA.count);
+
+export const getTopGenre = (films) => {
+  if (films.length === 0) {
+    return '';
+  }
+
+  return getGenresSortByCount(films)[0].genre;
+};

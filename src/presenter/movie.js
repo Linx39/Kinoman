@@ -5,9 +5,9 @@ import { render, remove, replace, removePopup, renderPopup } from '../utils/rend
 import { UserAction, UpdateType, PopupAction, PopupViewState, UpdateStage } from '../const.js';
 
 export default class Movie {
-  constructor (changeData, changeModePopup) {
+  constructor (changeData, changePopupMode) {
     this._changeData = changeData;
-    this._changeModePopup = changeModePopup;
+    this._changePopupMode = changePopupMode;
 
     this._filmCardComponent = null;
     this._filmDetailsComponent = null;
@@ -107,7 +107,7 @@ export default class Movie {
   }
 
   closeFilmDetails() {
-    this._changeModePopup(PopupAction.CLOSE);
+    // this._changePopupMode(PopupAction.CLOSE);
     removePopup(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._filmDetailsComponent.removeCtrlEnterDownListener();
@@ -119,7 +119,8 @@ export default class Movie {
       return;
     }
 
-    this.closeFilmDetails();
+    this._changePopupMode(PopupAction.CLOSE);
+    // this.closeFilmDetails();
   }
 
   _handleEscKeyDown(evt) {
@@ -129,7 +130,8 @@ export default class Movie {
 
     if (isEscEvent(evt)) {
       evt.preventDefault();
-      this.closeFilmDetails();
+      this._changePopupMode(PopupAction.CLOSE);
+      // this.closeFilmDetails();
     }
   }
 
@@ -143,7 +145,7 @@ export default class Movie {
       return;
     }
 
-    this._changeModePopup(PopupAction.OPEN, this._film);
+    this._changePopupMode(PopupAction.OPEN, this._film);
   }
 
   _handleWatchlistClick() {
@@ -212,7 +214,7 @@ export default class Movie {
 
     this._changeData(
       UserAction.ADD_COMMENT,
-      UpdateType.MINOR,
+      UpdateType.PATCH,
       this._film,
       newComment,
     );

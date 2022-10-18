@@ -17,7 +17,6 @@ export const UserAction = {
 };
 
 export const UpdateType = {
-  NOTHING: 'NOTHING',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',

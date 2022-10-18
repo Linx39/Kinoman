@@ -1,99 +1,71 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
-import { getRatingName } from '../utils/films.js';
-import { isDateInRange, convertTimeToHoursAndMinutes } from '../utils/common.js';
+import { getRatingName, getDuration, getGenresSortByCount, getTopGenre } from '../utils/films.js';
+import { convertTimeToHoursAndMinutes } from '../utils/common.js';
+import { StatisticFilterType, StatisticFilterName, statisticFilter } from '../utils/statistic-filter.js';
 
 const BAR_HEIGHT = 50;
 
-const Period = {
-  DAY: 1,
-  WEEK: 6,
-  MONTH: 30,
-  YEAR: 365,
+const CHART_TYPE = 'horizontalBar';
+
+const ChartColor = {
+  BACKGROUND: '#ffe800',
+  HOVER_BACKGROUND: '#ffe800',
+  OPTION: '#ffffff',
+  FONT:'#ffffff',
 };
 
-const StatisticFilterType = {
-  ALLTIME: 'all-time',
-  TODAY: 'today',
-  WEEK: 'week',
-  MONTH: 'month',
-  YEAR: 'year',
+const Position = {
+  START: 'start',
 };
 
-const StatisticFilterName = [
-  {type: StatisticFilterType.ALLTIME, name: 'All time'},
-  {type: StatisticFilterType.TODAY, name: 'Today'},
-  {type: StatisticFilterType.WEEK, name: 'Week'},
-  {type: StatisticFilterType.MONTH, name: 'Month'},
-  {type: StatisticFilterType.YEAR, name: 'Year'},
-];
-
-const statisticFilter = {
-  [StatisticFilterType.ALLTIME]: (films) => films,
-  [StatisticFilterType.TODAY]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.DAY)),
-  [StatisticFilterType.WEEK]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.WEEK)),
-  [StatisticFilterType.MONTH]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.MONTH)),
-  [StatisticFilterType.YEAR]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.YEAR)),
-};
-
-const getDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
-
-const getUniqueGenresToCount = (films) => {
-  let allGenres = [];
-  films.forEach((film) => allGenres = [...allGenres, ...film.genres]);
-  const uniqueGenresToCount = Array.from(new Set(allGenres))
-    .map((genre) => ({genre, count: allGenres.filter((value) => value === genre).length}));
-
-  return uniqueGenresToCount;
-};
-
-const getGenresSortByCount = (films) => getUniqueGenresToCount(films).sort((elementA, elementB) => elementB.count - elementA.count);
-
-const getTopGenre = (films) => {
-  if (films.length === 0) {
-    return '';
-  }
-
-  return getGenresSortByCount(films)[0].genre;
+const ChartProperties = {
+  FontSize: {
+    DATALABELS: 20,
+    TICKS: 20,
+  },
+  OFFSET: 40,
+  PADDING: 100,
+  BARTHICKNESS: 24,
 };
 
 const renderGenresChart = (statisticCtx, genres, counts) => new Chart(statisticCtx, {
   plugins: [ChartDataLabels],
-  type: 'horizontalBar',
+  type: CHART_TYPE,
   data: {
     labels: genres,
     datasets: [{
       data: counts,
-      backgroundColor: '#ffe800',
-      hoverBackgroundColor: '#ffe800',
-      anchor: 'start',
+      backgroundColor: ChartColor.BACKGROUND,
+      hoverBackgroundColor: ChartColor.HOVER_BACKGROUND,
+      anchor: Position.START,
     }],
   },
   options: {
     plugins: {
       datalabels: {
         font: {
-          size: 20,
+          size: ChartProperties.FontSize.DATALABELS,
         },
-        color: '#ffffff',
-        anchor: 'start',
-        align: 'start',
-        offset: 40,
+        color: ChartColor.OPTION,
+        anchor: Position.START,
+        align: Position.START,
+        offset: ChartProperties.OFFSET,
       },
     },
     scales: {
       yAxes: [{
         ticks: {
-          fontColor: '#ffffff',
-          padding: 100,
-          fontSize: 20,
+          fontColor: ChartColor.FONT,
+          padding: ChartProperties.PADDING,
+          fontSize: ChartProperties.FontSize.TICKS,
         },
         gridLines: {
           display: false,
           drawBorder: false,
         },
-        barThickness: 24,
+        barThickness: ChartProperties.BARTHICKNESS,
       }],
       xAxes: [{
         ticks: {
