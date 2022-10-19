@@ -37,8 +37,8 @@ export default class Provider {
       return this._api.getComments(film)
         .then((comments) => {
           const prevStore = this._storeComments.getItems();
-          const items = createCommentsStoreStructure(film.id, comments.map(CommentsModel.adaptToServer));
-          const updatedStore = {...prevStore, ...items};
+          const item = createCommentsStoreStructure(film.id, comments.map(CommentsModel.adaptToServer));
+          const updatedStore = {...prevStore, ...item};
           this._storeComments.setItems(updatedStore);
           return comments;
         });
@@ -72,7 +72,13 @@ export default class Provider {
     if (isOnline()) {
       return this._api.addComment(film, comment)
         .then((response) => {
-          this._storeComments.setItem(response.film.id, CommentsModel.adaptToServer(response.filmComments));
+          const prevStore = this._storeComments.getItems();
+          const item = createCommentsStoreStructure(response.film.id, response.filmComments.map(CommentsModel.adaptToServer));
+          const updatedStore = {...prevStore, ...item};
+          this._storeComments.setItems(updatedStore);
+
+          // const items = createCommentsStoreStructure(film.id, response.filmComments.map(CommentsModel.adaptToServer));
+          // this._storeComments.setItems(response.film.id, items);
           this._storeFilms.setItem(response.film.id, FilmsModel.adaptToServer(response.film));
           return response;
         });
@@ -87,12 +93,12 @@ export default class Provider {
         .then(() => {
           const updatedComments = this._storeComments.getItem(film.id);
           delete updatedComments[comment.id];
+          this._storeComments.setItem(film.id, updatedComments);
 
           const updatedFilm = this._storeFilms.getItem(film.id);
-          delete updatedFilm.comments[comment.id];
-
-          this._storeComments.setItem(film.id, CommentsModel.adaptToServer(updatedComments));
-          this._storeFilms.setItem(updatedFilm.id, FilmsModel.adaptToServer(updatedFilm));
+          const index = updatedFilm.comments.findIndex((id) => id === comment.id);
+          updatedFilm.comments.splice(index, 1);
+          this._storeFilms.setItem(updatedFilm.id, updatedFilm);
         });
     }
 
