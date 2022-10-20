@@ -28,11 +28,7 @@ export default class Store {
 
     this._storage.setItem(
       this._storeKey,
-      JSON.stringify(
-        Object.assign({}, store, {
-          [key]: value,
-        }),
-      ),
+      JSON.stringify({...store, [key]: value}),
     );
   }
 

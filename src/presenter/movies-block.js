@@ -9,8 +9,8 @@ import MoviePresenter from './movie.js';
 import NoMoviesPresenter from './no-movies.js';
 import CommentsModel from '../model/comments.js';
 import { render, remove } from '../utils/render.js';
-import { sortFilmsDate, sortFilmsRating, getTopFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, TopType, PopupViewState, UpdateStage } from '../const.js';
+import { sortFilmsDate, sortFilmsRating, getExtraFilms } from '../utils/films.js';
+import { SortType, UpdateType, UserAction, PopupAction, ExtraType, PopupViewState, UpdateStage } from '../const.js';
 import { filter } from '../utils/filter.js';
 import { isOnline } from '../utils/common.js';
 import { toast } from '../utils/toast.js';
@@ -109,14 +109,14 @@ export default class MoviesBlock {
     return this._commentsModel.getComments();
   }
 
-  _getTopFilms(topFilms, count, topType){
+  _getExtraFilms(extraFilms, count, extraType){
     const allFilms = this._filmsModel.getFilms();
 
-    if (topFilms === null) {
-      return getTopFilms(allFilms, count, topType);
+    if (extraFilms === null) {
+      return getExtraFilms(allFilms, count, extraType);
     }
 
-    return topFilms.map((topFilm) => allFilms.find((film) => film.id === topFilm.id));
+    return extraFilms.map((extraFilm) => allFilms.find((film) => film.id === extraFilm.id));
   }
 
   _renderLoading() {
@@ -232,8 +232,8 @@ export default class MoviesBlock {
     }
 
     if (allFilms.length !== 0) {
-      this._topRatedFilms = this._getTopFilms(this._topRatedFilms, EXTRA_CARD_COUNT, TopType.TOPRATED);
-      this._mostCommentedFilms = this._getTopFilms(this._mostCommentedFilms, EXTRA_CARD_COUNT, TopType.MOSTCOMMENTED);
+      this._topRatedFilms = this._getExtraFilms(this._topRatedFilms, EXTRA_CARD_COUNT, ExtraType.TOPRATED);
+      this._mostCommentedFilms = this._getExtraFilms(this._mostCommentedFilms, EXTRA_CARD_COUNT, ExtraType.MOSTCOMMENTED);
 
       if (this._topRatedFilms.length !== 0 || this._mostCommentedFilms.length !== 0) {
         this._renderFilmsListExtra(this._topRatedFilms, this._filmsListTopRatedComponent, ListType.TOPRATED);
@@ -265,7 +265,7 @@ export default class MoviesBlock {
       if (filmsCount > this._renderedCardsCount) {
         this._renderedCardsCount = this._renderedCardsCount % CARD_COUNT_STEP === 0 && this._renderedCardsCount !== 0
           ? this._renderedCardsCount
-          : this._renderedCardsCount + 1;
+          : this._renderedCardsCount + filmsCount;
       }
     }
 
@@ -411,7 +411,7 @@ export default class MoviesBlock {
 
         this._clearMoviesPresenters(ListType.MOSTCOMMENTED);
         remove(this._filmsListMostCommentedComponent);
-        this._mostCommentedFilms = getTopFilms(this._filmsModel.getFilms(), EXTRA_CARD_COUNT, TopType.MOSTCOMMENTED);
+        this._mostCommentedFilms = getExtraFilms(this._filmsModel.getFilms(), EXTRA_CARD_COUNT, ExtraType.MOSTCOMMENTED);
         this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOSTCOMMENTED);
 
         if (this._popupMoviePresenter !== null) {

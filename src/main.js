@@ -9,7 +9,7 @@ import Api from './api/api.js';
 import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { render, remove } from './utils/render.js';
-import { ModeNavigation, UpdateType } from './const.js';
+import { NavigationMode, UpdateType } from './const.js';
 import { isOnline } from './utils/common.js';
 import { toast } from './utils/toast.js';
 
@@ -49,12 +49,12 @@ let statisticComponent = null;
 
 const handleMainNavigationClick = (menuItem) => {
   switch (menuItem) {
-    case ModeNavigation.FILTER:
+    case NavigationMode.FILTER:
       moviesBlockPresenter.destroy();
       remove(statisticComponent);
       moviesBlockPresenter.init();
       break;
-    case ModeNavigation.STATISTICS:
+    case NavigationMode.STATISTICS:
       moviesBlockPresenter.destroy();
       statisticComponent = new StatisticView(filmsModel.getFilms());
       render(mainElement, statisticComponent);

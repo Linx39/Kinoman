@@ -107,7 +107,6 @@ export default class Movie {
   }
 
   closeFilmDetails() {
-    // this._changePopupMode(PopupAction.CLOSE);
     removePopup(this._filmDetailsComponent);
     document.removeEventListener('keydown', this._handleEscKeyDown);
     this._filmDetailsComponent.removeCtrlEnterDownListener();
@@ -120,7 +119,6 @@ export default class Movie {
     }
 
     this._changePopupMode(PopupAction.CLOSE);
-    // this.closeFilmDetails();
   }
 
   _handleEscKeyDown(evt) {
@@ -131,7 +129,6 @@ export default class Movie {
     if (isEscEvent(evt)) {
       evt.preventDefault();
       this._changePopupMode(PopupAction.CLOSE);
-      // this.closeFilmDetails();
     }
   }
 

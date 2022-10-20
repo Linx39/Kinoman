@@ -3,11 +3,7 @@ import CommentsModel from '../model/comments.js';
 import { isOnline } from '../utils/common.js';
 
 const createStoreStructure = (items) => items
-  .reduce((acc, current) => Object.assign({}, acc, {
-    [current.id]: current,
-  }), {});
-
-const createCommentsStoreStructure = (id, items) => ({[id]: createStoreStructure(items)});
+  .reduce((accumulator, item) => ({...accumulator, [item.id]: item}), {});
 
 export default class Provider {
   constructor(api, storeFilms, storeComments) {
@@ -24,11 +20,13 @@ export default class Provider {
         .then((films) => {
           const items = createStoreStructure(films.map(FilmsModel.adaptToServer));
           this._storeFilms.setItems(items);
+
           return films;
         });
     }
 
     const store = Object.values(this._storeFilms.getItems());
+
     return Promise.resolve(store.map(FilmsModel.adaptToClient));
   }
 
@@ -37,9 +35,10 @@ export default class Provider {
       return this._api.getComments(film)
         .then((comments) => {
           const prevStore = this._storeComments.getItems();
-          const item = createCommentsStoreStructure(film.id, comments.map(CommentsModel.adaptToServer));
+          const item = {[film.id]: createStoreStructure(comments.map(CommentsModel.adaptToServer))};
           const updatedStore = {...prevStore, ...item};
           this._storeComments.setItems(updatedStore);
+
           return comments;
         });
     }
@@ -58,11 +57,12 @@ export default class Provider {
       return this._api.updateFilm(film)
         .then((updatedFilm) => {
           this._storeFilms.setItem(updatedFilm.id, FilmsModel.adaptToServer(updatedFilm));
+
           return updatedFilm;
         });
     }
 
-    this._storeFilms.setItem(film.id, FilmsModel.adaptToServer(Object.assign({}, film)));
+    this._storeFilms.setItem(film.id, FilmsModel.adaptToServer({...film}));
     this._isSync = true;
 
     return Promise.resolve(film);
@@ -72,14 +72,9 @@ export default class Provider {
     if (isOnline()) {
       return this._api.addComment(film, comment)
         .then((response) => {
-          const prevStore = this._storeComments.getItems();
-          const item = createCommentsStoreStructure(response.film.id, response.filmComments.map(CommentsModel.adaptToServer));
-          const updatedStore = {...prevStore, ...item};
-          this._storeComments.setItems(updatedStore);
-
-          // const items = createCommentsStoreStructure(film.id, response.filmComments.map(CommentsModel.adaptToServer));
-          // this._storeComments.setItems(response.film.id, items);
+          this._storeComments.setItem(response.film.id, createStoreStructure(response.filmComments.map(CommentsModel.adaptToServer)));
           this._storeFilms.setItem(response.film.id, FilmsModel.adaptToServer(response.film));
+
           return response;
         });
     }
@@ -112,7 +107,6 @@ export default class Provider {
       return this._api.sync(storeFilms)
         .then((response) => {
           const items = createStoreStructure(response.updated);
-
           this._storeFilms.setItems(items);
         });
     }

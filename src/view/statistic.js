@@ -1,7 +1,7 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import SmartView from './smart.js';
-import { getRatingName, getDuration, getGenresSortByCount, getTopGenre } from '../utils/films.js';
+import { getRatingName, getSumDuration, getGenresSortByCount, getTopGenre } from '../utils/films.js';
 import { convertTimeToHoursAndMinutes } from '../utils/common.js';
 import { StatisticFilterType, StatisticFilterName, statisticFilter } from '../utils/statistic-filter.js';
 
@@ -105,7 +105,7 @@ const createStatisticTemplate = (filmsCount, currentFilter, filterFilms) => {
     .slice()
     .join('');
 
-  const totalDuration = convertTimeToHoursAndMinutes(getDuration(filterFilms));
+  const totalDuration = convertTimeToHoursAndMinutes(getSumDuration(filterFilms));
 
   return (
     `<section class="statistic">

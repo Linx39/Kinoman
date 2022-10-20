@@ -17,6 +17,7 @@ export default class NoMovies {
     const noMoviesComponent = this._noMoviesComponent;
 
     this._noMoviesComponent = new NoMoviesView(this._filterModel.getFilter());
+
     if (noMoviesComponent === null) {
       render(this._noMoviesContainer, this._noMoviesComponent);
       return;

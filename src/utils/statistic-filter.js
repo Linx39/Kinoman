@@ -1,8 +1,8 @@
 import { isDateInRange } from './common.js';
 
-const Period = {
+const Range = {
   DAY: 1,
-  WEEK: 6,
+  WEEK: 7,
   MONTH: 30,
   YEAR: 365,
 };
@@ -25,8 +25,8 @@ export const StatisticFilterName = [
 
 export const statisticFilter = {
   [StatisticFilterType.ALLTIME]: (films) => films,
-  [StatisticFilterType.TODAY]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.DAY)),
-  [StatisticFilterType.WEEK]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.WEEK)),
-  [StatisticFilterType.MONTH]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.MONTH)),
-  [StatisticFilterType.YEAR]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Period.YEAR)),
+  [StatisticFilterType.TODAY]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Range.DAY)),
+  [StatisticFilterType.WEEK]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Range.WEEK)),
+  [StatisticFilterType.MONTH]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Range.MONTH)),
+  [StatisticFilterType.YEAR]: (films) => films.filter((film) => isDateInRange(film.watchingDate, Range.YEAR)),
 };

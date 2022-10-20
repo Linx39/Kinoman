@@ -23,11 +23,7 @@ export default class Films extends Observer {
       throw new Error('Can\'t update unexisting film');
     }
 
-    this._films = [
-      ...this._films.slice(0, index),
-      update,
-      ...this._films.slice(index + 1),
-    ];
+    this._films.splice(index, 1, update);
 
     this._notify(updateType, update);
   }

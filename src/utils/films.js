@@ -1,16 +1,22 @@
 import { getDayDiff, convertTimeToHoursAndMinutes, getRandomElementFromArray } from './common.js';
-import { ProfileRating, TopType } from '../const.js';
+import { ExtraType } from '../const.js';
 
-const topFilter = {
-  [TopType.TOPRATED]:
+const ProfileRating = [
+  {name: 'Novice', count: 1},
+  {name: 'Fan', count: 11},
+  {name: 'Movie Buff', count: 21},
+];
+
+const ExtraFilter = {
+  [ExtraType.TOPRATED]:
     {
-      max: (films) => Math.max(...films.map((film) => film.rating)),
-      filter: (films) => films.filter((film) => film.rating === topFilter[TopType.TOPRATED].max(films)),
+      maxValue: (films) => Math.max(...films.map((film) => film.rating)),
+      filterFilms: (films) => films.filter((film) => film.rating === ExtraFilter[ExtraType.TOPRATED].maxValue(films)),
     },
-  [TopType.MOSTCOMMENTED]:
+  [ExtraType.MOSTCOMMENTED]:
     {
-      max: (films) => Math.max(...films.map((film) => film.comments.length)),
-      filter: (films) => films.filter((film) => film.comments.length === topFilter[TopType.MOSTCOMMENTED].max(films)),
+      maxValue: (films) => Math.max(...films.map((film) => film.comments.length)),
+      filterFilms: (films) => films.filter((film) => film.comments.length === ExtraFilter[ExtraType.MOSTCOMMENTED].maxValue(films)),
     },
 };
 
@@ -32,7 +38,6 @@ const getWeightForNullData = (dataA, dataB) => {
 
 export const sortFilmsDate = (filmA, filmB) => {
   const weight = getWeightForNullData(filmA.releaseDate, filmB.releaseDate);
-
   if (weight !== null) {
     return -weight;
   }
@@ -66,34 +71,39 @@ export const getRuntimeTemplate = (time) => {
 
   const hoursTemplate = hoursAndMinutes.hours !== 0? `${hoursAndMinutes.hours}h` : '';
   const minutesTemplate = hoursAndMinutes.minutes.lenght === 1? `0${hoursAndMinutes.minutes}m` : `${hoursAndMinutes.minutes}m`;
+
   return `${hoursTemplate} ${minutesTemplate}`;
 };
 
-export const getTopFilms = (films, count, topType) => {
-  const topFilms = new Array();
+export const getExtraFilms = (films, extraCount, extraType) => {
   const copyFilms = films.slice();
 
-  for (let i = 0; i < count; i++) {
-    const filteredCopyFilms = topFilter[topType].filter(copyFilms);
+  const extraFilms = new Array(extraCount).fill().map(() => {
+    const filteredCopyFilms = ExtraFilter[extraType].filterFilms(copyFilms);
 
-    if (filteredCopyFilms.length !== 0) {
-      const topFilm = getRandomElementFromArray(filteredCopyFilms);
-      const index = copyFilms.findIndex((film) => film.id === topFilm.id);
-      copyFilms.splice(index, 1);
-      topFilms.push(topFilm);
+    if (filteredCopyFilms.length === 0) {
+      return null;
     }
-  }
 
-  return topFilms;
+    const extraFilm = getRandomElementFromArray(filteredCopyFilms);
+    const index = copyFilms.findIndex((film) => film.id === extraFilm.id);
+    copyFilms.splice(index, 1);
+
+    return extraFilm;
+  });
+
+  return extraFilms.filter((film) => film !== null);
 };
 
-export const getDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
+export const getSumDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
 
 export const getUniqueGenresToCount = (films) => {
   let allGenres = [];
+
   films.forEach((film) => allGenres = [...allGenres, ...film.genres]);
+
   const uniqueGenresToCount = Array.from(new Set(allGenres))
-    .map((genre) => ({genre, count: allGenres.filter((value) => value === genre).length}));
+    .map((genre) => ({genre, count: allGenres.filter((item) => item === genre).length}));
 
   return uniqueGenresToCount;
 };

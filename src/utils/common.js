@@ -7,6 +7,8 @@ dayjs.extend(isBetween);
 
 const HOUR = 60;
 
+const DAY = 'day';
+
 export const DateFormat = {
   ONLY_YEAR: 'YYYY',
   FULL_DATE: 'DD MMMM YYYY',
@@ -19,7 +21,7 @@ export const formatDate = (date, dateFormat) => dayjs(date).format(dateFormat);
 
 export const convertDateToHumanFormat = (date) => dayjs(date).fromNow();
 
-export const isDateInRange = (date, range) => dayjs(date).isBetween(dayjs().subtract(range, 'day'), dayjs().add(1, 'day'));
+export const isDateInRange = (date, range) => dayjs(date).isBetween(dayjs().subtract(range, DAY), dayjs().add(1, DAY));
 
 export const convertTimeToHoursAndMinutes = (time) => {
   const hours = Math.floor(time / HOUR);
@@ -30,6 +32,7 @@ export const convertTimeToHoursAndMinutes = (time) => {
 export const getRandomInteger = (a = 0, b = 1) => {
   const min = Math.ceil(Math.min(a, b));
   const max = Math.floor(Math.max(a, b));
+
   return Math.floor(min + Math.random() * (max - min + 1));
 };
 

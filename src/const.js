@@ -1,9 +1,3 @@
-export const ProfileRating = [
-  {name: 'Novice', count: 1},
-  {name: 'Fan', count: 11},
-  {name: 'Movie Buff', count: 21},
-];
-
 export const SortType = {
   DEFAULT: 'default',
   DATE: 'date',
@@ -30,7 +24,7 @@ export const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export const ModeNavigation = {
+export const NavigationMode = {
   FILTER: 'FILTER',
   STATISTICS: 'STATISTICS',
 };
@@ -40,7 +34,7 @@ export const PopupAction = {
   CLOSE: 'CLOSE',
 };
 
-export const TopType = {
+export const ExtraType = {
   TOPRATED: 'TOPRATED',
   MOSTCOMMENTED: 'MOSTCOMMENTED',
 };

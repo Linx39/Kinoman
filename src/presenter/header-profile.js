@@ -23,8 +23,8 @@ export default class HeaderProfile {
     const ratingName = getRatingName(filmsCount);
 
     const prevHeaderProfileComponent = this._headerProfileComponent;
-
     this._headerProfileComponent = new HeaderProfileView(ratingName);
+
     if (prevHeaderProfileComponent === null) {
       render(this._headerProfileContainer, this._headerProfileComponent);
       return;
