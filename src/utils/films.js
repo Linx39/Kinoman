@@ -75,11 +75,11 @@ export const getRuntimeTemplate = (time) => {
   return `${hoursTemplate} ${minutesTemplate}`;
 };
 
-export const getExtraFilms = (films, extraCount, extraType) => {
+export const getExtraFilms = (films, count, type) => {
   const copyFilms = films.slice();
 
-  const extraFilms = new Array(extraCount).fill().map(() => {
-    const filteredCopyFilms = ExtraFilter[extraType].filterFilms(copyFilms);
+  const extraFilms = new Array(count).fill().map(() => {
+    const filteredCopyFilms = ExtraFilter[type].filterFilms(copyFilms);
 
     if (filteredCopyFilms.length === 0) {
       return null;

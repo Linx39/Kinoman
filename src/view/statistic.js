@@ -16,11 +16,11 @@ const ChartColor = {
   FONT:'#ffffff',
 };
 
-const Position = {
+const ChartPosition = {
   START: 'start',
 };
 
-const ChartProperties = {
+const ChartProperty = {
   FontSize: {
     DATALABELS: 20,
     TICKS: 20,
@@ -39,33 +39,33 @@ const renderGenresChart = (statisticCtx, genres, counts) => new Chart(statisticC
       data: counts,
       backgroundColor: ChartColor.BACKGROUND,
       hoverBackgroundColor: ChartColor.HOVER_BACKGROUND,
-      anchor: Position.START,
+      anchor: ChartPosition.START,
     }],
   },
   options: {
     plugins: {
       datalabels: {
         font: {
-          size: ChartProperties.FontSize.DATALABELS,
+          size: ChartProperty.FontSize.DATALABELS,
         },
         color: ChartColor.OPTION,
-        anchor: Position.START,
-        align: Position.START,
-        offset: ChartProperties.OFFSET,
+        anchor: ChartPosition.START,
+        align: ChartPosition.START,
+        offset: ChartProperty.OFFSET,
       },
     },
     scales: {
       yAxes: [{
         ticks: {
           fontColor: ChartColor.FONT,
-          padding: ChartProperties.PADDING,
-          fontSize: ChartProperties.FontSize.TICKS,
+          padding: ChartProperty.PADDING,
+          fontSize: ChartProperty.FontSize.TICKS,
         },
         gridLines: {
           display: false,
           drawBorder: false,
         },
-        barThickness: ChartProperties.BARTHICKNESS,
+        barThickness: ChartProperty.BARTHICKNESS,
       }],
       xAxes: [{
         ticks: {

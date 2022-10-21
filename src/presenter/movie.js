@@ -187,15 +187,13 @@ export default class Movie {
     }
 
     const index = this._film.comments.findIndex((id) => id === filmComment.id);
-    this._film.comments = [
-      ...this._film.comments.slice(0, index),
-      ...this._film.comments.slice(index + 1),
-    ];
+    const updatedComments = this._film.comments.slice();
+    updatedComments.splice(index, 1);
 
     this._changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.PATCH,
-      this._film,
+      {...this._film, comments: updatedComments},
       filmComment,
     );
   }

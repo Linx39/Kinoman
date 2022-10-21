@@ -109,11 +109,11 @@ export default class MoviesBlock {
     return this._commentsModel.getComments();
   }
 
-  _getExtraFilms(extraFilms, count, extraType){
+  _getExtraFilms(extraFilms, extraFilmsCount, extraType){
     const allFilms = this._filmsModel.getFilms();
 
     if (extraFilms === null) {
-      return getExtraFilms(allFilms, count, extraType);
+      return getExtraFilms(allFilms, extraFilmsCount, extraType);
     }
 
     return extraFilms.map((extraFilm) => allFilms.find((film) => film.id === extraFilm.id));
@@ -265,7 +265,7 @@ export default class MoviesBlock {
       if (filmsCount > this._renderedCardsCount) {
         this._renderedCardsCount = this._renderedCardsCount % CARD_COUNT_STEP === 0 && this._renderedCardsCount !== 0
           ? this._renderedCardsCount
-          : this._renderedCardsCount + filmsCount;
+          : this._renderedCardsCount + 1;
       }
     }
 
@@ -404,13 +404,12 @@ export default class MoviesBlock {
         Object
           .keys(this._moviePresentersStorage)
           .forEach((listType) => {
-            if (this._moviePresentersStorage[listType][film.id]) {
+            if (listType !== ListType.MOSTCOMMENTED && this._moviePresentersStorage[listType][film.id]) {
               this._moviePresentersStorage[listType][film.id].initFilmCard(this._filmsListContainer[listType], film);
             }
           });
 
         this._clearMoviesPresenters(ListType.MOSTCOMMENTED);
-        remove(this._filmsListMostCommentedComponent);
         this._mostCommentedFilms = getExtraFilms(this._filmsModel.getFilms(), EXTRA_CARD_COUNT, ExtraType.MOSTCOMMENTED);
         this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOSTCOMMENTED);
 
