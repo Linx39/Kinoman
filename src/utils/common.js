@@ -40,6 +40,6 @@ export const getRandomElementFromArray = (array) => array[getRandomInteger(0, ar
 
 export const isEscEvent = (evt) => (evt.key === 'Escape' || evt.key === 'Esc');
 
-export const isCtrlEnterEvent = (evt) => (evt.ctrlKey && evt.keyCode === 13);
+export const isCtrlEnterEvent = (evt) => (evt.keyCode === 13 && (evt.ctrlKey || evt.keyCode === 91 || evt.keyCode === 93));
 
 export const isOnline = () => window.navigator.onLine;

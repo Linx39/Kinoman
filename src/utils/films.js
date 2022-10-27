@@ -8,51 +8,21 @@ const ProfileRating = [
 ];
 
 const ExtraFilter = {
-  [ExtraType.TOPRATED]:
+  [ExtraType.TOP_RATED]:
     {
       maxValue: (films) => Math.max(...films.map((film) => film.rating)),
-      filterFilms: (films) => films.filter((film) => film.rating === ExtraFilter[ExtraType.TOPRATED].maxValue(films)),
+      filterFilms: (films) => films.filter((film) => film.rating === ExtraFilter[ExtraType.TOP_RATED].maxValue(films)),
     },
-  [ExtraType.MOSTCOMMENTED]:
+  [ExtraType.MOST_COMMENTED]:
     {
       maxValue: (films) => Math.max(...films.map((film) => film.comments.length)),
-      filterFilms: (films) => films.filter((film) => film.comments.length === ExtraFilter[ExtraType.MOSTCOMMENTED].maxValue(films)),
+      filterFilms: (films) => films.filter((film) => film.comments.length === ExtraFilter[ExtraType.MOST_COMMENTED].maxValue(films)),
     },
 };
 
-const getWeightForNullData = (dataA, dataB) => {
-  if (dataA === null && dataB === null) {
-    return 0;
-  }
+export const sortFilmsDate = (filmA, filmB) => getDayDiff(filmB.releaseDate, filmA.releaseDate);
 
-  if (dataA === null) {
-    return 1;
-  }
-
-  if (dataB === null) {
-    return -1;
-  }
-
-  return null;
-};
-
-export const sortFilmsDate = (filmA, filmB) => {
-  const weight = getWeightForNullData(filmA.releaseDate, filmB.releaseDate);
-  if (weight !== null) {
-    return -weight;
-  }
-
-  return -getDayDiff(filmA.releaseDate, filmB.releaseDate);
-};
-
-export const sortFilmsRating = (filmA, filmB) => {
-  const weight = getWeightForNullData(filmA.rating, filmB.rating);
-  if (weight !== null) {
-    return -weight;
-  }
-
-  return -(filmA.rating - filmB.rating);
-};
+export const sortFilmsRating = (filmA, filmB) => filmB.rating - filmA.rating;
 
 export const getRatingName = (count) => {
   if (count === 0) {

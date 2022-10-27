@@ -4,6 +4,7 @@ import { getRuntimeTemplate } from '../utils/films.js';
 import { formatDate, DateFormat, convertDateToHumanFormat, isCtrlEnterEvent } from '../utils/common.js';
 
 const BUTTON_ACTIVE_CLASS = 'film-details__control-button--active';
+const GENRE = 'Genre';
 const EMOJI_PATH = '../images/emoji/';
 const Emoji = {
   SMILE: 'smile',
@@ -98,7 +99,7 @@ const createFilmDetailsTopTemplate = (film) => {
               <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
-              <td class="film-details__term">${genres.length > 1 ? 'Genres' : 'Genre'}</td>
+              <td class="film-details__term">${genres.length > 1 ? `${GENRE}s` : GENRE}</td>
               <td class="film-details__cell">
                 ${genresTemplate}
             </tr>
@@ -166,7 +167,7 @@ const createNewCommentTemplate = (newComment, isDisabled) => {
 };
 
 const createFilmDetailsBottomTemplate = (filmComments, newComment, isCommentLoading) => {
-  let commentListTemplate = '<h3 class="film-details__comments-title">Oops... The comments weren\'t loaded. Please refresh the page.</h3>';
+  let commentListTemplate = '';
 
   if (isCommentLoading) {
     const isDisabled = getIsDisabled(filmComments, newComment);
@@ -183,6 +184,9 @@ const createFilmDetailsBottomTemplate = (filmComments, newComment, isCommentLoad
           ${commentsTemplate}
         </ul>
         ${newCommentsTemplate}`;
+  } else {
+    commentListTemplate =
+      '<h3 class="film-details__comments-title">Oops... The comments weren\'t loaded. Please refresh the page.</h3>';
   }
 
   return (
@@ -283,14 +287,6 @@ export default class FilmDetails extends SmartView {
 
   _onFavoriteClick(evt) {
     evt.preventDefault();
-
-    this._filmState = {
-      ...this._filmState,
-      favorite: !this._filmState.favorite,
-    };
-
-    this.updateState(this._filmState);
-
     this._callback.favoriteClick();
   }
 
@@ -387,7 +383,7 @@ export default class FilmDetails extends SmartView {
     this.updateState(this._newCommentState);
   }
 
-  abbortFilmState() {
+  abbortingFilmState() {
     const element = this.getElement();
 
     this.shake(element, () => {
@@ -395,7 +391,7 @@ export default class FilmDetails extends SmartView {
     });
   }
 
-  abbortFilmCommentsState() {
+  abbortingFilmCommentsState() {
     const element = this.getElement().querySelector(`.film-details__comment[data-id="${this._deletetingFilmComment.id}"]`);
 
     this.shake(element, () => {
@@ -404,7 +400,7 @@ export default class FilmDetails extends SmartView {
     });
   }
 
-  abbortNewCommentState() {
+  abbortingNewCommentState() {
     const element = this.getElement().querySelector('.film-details__new-comment');
 
     this.shake(element, () => {

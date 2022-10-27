@@ -20,8 +20,8 @@ const EXTRA_CARD_COUNT = 2;
 
 const ListType = {
   ALL: 'all',
-  TOPRATED: 'topRated',
-  MOSTCOMMENTED: 'mostCommented',
+  TOP_RATED: 'topRated',
+  MOST_COMMENTED: 'mostCommented',
 };
 
 const Warning = {
@@ -46,8 +46,8 @@ export default class MoviesBlock {
 
     this._moviePresentersStorage = {
       [ListType.ALL]: {},
-      [ListType.TOPRATED]: {},
-      [ListType.MOSTCOMMENTED]: {},
+      [ListType.TOP_RATED]: {},
+      [ListType.MOST_COMMENTED]: {},
     };
 
     this._sortComponent = null;
@@ -65,8 +65,8 @@ export default class MoviesBlock {
 
     this._filmsListContainer = {
       [ListType.ALL]: this._filmsListAllComponent.getContainer(),
-      [ListType.TOPRATED]: this._filmsListTopRatedComponent.getContainer(),
-      [ListType.MOSTCOMMENTED]: this._filmsListMostCommentedComponent.getContainer(),
+      [ListType.TOP_RATED]: this._filmsListTopRatedComponent.getContainer(),
+      [ListType.MOST_COMMENTED]: this._filmsListMostCommentedComponent.getContainer(),
     };
 
     this._handleViewAction = this._handleViewAction.bind(this);
@@ -232,12 +232,12 @@ export default class MoviesBlock {
     }
 
     if (allFilms.length !== 0) {
-      this._topRatedFilms = this._getExtraFilms(this._topRatedFilms, EXTRA_CARD_COUNT, ExtraType.TOPRATED);
-      this._mostCommentedFilms = this._getExtraFilms(this._mostCommentedFilms, EXTRA_CARD_COUNT, ExtraType.MOSTCOMMENTED);
+      this._topRatedFilms = this._getExtraFilms(this._topRatedFilms, EXTRA_CARD_COUNT, ExtraType.TOP_RATED);
+      this._mostCommentedFilms = this._getExtraFilms(this._mostCommentedFilms, EXTRA_CARD_COUNT, ExtraType.MOST_COMMENTED);
 
       if (this._topRatedFilms.length !== 0 || this._mostCommentedFilms.length !== 0) {
-        this._renderFilmsListExtra(this._topRatedFilms, this._filmsListTopRatedComponent, ListType.TOPRATED);
-        this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOSTCOMMENTED);
+        this._renderFilmsListExtra(this._topRatedFilms, this._filmsListTopRatedComponent, ListType.TOP_RATED);
+        this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOST_COMMENTED);
       }
     }
 
@@ -346,10 +346,18 @@ export default class MoviesBlock {
 
     switch (actionType) {
       case UserAction.EDIT_FILM:
+        this._popupMoviePresenter.setViewState(PopupViewState.UPDATE);
+
         this._api
           .updateFilm(updateFilm)
           .then((response) => {
             this._filmsModel.updateFilm(updateType, response);
+            this._handleUpdateStage(UpdateStage.END);
+          })
+          .catch(() => {
+            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_UPDATE);
+          })
+          .then(() => {
             this._handleUpdateStage(UpdateStage.END);
           });
         break;
@@ -404,14 +412,14 @@ export default class MoviesBlock {
         Object
           .keys(this._moviePresentersStorage)
           .forEach((listType) => {
-            if (listType !== ListType.MOSTCOMMENTED && this._moviePresentersStorage[listType][film.id]) {
+            if (listType !== ListType.MOST_COMMENTED && this._moviePresentersStorage[listType][film.id]) {
               this._moviePresentersStorage[listType][film.id].initFilmCard(this._filmsListContainer[listType], film);
             }
           });
 
-        this._clearMoviesPresenters(ListType.MOSTCOMMENTED);
-        this._mostCommentedFilms = getExtraFilms(this._filmsModel.getFilms(), EXTRA_CARD_COUNT, ExtraType.MOSTCOMMENTED);
-        this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOSTCOMMENTED);
+        this._clearMoviesPresenters(ListType.MOST_COMMENTED);
+        this._mostCommentedFilms = getExtraFilms(this._filmsModel.getFilms(), EXTRA_CARD_COUNT, ExtraType.MOST_COMMENTED);
+        this._renderFilmsListExtra(this._mostCommentedFilms, this._filmsListMostCommentedComponent, ListType.MOST_COMMENTED);
 
         if (this._popupMoviePresenter !== null) {
           this._popupMoviePresenter.initFilmDetails(film, this._getComments(), this._isCommentLoading);

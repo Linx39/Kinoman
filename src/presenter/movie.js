@@ -17,7 +17,7 @@ export default class Movie {
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleButtonCloseClick = this._handleButtonCloseClick.bind(this);
-    this._handleEscKeyDown = this._handleEscKeyDown.bind(this);
+    this._onDocumentKeydown = this._onDocumentKeydown.bind(this);
     this._handleCommentDelete = this._handleCommentDelete.bind(this);
     this._handleCommentSubmit = this._handleCommentSubmit.bind(this);
   }
@@ -80,17 +80,23 @@ export default class Movie {
 
   setViewState(state) {
     switch (state) {
+      case PopupViewState.UPDATE:
+        this._filmDetailsComponent.updateFilmState();
+        break;
       case PopupViewState.DELETING:
         this._filmDetailsComponent.updateFilmCommentsState();
         break;
       case PopupViewState.ADDING:
         this._filmDetailsComponent.updateNewCommentState();
         break;
+      case PopupViewState.ABORTING_UPDATE:
+        this._filmDetailsComponent.abbortFilmState();
+        break;
       case PopupViewState.ABORTING_DELETE:
-        this._filmDetailsComponent.abbortingFilmCommentsState();
+        this._filmDetailsComponent.abbortFilmCommentsState();
         break;
       case PopupViewState.ABORTING_ADD:
-        this._filmDetailsComponent.abbortingNewCommentState();
+        this._filmDetailsComponent.abbortNewCommentState();
         break;
     }
   }
@@ -108,7 +114,7 @@ export default class Movie {
 
   closeFilmDetails() {
     removePopup(this._filmDetailsComponent);
-    document.removeEventListener('keydown', this._handleEscKeyDown);
+    document.removeEventListener('keydown', this._onDocumentKeydown);
     this._filmDetailsComponent.removeCtrlEnterDownListener();
     this.destroyFilmDetails();
   }
@@ -121,7 +127,7 @@ export default class Movie {
     this._changePopupMode(PopupAction.CLOSE);
   }
 
-  _handleEscKeyDown(evt) {
+  _onDocumentKeydown(evt) {
     if (this._isUpdating) {
       return;
     }
@@ -134,7 +140,7 @@ export default class Movie {
 
   openFilmDetails() {
     renderPopup(this._filmDetailsComponent);
-    document.addEventListener('keydown', this._handleEscKeyDown);
+    document.addEventListener('keydown', this._onDocumentKeydown);
   }
 
   _handleFilmCardClick () {

@@ -2,7 +2,7 @@ import AbstractView from './abstract.js';
 import { formatDate, DateFormat } from '../utils/common.js';
 import { getRuntimeTemplate } from '../utils/films.js';
 
-const DESCRIPTON_LENGTH = 139;
+const DESCRIPTON_LENGTH = 140;
 
 const ITEM_ACTIVE_CLASS = 'film-card__controls-item--active';
 
@@ -34,7 +34,7 @@ const createFilmCardTemplate = (film) => {
 
       <img src="${poster}" alt="" class="film-card__poster">
 
-      <p class="film-card__description">${description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH)}...`}</p>
+      <p class="film-card__description">${description.length < DESCRIPTON_LENGTH? description : `${description.slice(0, DESCRIPTON_LENGTH-1)}...`}</p>
       
       <a class="film-card__comments">${comments.length} comments</a>
       
