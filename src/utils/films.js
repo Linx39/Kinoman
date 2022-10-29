@@ -68,14 +68,18 @@ export const getExtraFilms = (films, count, type) => {
 export const getSumDuration = (films) => films.reduce((sum, film) => sum + film.runtime, 0);
 
 export const getUniqueGenresToCount = (films) => {
-  let allGenres = [];
+  const genresToCount = films
+    .reduce((accumulator, film) => {
+      film.genres.forEach((genre) => {
+        accumulator = [genre] in accumulator
+          ? {...accumulator, [genre]: accumulator[genre] += 1}
+          : {...accumulator, [genre]: 1};
+      });
 
-  films.forEach((film) => allGenres = [...allGenres, ...film.genres]);
+      return accumulator;
+    }, {});
 
-  const uniqueGenresToCount = Array.from(new Set(allGenres))
-    .map((genre) => ({genre, count: allGenres.filter((item) => item === genre).length}));
-
-  return uniqueGenresToCount;
+  return Object.entries(genresToCount).map(([genre, count]) => ({genre, count}));
 };
 
 export const getGenresSortByCount = (films) => getUniqueGenresToCount(films).sort((elementA, elementB) => elementB.count - elementA.count);

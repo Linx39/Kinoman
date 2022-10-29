@@ -1,4 +1,5 @@
 import Abstract from '../view/abstract.js';
+import { throwSwitchError} from '../utils/common.js';
 
 const bodyElement = document.querySelector('body');
 const HIDE_OVERFLOW_CLASS = 'hide-overflow';
@@ -30,6 +31,8 @@ export const render = (container, component, place = RenderPosition.BEFOREEND) =
     case RenderPosition.BEFOREEND:
       container.append(component);
       break;
+    default:
+      throwSwitchError(place);
   }
 };
 

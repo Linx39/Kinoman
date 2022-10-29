@@ -1,8 +1,8 @@
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsView from '../view/film-details.js';
-import { isEscEvent} from '../utils/common.js';
+import { isEscEvent, throwSwitchError } from '../utils/common.js';
 import { render, remove, replace, removePopup, renderPopup } from '../utils/render.js';
-import { UserAction, UpdateType, PopupAction, PopupViewState, UpdateStage } from '../const.js';
+import { UserAction, UpdateType, PopupAction, ViewState, UpdateStage } from '../const.js';
 
 export default class Movie {
   constructor (changeData, changePopupMode) {
@@ -80,24 +80,32 @@ export default class Movie {
 
   setViewState(state) {
     switch (state) {
-      case PopupViewState.UPDATE:
+      case ViewState.CARD_UPDATE:
+        this._filmCardComponent.updateFilmState();
+        break;
+      case ViewState.POPUP_UPDATE:
         this._filmDetailsComponent.updateFilmState();
         break;
-      case PopupViewState.DELETING:
+      case ViewState.COMMENT_DELETING:
         this._filmDetailsComponent.updateFilmCommentsState();
         break;
-      case PopupViewState.ADDING:
+      case ViewState.COMMENT_ADDING:
         this._filmDetailsComponent.updateNewCommentState();
         break;
-      case PopupViewState.ABORTING_UPDATE:
-        this._filmDetailsComponent.abbortFilmState();
+      case ViewState.ABORTING_CARD_UPDATE:
+        this._filmCardComponent.abortFilmState();
         break;
-      case PopupViewState.ABORTING_DELETE:
-        this._filmDetailsComponent.abbortFilmCommentsState();
+      case ViewState.ABORTING_POPUP_UPDATE:
+        this._filmDetailsComponent.abortFilmState();
         break;
-      case PopupViewState.ABORTING_ADD:
-        this._filmDetailsComponent.abbortNewCommentState();
+      case ViewState.ABORTING_COMMENT_DELETE:
+        this._filmDetailsComponent.abortFilmCommentsState();
         break;
+      case ViewState.ABORTING_COMMENT_ADD:
+        this._filmDetailsComponent.abortNewCommentState();
+        break;
+      default:
+        throwSwitchError(state);
     }
   }
 
@@ -109,6 +117,8 @@ export default class Movie {
       case UpdateStage.END:
         this._isUpdating = false;
         break;
+      default:
+        throwSwitchError(stage);
     }
   }
 

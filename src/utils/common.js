@@ -5,8 +5,12 @@ import isBetween from 'dayjs/plugin/isBetween';
 dayjs.extend(relativeTime);
 dayjs.extend(isBetween);
 
+const Key = {
+  ENTER: 13,
+  CMD_LEFT: 91,
+  CMD_RIGHT: 93,
+};
 const HOUR = 60;
-
 const DAY = 'day';
 
 export const DateFormat = {
@@ -40,6 +44,13 @@ export const getRandomElementFromArray = (array) => array[getRandomInteger(0, ar
 
 export const isEscEvent = (evt) => (evt.key === 'Escape' || evt.key === 'Esc');
 
-export const isCtrlEnterEvent = (evt) => (evt.keyCode === 13 && (evt.ctrlKey || evt.keyCode === 91 || evt.keyCode === 93));
+export const isCtrlEnterEvent = (evt) => (
+  evt.keyCode === Key.ENTER &&
+  (evt.ctrlKey || evt.keyCode === Key.CMD_LEFT || evt.keyCode === Key.CMD_RIGHT)
+);
 
 export const isOnline = () => window.navigator.onLine;
+
+export const throwSwitchError = (expression) => {
+  throw new Error(`Unknown switch case expression: '${expression}'!`);
+};

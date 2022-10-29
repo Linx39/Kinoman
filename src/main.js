@@ -10,7 +10,7 @@ import Store from './api/store.js';
 import Provider from './api/provider.js';
 import { render, remove } from './utils/render.js';
 import { NavigationMode, UpdateType } from './const.js';
-import { isOnline } from './utils/common.js';
+import { isOnline, throwSwitchError } from './utils/common.js';
 import { toast } from './utils/toast.js';
 
 const AUTHORIZATION = 'Basic dfdc214dtrt64dre';
@@ -54,11 +54,15 @@ const handleMainNavigationClick = (menuItem) => {
       remove(statisticComponent);
       moviesBlockPresenter.init();
       break;
+
     case NavigationMode.STATISTICS:
       moviesBlockPresenter.destroy();
       statisticComponent = new StatisticView(filmsModel.getFilms());
       render(mainElement, statisticComponent);
       break;
+
+    default:
+      throwSwitchError(menuItem);
   }
 };
 

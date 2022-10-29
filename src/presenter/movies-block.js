@@ -10,9 +10,9 @@ import NoMoviesPresenter from './no-movies.js';
 import CommentsModel from '../model/comments.js';
 import { render, remove } from '../utils/render.js';
 import { sortFilmsDate, sortFilmsRating, getExtraFilms } from '../utils/films.js';
-import { SortType, UpdateType, UserAction, PopupAction, ExtraType, PopupViewState, UpdateStage } from '../const.js';
+import { SortType, UpdateType, UserAction, PopupAction, ExtraType, ViewState, UpdateStage } from '../const.js';
 import { filter } from '../utils/filter.js';
-import { isOnline } from '../utils/common.js';
+import { isOnline, throwSwitchError } from '../utils/common.js';
 import { toast } from '../utils/toast.js';
 
 const CARD_COUNT_STEP = 5;
@@ -96,13 +96,15 @@ export default class MoviesBlock {
     const filtredFilms = filter[filterType](films);
 
     switch (this._currentSortType) {
+      case SortType.DEFAULT:
+        return filtredFilms;
       case SortType.DATE:
         return filtredFilms.sort(sortFilmsDate);
       case SortType.RAITING:
         return filtredFilms.sort(sortFilmsRating);
+      default:
+        throwSwitchError(this._currentSortType);
     }
-
-    return filtredFilms;
   }
 
   _getComments() {
@@ -326,6 +328,9 @@ export default class MoviesBlock {
         this._popupFilm = null;
         this._popupMoviePresenter = null;
         break;
+
+      default:
+        throwSwitchError(actionType);
     }
   }
 
@@ -341,12 +346,26 @@ export default class MoviesBlock {
     }
   }
 
+  _handleFilmCardViewState(film, state) {
+    Object
+      .keys(this._moviePresentersStorage)
+      .forEach((listType) => {
+        if (this._moviePresentersStorage[listType][film.id]) {
+          this._moviePresentersStorage[listType][film.id].setViewState(state);
+        }
+      });
+  }
+
   _handleViewAction(actionType, updateType, updateFilm, updateComment) {
     this._handleUpdateStage(UpdateStage.START);
 
     switch (actionType) {
       case UserAction.EDIT_FILM:
-        this._popupMoviePresenter.setViewState(PopupViewState.UPDATE);
+        this._handleFilmCardViewState(updateFilm, ViewState.CARD_UPDATE);
+
+        if ( this._popupMoviePresenter !== null) {
+          this._popupMoviePresenter.setViewState(ViewState.POPUP_UPDATE);
+        }
 
         this._api
           .updateFilm(updateFilm)
@@ -355,7 +374,11 @@ export default class MoviesBlock {
             this._handleUpdateStage(UpdateStage.END);
           })
           .catch(() => {
-            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_UPDATE);
+            this._handleFilmCardViewState(updateFilm, ViewState.ABORTING_CARD_UPDATE);
+
+            if ( this._popupMoviePresenter !== null) {
+              this._popupMoviePresenter.setViewState(ViewState.ABORTING_POPUP_UPDATE);
+            }
           })
           .then(() => {
             this._handleUpdateStage(UpdateStage.END);
@@ -363,7 +386,7 @@ export default class MoviesBlock {
         break;
 
       case UserAction.DELETE_COMMENT:
-        this._popupMoviePresenter.setViewState(PopupViewState.DELETING);
+        this._popupMoviePresenter.setViewState(ViewState.COMMENT_DELETING);
 
         this._api
           .deleteComment(updateFilm, updateComment)
@@ -376,7 +399,7 @@ export default class MoviesBlock {
               toast(Warning.NOT_DELETE);
             }
 
-            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_DELETE);
+            this._popupMoviePresenter.setViewState(ViewState.ABORTING_COMMENT_DELETE);
           })
           .then(() => {
             this._handleUpdateStage(UpdateStage.END);
@@ -384,7 +407,7 @@ export default class MoviesBlock {
         break;
 
       case UserAction.ADD_COMMENT:
-        this._popupMoviePresenter.setViewState(PopupViewState.ADDING);
+        this._popupMoviePresenter.setViewState(ViewState.COMMENT_ADDING);
 
         this._api
           .addComment(updateFilm, updateComment)
@@ -397,12 +420,15 @@ export default class MoviesBlock {
               toast(Warning.NOT_SUBMIT);
             }
 
-            this._popupMoviePresenter.setViewState(PopupViewState.ABORTING_ADD);
+            this._popupMoviePresenter.setViewState(ViewState.ABORTING_COMMENT_ADD);
           })
           .then(() => {
             this._handleUpdateStage(UpdateStage.END);
           });
         break;
+
+      default:
+        throwSwitchError(actionType);
     }
   }
 
@@ -438,6 +464,9 @@ export default class MoviesBlock {
         this._isLoading = false;
         remove(this._loadingComponent);
         break;
+
+      default:
+        throwSwitchError(updateType);
     }
 
     if (updateType !== UpdateType.PATCH) {
@@ -445,4 +474,3 @@ export default class MoviesBlock {
     }
   }
 }
-

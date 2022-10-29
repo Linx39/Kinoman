@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import { formatDate, DateFormat } from '../utils/common.js';
 import { getRuntimeTemplate } from '../utils/films.js';
 
@@ -46,7 +46,7 @@ const createFilmCardTemplate = (film) => {
     </article>`);
 };
 
-export default class FilmCard extends AbstractView {
+export default class FilmCard extends SmartView {
   constructor(film) {
     super();
     this._film = film;
@@ -59,6 +59,13 @@ export default class FilmCard extends AbstractView {
 
   getTemplate() {
     return createFilmCardTemplate(this._film);
+  }
+
+  restoreListeners() {
+    this.setFilmCardClickListener(this._callback.filmCardClick);
+    this.setWatchlistClickListener(this._callback.watchlistClick) ;
+    this.setWatchedClickListener(this._callback.watchedClick);
+    this.setFavoriteClickListener(this._callback.favoriteClick);
   }
 
   _onFilmCardClick(evt) {
@@ -101,5 +108,17 @@ export default class FilmCard extends AbstractView {
   setFavoriteClickListener(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._onFavoriteClick);
+  }
+
+  updateFilmState() {
+    this.updateState(this._film);
+  }
+
+  abortFilmState() {
+    const element = this.getElement();
+
+    this.shake(element, () => {
+      this.updateState(this._film);
+    });
   }
 }

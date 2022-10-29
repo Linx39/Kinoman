@@ -136,19 +136,24 @@ const createCommentTemplate = (filmComment) => {
     </li>`);
 };
 
-const createEmojiListTemplate = (item, emotion, isDisabled) => (
-  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${item}" value="${item}" ${emotion === `${item}` ? 'checked' : ''}>
-  <label class="film-details__emoji-label" for="emoji-${item}">
-    <img src="${EMOJI_PATH}${item}.png" width="30" height="30" alt="emoji" data-emotion = "${item}">
+const createEmojiListTemplate = (emoji, emotion, isDisabled) => (
+  `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}" ${emotion === `${emoji}` && `${!isDisabled}` ? 'checked' : ''}>
+  <label class="film-details__emoji-label" for="emoji-${emoji}">
+    <img src="${EMOJI_PATH}${emoji}.png" width="30" height="30" alt="emoji" data-emotion = "${emoji}">
   </label>`);
+
 
 const createNewCommentTemplate = (newComment, isDisabled) => {
   const {comment, emotion} = newComment;
-  const emotiomTemplate = emotion !== null ? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>` : '';
+
+  const emotiomTemplate = emotion !== null
+    ? `<img src="${EMOJI_PATH}${emotion}.png" width="55" height="55" alt="emoji-${emotion}"></img>`
+    : '';
+
   const commentTemplate = he.encode(comment !== null? comment : '');
 
   const emojiListTemplate = Object.values(Emoji)
-    .map((item) => createEmojiListTemplate(item, emotion, isDisabled))
+    .map((emoji) => createEmojiListTemplate(emoji, emotion, isDisabled))
     .join('');
 
   return (
@@ -284,13 +289,6 @@ export default class FilmDetails extends SmartView {
   _onFavoriteClick(evt) {
     evt.preventDefault();
 
-    this._filmState = {
-      ...this._filmState,
-      favorite: !this._filmState.favorite,
-    };
-
-    this.updateState(this._filmState);
-
     this._callback.favoriteClick();
   }
 
@@ -300,22 +298,19 @@ export default class FilmDetails extends SmartView {
   }
 
   _onEmojiListClick(evt) {
-    if (getIsDisabled(this._filmCommentsState, this._newCommentState)) {
-      return;
-    }
-
     if (evt.target.tagName !== 'IMG') {
       return;
     }
 
     evt.preventDefault();
 
-    this._newCommentState = {
-      ...this._newCommentState,
-      emotion: evt.target.dataset.emotion,
-    };
-
-    this.updateState(this._newCommentState);
+    if (!getIsDisabled(this._filmCommentsState, this._newCommentState)) {
+      this._newCommentState = {
+        ...this._newCommentState,
+        emotion: evt.target.dataset.emotion,
+      };
+      this.updateState(this._newCommentState);
+    }
   }
 
   _onCommentInput(evt) {
@@ -387,7 +382,7 @@ export default class FilmDetails extends SmartView {
     this.updateState(this._newCommentState);
   }
 
-  abbortFilmState() {
+  abortFilmState() {
     const element = this.getElement();
 
     this.shake(element, () => {
@@ -395,7 +390,7 @@ export default class FilmDetails extends SmartView {
     });
   }
 
-  abbortFilmCommentsState() {
+  abortFilmCommentsState() {
     const element = this.getElement().querySelector(`.film-details__comment[data-id="${this._deletetingFilmComment.id}"]`);
 
     this.shake(element, () => {
@@ -404,7 +399,7 @@ export default class FilmDetails extends SmartView {
     });
   }
 
-  abbortNewCommentState() {
+  abortNewCommentState() {
     const element = this.getElement().querySelector('.film-details__new-comment');
 
     this.shake(element, () => {
